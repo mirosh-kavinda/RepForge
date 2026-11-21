@@ -52,7 +52,6 @@ sets · SYN-03 CSV/JSON export · tablet layout.
 | Ghost Set step: fixed 2.5 kg or smallest plate the user owns (1.25)? | LOG-02 |
 | Health Connect / Apple Health sync: v1.1 or later? | BOD-01 (data shape) |
 | Sinhala and Tamil translations at launch or after? | FND-01 (l10n setup is ready either way) |
-| Figma mockup access (spec noted it couldn't be opened); the claude.ai canvas is the current design source | FND-02 |
 
 ## Notes
 

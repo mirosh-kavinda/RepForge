@@ -24,12 +24,12 @@ Semantic (solid / tint / on-tint):
 | Role | Solid | Tint | On-tint |
 |---|---|---|---|
 | action · Ember | #FF6B2C | #2A1A12 | #FF8A55 |
-| success / PR · Volt | #C8F560 | #20241A | #3A4A1E |
+| success / PR · Volt | #C8F560 | #20241A | #C8F560 |
 | rest · Rest Blue | #5AA9FF | #13233A | #8CC4FF |
 | missed · Alert | #FF5D5D | #4A1E1E | #FF9A9A |
 
 Rules: tints are only for status-chip and calendar-cell backgrounds; text on a tint uses the
-on-tint colour; text on a solid uses `bg`. Light theme keeps bright Ember/Volt fills on buttons
+on-tint colour; text and icons on a solid fill use `onSolid` (Graphite #0E0F12 in both themes). Light theme keeps bright Ember/Volt fills on buttons
 and chips, but text/icons switch to darker inks — Ember-ink #C2410C, Volt-ink #3F6212 — for AA
 on white.
 
@@ -38,7 +38,8 @@ on white.
 | Token | Dark | Light |
 |---|---|---|
 | bg | #0E0F12 | #F3F4F6 |
-| surface / navBar | #1A1C22 | #FFFFFF |
+| navBar | #15171C | #FFFFFF |
+| surface | #1A1C22 | #FFFFFF |
 | divider | #23262D | #E6E8EC |
 | border | #2A2D35 | #D9DCE2 |
 | textPrimary | #F4F5F7 | #12141A |
@@ -46,14 +47,26 @@ on white.
 | textMuted (ghost) | #8A93A6 | #5E6678 |
 | action fill | #FF6B2C | #FF6B2C |
 | action ink (text) | #FF8A55 | #C2410C |
+| action tint | #2A1A12 | #FFE4D5 |
+| action on-tint | #FF8A55 | #9A3412 |
 | success fill | #C8F560 | #C8F560 |
 | success ink (text) | #C8F560 | #3F6212 |
-| success tint | #3A4A1E | #D5EDA6 |
+| success tint | #20241A | #D5EDA6 |
+| success on-tint | #C8F560 | #3F6212 |
+| success border (done row) | #5C7A2A | #5E8A18 |
+| rest fill | #5AA9FF | #5AA9FF |
+| rest ink (text) | #8CC4FF | #1D5FB0 |
 | rest tint | #13233A | #DCEBFF |
+| rest on-tint | #8CC4FF | #144A8C |
+| missed fill | #FF5D5D | #FF5D5D |
+| missed ink (text) | #FF9A9A | #B91C1C |
 | missed tint | #4A1E1E | #FFDADA |
+| missed on-tint | #FF9A9A | #8F1A1A |
+| onSolid (text on fills) | #0E0F12 | #0E0F12 |
 
-Light values for rest/missed solid and on-tint colours are not on the canvas; FND-02 picks
-them and verifies AA contrast (AC3).
+Values not on the canvas (light action tint/on-tint, rest/missed ink and on-tint, success
+border, onSolid) were set in the FND-02 spec (2026-11-21) and checked for AA contrast. The
+earlier dark success on-tint #3A4A1E (1.6:1 on its tint) was replaced by Volt #C8F560.
 
 ## Logo and voice
 
@@ -85,7 +98,7 @@ Radius: xs 4 · sm 8 · md 12 (buttons) · lg 16 (cards) · pill. Spacing: 4-pt 
 - **RfSetRow** — pending (surface), done (Volt tint + border), PR (adds PR chip); ghost line in
   textMuted; swipe left delete; long-press notes / RPE.
 - **RfChip / RfDayTile** — filter chip (outline → Ember when on), status chip (tint + on-tint);
-  day tile states done, today (Ember 2 px), rest, missed, planned (dashed); always a text label.
+  day tile states done, today (2 px Ember-ink border, `actionInk`, for ≥ 3:1 in light), rest, missed, planned (dashed); always a text label.
 
 ## Screen inventory
 

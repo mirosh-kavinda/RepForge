@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'l10n/generated/app_localizations.dart';
 import 'router.dart';
+import 'theme/rf_theme.dart';
+import 'theme/theme_mode.dart';
 
-/// Root widget. Theme tokens arrive with FND-02.
 class RepForgeApp extends ConsumerWidget {
   const RepForgeApp({super.key});
 
@@ -22,7 +23,9 @@ class RepForgeApp extends ConsumerWidget {
       ],
       // AC5: English only until si/ta are translated (their ARB files stay empty).
       supportedLocales: const [Locale('en')],
-      themeMode: ThemeMode.system,
+      theme: rfTheme(Brightness.light),
+      darkTheme: rfTheme(Brightness.dark),
+      themeMode: ref.watch(appThemeModeProvider),
     );
   }
 }
