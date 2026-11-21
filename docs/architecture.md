@@ -117,7 +117,8 @@ w = weight kg, h = height cm, a = age years. All results are labelled as estimat
 - e1RM (Epley) = w × (1 + reps/30); sets > 12 reps excluded
 - Volume = Σ weight × reps over working sets (warm-ups excluded)
 - Adherence % = completed training days ÷ planned training days
-- Cycle streak = consecutive planned days done in order; rest days count as done when taken
+- Cycle streak = walk back from today: done and rest extend it, skipped and moved are neutral,
+  a missed training day ends it; today not yet done never breaks it (FND-04 AC8)
 - Goal projection = linear regression over last 4–8 weeks; finish = where the line meets target
 - Ghost target = last set + 2.5 kg if all reps hit top of range, else same weight + 1 rep
 

@@ -7,25 +7,51 @@ import 'package:repforge/app/router.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/presentation/sign_in_screen.dart';
 import 'package:repforge/features/home/presentation/home_screen.dart';
+import 'package:repforge/features/onboarding/data/providers.dart';
+import 'package:repforge/features/onboarding/presentation/goal_level_screen.dart';
+import 'package:repforge/features/onboarding/presentation/welcome_screen.dart';
 
 import '../features/auth/fake_auth_repository.dart';
+import '../features/onboarding/fake_onboarding_repository.dart';
 
 void main() {
-  group('AUTH-01 auth gate', () {
-    test('AC1 redirect rules', () {
-      const loading = AsyncLoading<bool>();
-      expect(authRedirect(loading, Routes.start), isNull);
-      expect(authRedirect(const AsyncData(false), Routes.start), Routes.signIn);
-      expect(authRedirect(const AsyncData(false), Routes.home), Routes.signIn);
-      expect(authRedirect(const AsyncData(false), Routes.signIn), isNull);
-      expect(authRedirect(const AsyncData(false), Routes.signInEmail), isNull);
-      expect(authRedirect(const AsyncData(true), Routes.start), Routes.home);
-      expect(authRedirect(const AsyncData(true), Routes.home), isNull);
-      // A guest may still open Sign in to back up.
-      expect(authRedirect(const AsyncData(true), Routes.signIn), isNull);
+  group('AUTH-01 / ONB-01 app gate', () {
+    const no = AsyncData(false);
+    const yes = AsyncData(true);
+    const loading = AsyncLoading<bool>();
+
+    test('AUTH-01 AC1 ONB-01 AC1 no choice yet: Welcome or Sign in only', () {
+      expect(appRedirect(loading, loading, Routes.start), isNull);
+      expect(appRedirect(no, loading, Routes.start), Routes.welcome);
+      expect(appRedirect(no, no, Routes.home), Routes.welcome);
+      expect(appRedirect(no, no, Routes.onboarding), Routes.welcome);
+      expect(appRedirect(no, no, Routes.welcome), isNull);
+      expect(appRedirect(no, no, Routes.signIn), isNull);
+      expect(appRedirect(no, no, Routes.signInEmail), isNull);
     });
 
-    Future<StreamController<bool>> pumpGate(WidgetTester tester) async {
+    test('ONB-01 AC2 chosen but not onboarded: onboarding only', () {
+      expect(appRedirect(yes, loading, Routes.start), isNull);
+      expect(appRedirect(yes, no, Routes.start), Routes.onboarding);
+      expect(appRedirect(yes, no, Routes.home), Routes.onboarding);
+      expect(appRedirect(yes, no, Routes.onboarding), isNull);
+      expect(appRedirect(yes, no, Routes.onboardingAbout), isNull);
+    });
+
+    test('ONB-01 AC2 onboarded: Home, never onboarding again', () {
+      expect(appRedirect(yes, yes, Routes.start), Routes.home);
+      expect(appRedirect(yes, yes, Routes.welcome), Routes.home);
+      expect(appRedirect(yes, yes, Routes.onboarding), Routes.home);
+      expect(appRedirect(yes, yes, Routes.onboardingAbout), Routes.home);
+      expect(appRedirect(yes, yes, Routes.home), isNull);
+      // A guest may still open Sign in to back up.
+      expect(appRedirect(yes, yes, Routes.signIn), isNull);
+    });
+
+    Future<StreamController<bool>> pumpGate(
+      WidgetTester tester, {
+      bool onboarded = true,
+    }) async {
       final choice = StreamController<bool>();
       addTearDown(choice.close);
       await tester.pumpWidget(
@@ -33,6 +59,9 @@ void main() {
           overrides: [
             authChoiceMadeProvider.overrideWith((ref) => choice.stream),
             authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+            onboardingRepositoryProvider.overrideWithValue(
+              FakeOnboardingRepository(done: onboarded),
+            ),
           ],
           child: const RepForgeApp(),
         ),
@@ -40,15 +69,26 @@ void main() {
       return choice;
     }
 
-    testWidgets('AC1 a fresh install opens on Sign in', (tester) async {
-      final choice = await pumpGate(tester);
+    testWidgets('ONB-01 AC1 a fresh install opens on Welcome', (tester) async {
+      final choice = await pumpGate(tester, onboarded: false);
       choice.add(false);
       await tester.pumpAndSettle();
+      expect(find.byType(WelcomeScreen), findsOneWidget);
+      await tester.tap(find.text('Get started'));
+      await tester.pumpAndSettle();
       expect(find.byType(SignInScreen), findsOneWidget);
-      expect(find.byType(HomeScreen), findsNothing);
     });
 
-    testWidgets('AC1 after a choice, launches go straight to Home', (
+    testWidgets('ONB-01 AC2 signed in but not onboarded opens step 1', (
+      tester,
+    ) async {
+      final choice = await pumpGate(tester, onboarded: false);
+      choice.add(true);
+      await tester.pumpAndSettle();
+      expect(find.byType(GoalLevelScreen), findsOneWidget);
+    });
+
+    testWidgets('AUTH-01 AC1 after a choice and onboarding, Home', (
       tester,
     ) async {
       final choice = await pumpGate(tester);
@@ -57,13 +97,15 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
-    testWidgets('AC10 clearing the choice returns to Sign in', (tester) async {
+    testWidgets('AUTH-01 AC10 clearing the choice returns to Welcome', (
+      tester,
+    ) async {
       final choice = await pumpGate(tester);
       choice.add(true);
       await tester.pumpAndSettle();
       choice.add(false);
       await tester.pumpAndSettle();
-      expect(find.byType(SignInScreen), findsOneWidget);
+      expect(find.byType(WelcomeScreen), findsOneWidget);
     });
   });
 }

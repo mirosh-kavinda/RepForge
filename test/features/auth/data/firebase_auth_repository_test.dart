@@ -40,6 +40,10 @@ class FakeUser extends Fake implements User {
   final String? email;
   @override
   final List<UserInfo> providerData;
+  @override
+  String? get displayName => null;
+  @override
+  String? get photoURL => null;
 
   Future<UserCredential> Function(AuthCredential)? onLink;
   Future<void> Function()? onReload;

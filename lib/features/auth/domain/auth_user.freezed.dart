@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthUser {
 
- String get uid; AuthKind get kind; String? get email; bool get emailVerified; Set<SignInProvider> get providers;
+ String get uid; AuthKind get kind; String? get email; String? get displayName; String? get photoUrl; bool get emailVerified; Set<SignInProvider> get providers;
 /// Create a copy of AuthUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AuthUserCopyWith<AuthUser> get copyWith => _$AuthUserCopyWithImpl<AuthUser>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other.providers, providers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other.providers, providers));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,uid,kind,email,emailVerified,const DeepCollectionEquality().hash(providers));
+int get hashCode => Object.hash(runtimeType,uid,kind,email,displayName,photoUrl,emailVerified,const DeepCollectionEquality().hash(providers));
 
 @override
 String toString() {
-  return 'AuthUser(uid: $uid, kind: $kind, email: $email, emailVerified: $emailVerified, providers: $providers)';
+  return 'AuthUser(uid: $uid, kind: $kind, email: $email, displayName: $displayName, photoUrl: $photoUrl, emailVerified: $emailVerified, providers: $providers)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AuthUserCopyWith<$Res>  {
   factory $AuthUserCopyWith(AuthUser value, $Res Function(AuthUser) _then) = _$AuthUserCopyWithImpl;
 @useResult
 $Res call({
- String uid, AuthKind kind, String? email, bool emailVerified, Set<SignInProvider> providers
+ String uid, AuthKind kind, String? email, String? displayName, String? photoUrl, bool emailVerified, Set<SignInProvider> providers
 });
 
 
@@ -62,11 +62,13 @@ class _$AuthUserCopyWithImpl<$Res>
 
 /// Create a copy of AuthUser
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? kind = null,Object? email = freezed,Object? emailVerified = null,Object? providers = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? kind = null,Object? email = freezed,Object? displayName = freezed,Object? photoUrl = freezed,Object? emailVerified = null,Object? providers = null,}) {
   return _then(_self.copyWith(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as AuthKind,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool,providers: null == providers ? _self.providers : providers // ignore: cast_nullable_to_non_nullable
 as Set<SignInProvider>,
@@ -154,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  AuthKind kind,  String? email,  bool emailVerified,  Set<SignInProvider> providers)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  AuthKind kind,  String? email,  String? displayName,  String? photoUrl,  bool emailVerified,  Set<SignInProvider> providers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthUser() when $default != null:
-return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.providers);case _:
+return $default(_that.uid,_that.kind,_that.email,_that.displayName,_that.photoUrl,_that.emailVerified,_that.providers);case _:
   return orElse();
 
 }
@@ -175,10 +177,10 @@ return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.provi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  AuthKind kind,  String? email,  bool emailVerified,  Set<SignInProvider> providers)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  AuthKind kind,  String? email,  String? displayName,  String? photoUrl,  bool emailVerified,  Set<SignInProvider> providers)  $default,) {final _that = this;
 switch (_that) {
 case _AuthUser():
-return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.providers);case _:
+return $default(_that.uid,_that.kind,_that.email,_that.displayName,_that.photoUrl,_that.emailVerified,_that.providers);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +197,10 @@ return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.provi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  AuthKind kind,  String? email,  bool emailVerified,  Set<SignInProvider> providers)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  AuthKind kind,  String? email,  String? displayName,  String? photoUrl,  bool emailVerified,  Set<SignInProvider> providers)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthUser() when $default != null:
-return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.providers);case _:
+return $default(_that.uid,_that.kind,_that.email,_that.displayName,_that.photoUrl,_that.emailVerified,_that.providers);case _:
   return null;
 
 }
@@ -210,12 +212,14 @@ return $default(_that.uid,_that.kind,_that.email,_that.emailVerified,_that.provi
 
 
 class _AuthUser extends AuthUser {
-  const _AuthUser({required this.uid, required this.kind, this.email, this.emailVerified = false, final  Set<SignInProvider> providers = const <SignInProvider>{}}): _providers = providers,super._();
+  const _AuthUser({required this.uid, required this.kind, this.email, this.displayName, this.photoUrl, this.emailVerified = false, final  Set<SignInProvider> providers = const <SignInProvider>{}}): _providers = providers,super._();
   
 
 @override final  String uid;
 @override final  AuthKind kind;
 @override final  String? email;
+@override final  String? displayName;
+@override final  String? photoUrl;
 @override@JsonKey() final  bool emailVerified;
  final  Set<SignInProvider> _providers;
 @override@JsonKey() Set<SignInProvider> get providers {
@@ -235,16 +239,16 @@ _$AuthUserCopyWith<_AuthUser> get copyWith => __$AuthUserCopyWithImpl<_AuthUser>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other._providers, _providers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.kind, kind) || other.kind == kind)&&(identical(other.email, email) || other.email == email)&&(identical(other.displayName, displayName) || other.displayName == displayName)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&const DeepCollectionEquality().equals(other._providers, _providers));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,uid,kind,email,emailVerified,const DeepCollectionEquality().hash(_providers));
+int get hashCode => Object.hash(runtimeType,uid,kind,email,displayName,photoUrl,emailVerified,const DeepCollectionEquality().hash(_providers));
 
 @override
 String toString() {
-  return 'AuthUser(uid: $uid, kind: $kind, email: $email, emailVerified: $emailVerified, providers: $providers)';
+  return 'AuthUser(uid: $uid, kind: $kind, email: $email, displayName: $displayName, photoUrl: $photoUrl, emailVerified: $emailVerified, providers: $providers)';
 }
 
 
@@ -255,7 +259,7 @@ abstract mixin class _$AuthUserCopyWith<$Res> implements $AuthUserCopyWith<$Res>
   factory _$AuthUserCopyWith(_AuthUser value, $Res Function(_AuthUser) _then) = __$AuthUserCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, AuthKind kind, String? email, bool emailVerified, Set<SignInProvider> providers
+ String uid, AuthKind kind, String? email, String? displayName, String? photoUrl, bool emailVerified, Set<SignInProvider> providers
 });
 
 
@@ -272,11 +276,13 @@ class __$AuthUserCopyWithImpl<$Res>
 
 /// Create a copy of AuthUser
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? kind = null,Object? email = freezed,Object? emailVerified = null,Object? providers = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? kind = null,Object? email = freezed,Object? displayName = freezed,Object? photoUrl = freezed,Object? emailVerified = null,Object? providers = null,}) {
   return _then(_AuthUser(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,kind: null == kind ? _self.kind : kind // ignore: cast_nullable_to_non_nullable
 as AuthKind,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,displayName: freezed == displayName ? _self.displayName : displayName // ignore: cast_nullable_to_non_nullable
+as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
 as String?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
 as bool,providers: null == providers ? _self._providers : providers // ignore: cast_nullable_to_non_nullable
 as Set<SignInProvider>,

@@ -35,12 +35,20 @@
   "stepperDecrease": "Decrease {label}",
   "@stepperDecrease": {
     "description": "Screen-reader label for a stepper's minus button.",
-    "placeholders": { "label": { "type": "String" } }
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   },
   "stepperIncrease": "Increase {label}",
   "@stepperIncrease": {
     "description": "Screen-reader label for a stepper's plus button.",
-    "placeholders": { "label": { "type": "String" } }
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   },
   "stepperAtMin": "at minimum",
   "@stepperAtMin": {
@@ -51,81 +59,513 @@
     "description": "Screen-reader hint when a stepper is at its highest value."
   },
   "dayDone": "Done",
-  "@dayDone": { "description": "Day tile state: workout completed." },
+  "@dayDone": {
+    "description": "Day tile state: workout completed."
+  },
   "dayToday": "Today",
-  "@dayToday": { "description": "Day tile state: today." },
+  "@dayToday": {
+    "description": "Day tile state: today."
+  },
   "dayRest": "Rest",
-  "@dayRest": { "description": "Day tile state: planned rest day." },
+  "@dayRest": {
+    "description": "Day tile state: planned rest day."
+  },
   "dayMissed": "Missed",
-  "@dayMissed": { "description": "Day tile state: planned workout not done." },
+  "@dayMissed": {
+    "description": "Day tile state: planned workout not done."
+  },
   "dayPlanned": "Planned",
-  "@dayPlanned": { "description": "Day tile state: upcoming workout." },
-  "signInHeadline": "Train now. Back up when you like.",
-  "@signInHeadline": {"description": "Sign in screen headline."},
+  "@dayPlanned": {
+    "description": "Day tile state: upcoming workout."
+  },
+  "signInHeadline": "Sign in with Google.\nNever lose a rep.",
+  "@signInHeadline": {
+    "description": "Sign in screen headline."
+  },
   "signInBody": "Sign in to keep your training safe across phones. Everything also works offline as a guest.",
-  "@signInBody": {"description": "Sign in screen explainer under the headline."},
+  "@signInBody": {
+    "description": "Sign in screen explainer under the headline."
+  },
   "signInGoogle": "Continue with Google",
-  "@signInGoogle": {"description": "Sign in button: Google."},
+  "@signInGoogle": {
+    "description": "Sign in button: Google."
+  },
   "signInApple": "Continue with Apple",
-  "@signInApple": {"description": "Sign in button: Apple (iPhone only)."},
+  "@signInApple": {
+    "description": "Sign in button: Apple (iPhone only)."
+  },
   "signInEmail": "Continue with email",
-  "@signInEmail": {"description": "Sign in button: email and password."},
+  "@signInEmail": {
+    "description": "Sign in button: email and password."
+  },
   "signInGuest": "Continue as guest",
-  "@signInGuest": {"description": "Sign in button: use the app without an account."},
+  "@signInGuest": {
+    "description": "Sign in button: use the app without an account."
+  },
   "authOffline": "You're offline. Signing in needs a connection; you can continue as guest.",
-  "@authOffline": {"description": "Shown when a sign-in provider is tapped without network."},
+  "@authOffline": {
+    "description": "Shown when a sign-in provider is tapped without network."
+  },
   "authUnknown": "Something went wrong. Please try again.",
-  "@authUnknown": {"description": "Generic sign-in error."},
+  "@authUnknown": {
+    "description": "Generic sign-in error."
+  },
   "authUseGoogle": "This email is registered with Google. Use Continue with Google.",
-  "@authUseGoogle": {"description": "The email belongs to a Google account."},
+  "@authUseGoogle": {
+    "description": "The email belongs to a Google account."
+  },
   "authUseApple": "This email is registered with Apple. Use Continue with Apple.",
-  "@authUseApple": {"description": "The email belongs to an Apple account."},
+  "@authUseApple": {
+    "description": "The email belongs to an Apple account."
+  },
   "authInvalidEmail": "Enter a valid email address.",
-  "@authInvalidEmail": {"description": "Inline email field error."},
+  "@authInvalidEmail": {
+    "description": "Inline email field error."
+  },
   "authWeakPassword": "Use at least 8 characters.",
-  "@authWeakPassword": {"description": "Inline password field error."},
+  "@authWeakPassword": {
+    "description": "Inline password field error."
+  },
   "authWrongPassword": "Wrong password. If you signed up with Google, use Continue with Google.",
-  "@authWrongPassword": {"description": "Wrong password for an existing email account."},
+  "@authWrongPassword": {
+    "description": "Wrong password for an existing email account."
+  },
   "emailTitle": "Email",
-  "@emailTitle": {"description": "Email sign-in screen title."},
+  "@emailTitle": {
+    "description": "Email sign-in screen title."
+  },
   "emailField": "Email",
-  "@emailField": {"description": "Email text field label."},
+  "@emailField": {
+    "description": "Email text field label."
+  },
   "passwordField": "Password",
-  "@passwordField": {"description": "Password text field label."},
+  "@passwordField": {
+    "description": "Password text field label."
+  },
   "emailSubmit": "Continue",
-  "@emailSubmit": {"description": "Email form submit button."},
+  "@emailSubmit": {
+    "description": "Email form submit button."
+  },
   "emailNewHint": "New here? We'll create your account and send a verification email.",
-  "@emailNewHint": {"description": "Hint under the email form."},
+  "@emailNewHint": {
+    "description": "Hint under the email form."
+  },
   "forgotPassword": "Forgot password?",
-  "@forgotPassword": {"description": "Button that sends a password reset email."},
+  "@forgotPassword": {
+    "description": "Button that sends a password reset email."
+  },
   "resetSent": "If an account exists for {email}, we've sent a reset link.",
-  "@resetSent": {"description": "Confirmation after a reset request.", "placeholders": {"email": {"type": "String"}}},
+  "@resetSent": {
+    "description": "Confirmation after a reset request.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "existingTitle": "This account already exists",
-  "@existingTitle": {"description": "Dialog title: guest signs in to an existing account."},
+  "@existingTitle": {
+    "description": "Dialog title: guest signs in to an existing account."
+  },
   "existingBody": "You have training on this phone from guest mode. Keep it to merge into this account once backup arrives, or discard it.",
-  "@existingBody": {"description": "Dialog body for the keep/discard choice."},
+  "@existingBody": {
+    "description": "Dialog body for the keep/discard choice."
+  },
   "existingKeep": "Keep my guest data",
-  "@existingKeep": {"description": "Dialog action: keep guest data."},
+  "@existingKeep": {
+    "description": "Dialog action: keep guest data."
+  },
   "existingDiscard": "Discard guest data",
-  "@existingDiscard": {"description": "Dialog action: remove guest data."},
+  "@existingDiscard": {
+    "description": "Dialog action: remove guest data."
+  },
   "cancel": "Cancel",
-  "@cancel": {"description": "Generic cancel action."},
+  "@cancel": {
+    "description": "Generic cancel action."
+  },
   "verifyTitle": "Verify your email",
-  "@verifyTitle": {"description": "Home notice title for unverified email accounts."},
+  "@verifyTitle": {
+    "description": "Home notice title for unverified email accounts."
+  },
   "verifyBody": "Open the link we sent to {email}. Backup starts once it is verified.",
-  "@verifyBody": {"description": "Home notice body.", "placeholders": {"email": {"type": "String"}}},
+  "@verifyBody": {
+    "description": "Home notice body.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "verifyResend": "Resend",
-  "@verifyResend": {"description": "Button: send the verification email again."},
+  "@verifyResend": {
+    "description": "Button: send the verification email again."
+  },
   "verifySent": "Verification email sent.",
-  "@verifySent": {"description": "Confirmation after resending."},
+  "@verifySent": {
+    "description": "Confirmation after resending."
+  },
   "accountSignOut": "Sign out",
-  "@accountSignOut": {"description": "Profile action: sign out."},
+  "@accountSignOut": {
+    "description": "Profile action: sign out."
+  },
   "accountBackUp": "Sign in to back up",
-  "@accountBackUp": {"description": "Profile action for guests."},
+  "@accountBackUp": {
+    "description": "Profile action for guests."
+  },
   "signOutTitle": "Sign out?",
-  "@signOutTitle": {"description": "Sign out confirmation title."},
+  "@signOutTitle": {
+    "description": "Sign out confirmation title."
+  },
   "signOutBody": "Data not yet backed up will be removed from this phone.",
-  "@signOutBody": {"description": "Sign out confirmation body."},
+  "@signOutBody": {
+    "description": "Sign out confirmation body."
+  },
   "signOutConfirm": "Sign out and remove",
-  "@signOutConfirm": {"description": "Sign out confirmation action."}
+  "@signOutConfirm": {
+    "description": "Sign out confirmation action."
+  },
+  "welcomeHeadline": "Beat your last set.",
+  "@welcomeHeadline": {
+    "description": "Welcome screen headline (tagline)."
+  },
+  "welcomeBody": "Plan a training cycle that fits your life, log a set in two taps, and watch every number move.",
+  "@welcomeBody": {
+    "description": "Welcome screen explainer."
+  },
+  "welcomeStart": "Get started",
+  "@welcomeStart": {
+    "description": "Welcome screen button."
+  },
+  "onbStep": "Step {step} of {total}",
+  "@onbStep": {
+    "description": "Onboarding progress label.",
+    "placeholders": {
+      "step": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "onbGoalTitle": "What is your main goal?",
+  "@onbGoalTitle": {
+    "description": "Onboarding step 1 title."
+  },
+  "onbGoalLabel": "Goal",
+  "@onbGoalLabel": {
+    "description": "Onboarding goal group label."
+  },
+  "onbLevelLabel": "Training experience",
+  "@onbLevelLabel": {
+    "description": "Onboarding level group label."
+  },
+  "goalBuildMuscle": "Build muscle",
+  "@goalBuildMuscle": {
+    "description": "Goal option."
+  },
+  "goalGetStronger": "Get stronger",
+  "@goalGetStronger": {
+    "description": "Goal option."
+  },
+  "goalLoseFat": "Lose fat",
+  "@goalLoseFat": {
+    "description": "Goal option."
+  },
+  "levelBeginner": "Beginner",
+  "@levelBeginner": {
+    "description": "Level option."
+  },
+  "levelIntermediate": "Intermediate",
+  "@levelIntermediate": {
+    "description": "Level option."
+  },
+  "levelAdvanced": "Advanced",
+  "@levelAdvanced": {
+    "description": "Level option."
+  },
+  "onbOptionalHint": "Everything here is optional. You can change it later.",
+  "@onbOptionalHint": {
+    "description": "Onboarding hint."
+  },
+  "onbContinue": "Continue",
+  "@onbContinue": {
+    "description": "Onboarding next button."
+  },
+  "onbAboutTitle": "About you",
+  "@onbAboutTitle": {
+    "description": "Onboarding step 2 title."
+  },
+  "onbUnitsLabel": "Units",
+  "@onbUnitsLabel": {
+    "description": "Units group label."
+  },
+  "unitsMetric": "kg · cm",
+  "@unitsMetric": {
+    "description": "Units option."
+  },
+  "unitsImperial": "lb · in",
+  "@unitsImperial": {
+    "description": "Units option."
+  },
+  "onbSexLabel": "Sex",
+  "@onbSexLabel": {
+    "description": "Sex group label."
+  },
+  "sexMale": "Male",
+  "@sexMale": {
+    "description": "Sex option."
+  },
+  "sexFemale": "Female",
+  "@sexFemale": {
+    "description": "Sex option."
+  },
+  "sexPreferNot": "Prefer not to say",
+  "@sexPreferNot": {
+    "description": "Sex option."
+  },
+  "onbBirthYear": "Birth year",
+  "@onbBirthYear": {
+    "description": "Birth year field label."
+  },
+  "onbHeightCm": "Height (cm)",
+  "@onbHeightCm": {
+    "description": "Height field label, metric."
+  },
+  "onbHeightFt": "Height (ft)",
+  "@onbHeightFt": {
+    "description": "Height feet field label."
+  },
+  "onbHeightIn": "Inches",
+  "@onbHeightIn": {
+    "description": "Height inches field label."
+  },
+  "onbWeightKg": "Weight (kg)",
+  "@onbWeightKg": {
+    "description": "Weight field label, metric."
+  },
+  "onbWeightLb": "Weight (lb)",
+  "@onbWeightLb": {
+    "description": "Weight field label, imperial."
+  },
+  "onbBirthYearError": "Enter a birth year for an age of 13 to 100.",
+  "@onbBirthYearError": {
+    "description": "Birth year out of range."
+  },
+  "onbHeightError": "Enter a height between 100 and 250 cm (3 ft 4 in to 8 ft 2 in).",
+  "@onbHeightError": {
+    "description": "Height out of range."
+  },
+  "onbWeightError": "Enter a weight between 25 and 350 kg (55 to 772 lb).",
+  "@onbWeightError": {
+    "description": "Weight out of range."
+  },
+  "onbFinish": "Finish",
+  "@onbFinish": {
+    "description": "Onboarding finish button."
+  },
+  "onbSaveFailed": "Couldn't save. Please try again.",
+  "@onbSaveFailed": {
+    "description": "Onboarding save failed."
+  },
+  "goalStayConsistent": "Stay consistent",
+  "@goalStayConsistent": {
+    "description": "Goal option."
+  },
+  "goalBuildMuscleHint": "Hypertrophy: 8–12 reps, more volume",
+  "@goalBuildMuscleHint": {
+    "description": "Goal option meaning."
+  },
+  "goalGetStrongerHint": "Strength: 3–6 reps, heavier loads",
+  "@goalGetStrongerHint": {
+    "description": "Goal option meaning."
+  },
+  "goalLoseFatHint": "Keep lifting, add cardio and a calorie target",
+  "@goalLoseFatHint": {
+    "description": "Goal option meaning."
+  },
+  "goalStayConsistentHint": "Simple plan, focus on streaks",
+  "@goalStayConsistentHint": {
+    "description": "Goal option meaning."
+  },
+  "welcomeAlreadyHaveAccount": "I already have an account",
+  "@welcomeAlreadyHaveAccount": {
+    "description": "Welcome secondary button."
+  },
+  "welcomeFeatureCycles": "Rolling cycles: a missed day never breaks the plan",
+  "@welcomeFeatureCycles": {
+    "description": "Welcome feature line."
+  },
+  "welcomeFeatureGhost": "Ghost Sets: see last time, beat it today",
+  "@welcomeFeatureGhost": {
+    "description": "Welcome feature line."
+  },
+  "welcomeFeatureBody": "Body Snapshot: every metric from one entry",
+  "@welcomeFeatureBody": {
+    "description": "Welcome feature line."
+  },
+  "onbAboutHint": "Used for BMI, BMR, calories and body-fat estimates. Edit any time.",
+  "@onbAboutHint": {
+    "description": "About-you explainer."
+  },
+  "onbWaistCm": "Waist (optional, cm)",
+  "@onbWaistCm": {
+    "description": "Waist field label, metric."
+  },
+  "onbWaistIn": "Waist (optional, in)",
+  "@onbWaistIn": {
+    "description": "Waist field label, imperial."
+  },
+  "onbWaistError": "Enter a waist between 40 and 250 cm (16 to 98 in).",
+  "@onbWaistError": {
+    "description": "Waist out of range."
+  },
+  "onbActivityLabel": "Activity outside the gym",
+  "@onbActivityLabel": {
+    "description": "Activity picker label."
+  },
+  "onbActivityNone": "Choose (optional)",
+  "@onbActivityNone": {
+    "description": "Activity picker placeholder."
+  },
+  "activitySedentary": "Sedentary · mostly sitting",
+  "@activitySedentary": {
+    "description": "Activity level."
+  },
+  "activityLight": "Light · some walking each day",
+  "@activityLight": {
+    "description": "Activity level."
+  },
+  "activityModerate": "Moderate · on my feet part of the day",
+  "@activityModerate": {
+    "description": "Activity level."
+  },
+  "activityActive": "Active · on my feet most of the day",
+  "@activityActive": {
+    "description": "Activity level."
+  },
+  "activityVeryActive": "Very active · physical job or training twice a day",
+  "@activityVeryActive": {
+    "description": "Activity level."
+  },
+  "signInOtherOptions": "Other options:",
+  "@signInOtherOptions": {
+    "description": "Sign in: label before Apple and Email."
+  },
+  "signInAppleShort": "Apple",
+  "@signInAppleShort": {
+    "description": "Sign in: Apple option."
+  },
+  "signInEmailShort": "Email",
+  "@signInEmailShort": {
+    "description": "Sign in: email option."
+  },
+  "signInSkip": "Skip for now",
+  "@signInSkip": {
+    "description": "Sign in: continue as guest."
+  },
+  "signInSkipNote": "Guest data stays on this phone only, with no backup",
+  "@signInSkipNote": {
+    "description": "Sign in: under Skip for now."
+  },
+  "signInPrivacy": "We use only your name, email and photo. Health data is never shared.",
+  "@signInPrivacy": {
+    "description": "Sign in privacy line."
+  },
+  "signInBenefitBackup": "Automatic backup",
+  "@signInBenefitBackup": {
+    "description": "Benefit title."
+  },
+  "signInBenefitBackupBody": "Every set, body snapshot, goal and progress photo saves to your account.",
+  "@signInBenefitBackupBody": {
+    "description": "Benefit body."
+  },
+  "signInBenefitRestore": "Restore on any phone",
+  "@signInBenefitRestore": {
+    "description": "Benefit title."
+  },
+  "signInBenefitRestoreBody": "New phone? Sign in and your whole history comes back.",
+  "@signInBenefitRestoreBody": {
+    "description": "Benefit body."
+  },
+  "signInBenefitPersonal": "Personalised to you",
+  "@signInBenefitPersonal": {
+    "description": "Benefit title."
+  },
+  "signInBenefitPersonalBody": "Your name, photo, plan, units, theme and reminders follow you everywhere.",
+  "@signInBenefitPersonalBody": {
+    "description": "Benefit body."
+  },
+  "accountTitle": "Your account",
+  "@accountTitle": {
+    "description": "Account screen title."
+  },
+  "accountBackupOn": "Backup on",
+  "@accountBackupOn": {
+    "description": "Account status chip."
+  },
+  "accountBackupAfterVerify": "Backup after you verify",
+  "@accountBackupAfterVerify": {
+    "description": "Account status chip, unverified email."
+  },
+  "accountSectionBackUp": "Back up",
+  "@accountSectionBackUp": {
+    "description": "Account section header."
+  },
+  "accountSectionPersonalise": "Personalise · change any time in Settings",
+  "@accountSectionPersonalise": {
+    "description": "Account section header."
+  },
+  "accountWorkouts": "Workouts and goals",
+  "@accountWorkouts": {
+    "description": "Backup row."
+  },
+  "accountWorkoutsHint": "Schedules, templates, sets, goals, streaks",
+  "@accountWorkoutsHint": {
+    "description": "Backup row hint."
+  },
+  "accountAlwaysOn": "Always on",
+  "@accountAlwaysOn": {
+    "description": "Backup row state."
+  },
+  "accountBodyMetrics": "Body metrics",
+  "@accountBodyMetrics": {
+    "description": "Backup switch."
+  },
+  "accountBodyMetricsHint": "Weight, measurements, calculated stats",
+  "@accountBodyMetricsHint": {
+    "description": "Backup switch hint."
+  },
+  "accountPhotos": "Progress photos",
+  "@accountPhotos": {
+    "description": "Backup switch."
+  },
+  "accountPhotosHint": "Private · uploads on Wi-Fi only",
+  "@accountPhotosHint": {
+    "description": "Backup switch hint."
+  },
+  "accountUseProfile": "Use my name and photo",
+  "@accountUseProfile": {
+    "description": "Personalise switch."
+  },
+  "accountUseProfileHint": "Shown on Home and your profile",
+  "@accountUseProfileHint": {
+    "description": "Personalise switch hint."
+  },
+  "accountSyncSettings": "Sync settings across devices",
+  "@accountSyncSettings": {
+    "description": "Personalise switch."
+  },
+  "accountSyncSettingsHint": "Theme, units, rest timer, plate setup",
+  "@accountSyncSettingsHint": {
+    "description": "Personalise switch hint."
+  },
+  "accountReminders": "Reminders on all my devices",
+  "@accountReminders": {
+    "description": "Personalise switch."
+  },
+  "accountRemindersHint": "Workout days, rest timer, weekly report",
+  "@accountRemindersHint": {
+    "description": "Personalise switch hint."
+  }
 }

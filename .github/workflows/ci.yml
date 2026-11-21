@@ -63,6 +63,9 @@ jobs:
       - name: Coverage gate, core + domain >= 80 % (AC4)
         run: dart run tool/check_coverage.dart coverage/lcov.info --min=80
 
+      - name: Coverage gate, metrics = 100 % (FND-04)
+        run: dart run tool/check_coverage.dart coverage/lcov.info --only=lib/core/metrics --min=100
+
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4

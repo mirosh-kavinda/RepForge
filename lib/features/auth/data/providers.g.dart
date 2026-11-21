@@ -83,6 +83,54 @@ final class AuthLocalStoreProvider
 
 String _$authLocalStoreHash() => r'9d9d68854bb3ceb4e1a529c451a7eee3bb6634e5';
 
+@ProviderFor(accountPreferencesStore)
+final accountPreferencesStoreProvider = AccountPreferencesStoreProvider._();
+
+final class AccountPreferencesStoreProvider
+    extends
+        $FunctionalProvider<
+          AccountPreferencesStore,
+          AccountPreferencesStore,
+          AccountPreferencesStore
+        >
+    with $Provider<AccountPreferencesStore> {
+  AccountPreferencesStoreProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'accountPreferencesStoreProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$accountPreferencesStoreHash();
+
+  @$internal
+  @override
+  $ProviderElement<AccountPreferencesStore> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AccountPreferencesStore create(Ref ref) {
+    return accountPreferencesStore(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AccountPreferencesStore value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AccountPreferencesStore>(value),
+    );
+  }
+}
+
+String _$accountPreferencesStoreHash() =>
+    r'ada4e30f0c8a85d24d91aa67ed1eb1ae71573b14';
+
 @ProviderFor(authChoiceMade)
 final authChoiceMadeProvider = AuthChoiceMadeProvider._();
 

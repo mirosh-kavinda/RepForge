@@ -3,10 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/auth/data/providers.dart';
+import '../features/auth/presentation/account_screen.dart';
 import '../features/auth/presentation/email_sign_in_screen.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/library/presentation/library_screen.dart';
+import '../features/onboarding/data/providers.dart';
+import '../features/onboarding/presentation/about_you_screen.dart';
+import '../features/onboarding/presentation/goal_level_screen.dart';
+import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/progress/presentation/progress_screen.dart';
 import '../features/schedule/presentation/schedule_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
@@ -16,8 +21,12 @@ part 'router.g.dart';
 
 abstract final class Routes {
   static const start = '/';
+  static const welcome = '/welcome';
+  static const onboarding = '/onboarding';
+  static const onboardingAbout = '/onboarding/about';
   static const signIn = '/sign-in';
   static const signInEmail = '/sign-in/email';
+  static const account = '/account';
   static const home = '/home';
   static const schedule = '/schedule';
   static const library = '/library';
@@ -25,30 +34,69 @@ abstract final class Routes {
   static const profile = '/profile';
 }
 
-// AC1: the gate comes from Drift, so it is known offline and without Firebase.
-// While it loads, the blank start route shows for a few milliseconds.
-String? authRedirect(AsyncValue<bool> choiceMade, String location) {
-  if (choiceMade.isLoading && !choiceMade.hasValue) return null;
-  final made = choiceMade.value ?? false;
+// AUTH-01 AC1, ONB-01 AC1/AC2: both gates come from Drift, so they are known
+// offline and without Firebase. While they load, the blank start route shows.
+String? appRedirect(
+  AsyncValue<bool> choiceMade,
+  AsyncValue<bool> onboarded,
+  String location,
+) {
+  bool loading(AsyncValue<bool> v) => v.isLoading && !v.hasValue;
+  if (loading(choiceMade)) return null;
+  final onWelcome = location == Routes.welcome;
   final onSignIn = location.startsWith(Routes.signIn);
-  if (!made) return onSignIn ? null : Routes.signIn;
-  return location == Routes.start ? Routes.home : null;
+  if (!(choiceMade.value ?? false)) {
+    return onWelcome || onSignIn ? null : Routes.welcome;
+  }
+  if (loading(onboarded)) return null;
+  final onOnboarding = location.startsWith(Routes.onboarding);
+  // Account (09b) follows a sign-in, before or after onboarding.
+  final onAccount = location == Routes.account;
+  if (!(onboarded.value ?? false)) {
+    return onOnboarding || onAccount ? null : Routes.onboarding;
+  }
+  return location == Routes.start || onWelcome || onOnboarding
+      ? Routes.home
+      : null;
 }
 
 /// App router. `indexedStack` keeps every tab's state alive (FND-01 AC6).
 @Riverpod(keepAlive: true)
 GoRouter router(Ref ref) {
-  final gate = ValueNotifier(ref.read(authChoiceMadeProvider));
-  ref.listen(authChoiceMadeProvider, (_, next) => gate.value = next);
+  final gate = ValueNotifier(0);
+  ref
+    ..listen(authChoiceMadeProvider, (_, _) => gate.value++)
+    ..listen(onboardingDoneProvider, (_, _) => gate.value++);
   final router = GoRouter(
     initialLocation: Routes.start,
     refreshListenable: gate,
-    redirect: (context, state) =>
-        authRedirect(gate.value, state.matchedLocation),
+    redirect: (context, state) => appRedirect(
+      ref.read(authChoiceMadeProvider),
+      ref.read(onboardingDoneProvider),
+      state.matchedLocation,
+    ),
     routes: [
       GoRoute(
         path: Routes.start,
         builder: (context, state) => const Scaffold(),
+      ),
+      GoRoute(
+        path: Routes.account,
+        builder: (context, state) => const AccountScreen(),
+      ),
+      GoRoute(
+        path: Routes.welcome,
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.onboarding,
+        builder: (context, state) => const GoalLevelScreen(),
+        routes: [
+          GoRoute(
+            path: 'about',
+            builder: (context, state) => const AboutYouScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: Routes.signIn,

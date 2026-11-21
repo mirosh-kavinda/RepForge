@@ -7,17 +7,21 @@ import 'package:repforge/app/app.dart';
 import 'package:repforge/app/router.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
+import 'package:repforge/features/onboarding/data/providers.dart';
 
+import '../../onboarding/fake_onboarding_repository.dart';
+import '../fake_account_preferences_store.dart';
 import '../fake_auth_repository.dart';
 
 // Pumps the real app and router with a fake repository. `choiceMade` mirrors
 // the stored choice: successes in the fake flip it, as the real repo does.
 class AuthApp {
-  AuthApp(this.repo, this.choice, this.container);
+  AuthApp(this.repo, this.choice, this.container, this.preferences);
 
   final FakeAuthRepository repo;
   final StreamController<bool> choice;
   final ProviderContainer container;
+  final FakeAccountPreferencesStore preferences;
 
   static Future<AuthApp> pump(
     WidgetTester tester, {
@@ -31,6 +35,7 @@ class AuthApp {
     addTearDown(choice.close);
     auth.onChoice = choice.add;
     var current = choiceMade;
+    final preferences = FakeAccountPreferencesStore();
     final container = ProviderContainer(
       overrides: [
         authChoiceMadeProvider.overrideWith((ref) async* {
@@ -38,6 +43,10 @@ class AuthApp {
           yield* choice.stream.map((v) => current = v);
         }),
         authRepositoryProvider.overrideWithValue(auth),
+        accountPreferencesStoreProvider.overrideWithValue(preferences),
+        onboardingRepositoryProvider.overrideWithValue(
+          FakeOnboardingRepository(done: true),
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -52,11 +61,12 @@ class AuthApp {
       ),
     );
     await tester.pumpAndSettle();
-    if (location != null) {
-      container.read(routerProvider).go(location);
+    final target = location ?? (choiceMade ? null : Routes.signIn);
+    if (target != null) {
+      container.read(routerProvider).go(target);
       await tester.pumpAndSettle();
     }
-    return AuthApp(auth, choice, container);
+    return AuthApp(auth, choice, container, preferences);
   }
 
   static const googleUser = AuthUser(

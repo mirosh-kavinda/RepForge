@@ -317,6 +317,8 @@ class FirebaseAuthRepository implements AuthRepository {
     uid: user.uid,
     kind: user.isAnonymous ? AuthKind.anonymous : AuthKind.account,
     email: user.email,
+    displayName: user.displayName,
+    photoUrl: user.photoURL,
     emailVerified: user.emailVerified,
     providers: {
       for (final info in user.providerData)

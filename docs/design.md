@@ -112,7 +112,8 @@ Radius: xs 4 · sm 8 · md 12 (buttons) · lg 16 (cards) · pill. Spacing: 4-pt 
 | 06 | Progress | PRG-01, PRG-02 |
 | 07 | Goals | GOL-01, GOL-02 |
 | 08 | Welcome | ONB-01 |
-| 09 | Sign in (Google, Apple, email, guest) | AUTH-01 |
+| 09 | Sign in (Google main; Apple, email; skip for now) | AUTH-01 |
+| 09b | Account: backup and personalisation choices | AUTH-01 (restore card: SYN-02) |
 | 10–12 | Onboarding: goal + level, about you, starter plan | ONB-01, SCH-01 |
 | 13 | Edit workout (template, supersets) | WKT-01 |
 | 14 | Exercise detail | EXL-02 |
