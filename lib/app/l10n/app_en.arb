@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "RepForge",
+  "@appTitle": {
+    "description": "App name shown in the title bar and task switcher."
+  }
+}

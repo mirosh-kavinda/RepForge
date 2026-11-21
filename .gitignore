@@ -49,3 +49,6 @@ lib/firebase_options.dart
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Generated l10n (flutter gen-l10n runs on pub get)
+lib/app/l10n/generated/
