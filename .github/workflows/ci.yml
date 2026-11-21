@@ -89,3 +89,29 @@ jobs:
 
       - name: Build iOS (AC1, iOS 15+)
         run: flutter build ios --no-codesign --debug
+
+  rules:
+    name: Firestore rules (AUTH-01 AC11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: test/firestore_rules/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install rules test packages
+        run: npm ci --prefix test/firestore_rules
+
+      - name: Rules tests on the emulator (demo project, no secrets)
+        run: >
+          npx --yes firebase-tools@15.31.0 emulators:exec --only firestore
+          --project demo-repforge "npm --prefix test/firestore_rules test"

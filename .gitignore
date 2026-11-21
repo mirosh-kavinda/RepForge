@@ -53,3 +53,12 @@ lib/firebase_options.dart
 # Generated l10n (flutter gen-l10n runs on pub get)
 lib/app/l10n/generated/
 android/.kotlin/
+
+# Per-flavor dart-define config (Firebase keys); copy config/example.json
+config/*.json
+!config/example.json
+
+# Firestore emulator logs
+firestore-debug.log
+firebase-debug.log
+ui-debug.log

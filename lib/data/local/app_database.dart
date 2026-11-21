@@ -41,6 +41,8 @@ class AppMeta extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
+const catalogVersionKey = 'catalogVersion';
+
 @DriftDatabase(tables: [CatalogExercises, ExerciseMuscles, AppMeta, Outbox])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -67,6 +69,13 @@ class AppDatabase extends _$AppDatabase {
   Future<void> writeMeta(String key, String value) => into(
     appMeta,
   ).insertOnConflictUpdate(AppMetaCompanion.insert(key: key, value: value));
+
+  Future<void> deleteMeta(String key) =>
+      (delete(appMeta)..where((m) => m.key.equals(key))).go();
+
+  Stream<String?> watchMeta(String key) => (select(
+    appMeta,
+  )..where((m) => m.key.equals(key))).watchSingleOrNull().map((m) => m?.value);
 }
 
 AppDatabase openAppDatabase() => AppDatabase(driftDatabase(name: 'repforge'));

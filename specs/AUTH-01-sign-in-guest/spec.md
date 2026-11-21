@@ -1,6 +1,6 @@
 # AUTH-01: Sign in with Google, Apple, email, or continue as guest
 
-Status: Draft
+Status: Approved
 Phase: P1 · Priority: MVP · Screens: 09 Sign in
 
 ## Why

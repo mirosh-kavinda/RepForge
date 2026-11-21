@@ -15,7 +15,7 @@ class CatalogImporter {
   }) : _loadSeed = loadSeed,
        _now = now ?? DateTime.now;
 
-  static const versionKey = 'catalogVersion';
+  static const versionKey = catalogVersionKey;
 
   final AppDatabase _db;
   final Future<String> Function() _loadSeed;

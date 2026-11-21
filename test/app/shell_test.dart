@@ -12,8 +12,12 @@ import 'package:repforge/features/progress/presentation/progress_screen.dart';
 import 'package:repforge/features/schedule/presentation/schedule_screen.dart';
 import 'package:repforge/features/settings/presentation/profile_screen.dart';
 
+import '../helpers/app_overrides.dart';
+
 Future<void> pumpApp(WidgetTester tester) async {
-  await tester.pumpWidget(const ProviderScope(child: RepForgeApp()));
+  await tester.pumpWidget(
+    ProviderScope(overrides: signedInOverrides(), child: const RepForgeApp()),
+  );
   await tester.pumpAndSettle();
 }
 

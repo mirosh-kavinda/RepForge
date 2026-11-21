@@ -29,3 +29,16 @@ Spec-driven development with Claude Code — see [CLAUDE.md](CLAUDE.md) and
 
 Flutter · Riverpod · go_router · Drift (SQLite + FTS5) · freezed · Firebase (Auth, Firestore,
 Storage, Messaging, Crashlytics, App Check) · fl_chart · workmanager.
+
+## Running
+
+Android has `dev` and `prod` flavors. Firebase settings come from a gitignored dart-define file:
+
+```sh
+cp config/example.json config/dev.json   # fill in from the repforge-dev console
+flutter run --flavor dev --dart-define-from-file=config/dev.json
+```
+
+Without a config file the app still runs, local-only: guests work, sign-in reports offline.
+Firestore rules test: `firebase emulators:exec --only firestore --project demo-repforge "npm --prefix test/firestore_rules test"`
+(after `npm ci --prefix test/firestore_rules`).
