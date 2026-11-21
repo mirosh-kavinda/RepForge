@@ -12,7 +12,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 |---|---|---|---|
 | FND-01 | Project bootstrap: Flutter app, folder layout, lint, CI | P1 | Done |
 | FND-02 | Theme and brand tokens (`RfColors`, type, spacing, core widgets) | P1 | Done |
-| FND-03 | Local database, outbox table, exercise catalog seed + FTS search | P1 | Spec |
+| FND-03 | Local database, outbox table, exercise catalog seed + FTS search | P1 | Done |
 | FND-04 | Metrics package (BMI, BF %, LBM, FFMI, BMR, TDEE, e1RM, volume) | P2 | — |
 
 ## Functional requirements

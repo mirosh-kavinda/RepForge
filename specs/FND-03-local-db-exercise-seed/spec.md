@@ -1,6 +1,6 @@
 # FND-03: Local database, outbox and exercise catalog seed
 
-Status: Approved
+Status: Done
 Phase: P1 · Priority: MVP · Screens: none yet (data for 04 Exercise library, 14 Exercise detail)
 Covers the data half of: EXL-01, EXL-02
 

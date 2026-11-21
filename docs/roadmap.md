@@ -70,3 +70,16 @@ Android 12. `adb shell am start -W -S` after `am force-stop`, `TotalTime` in ms.
 
 Target is < 2 s. Re-measure the same way when FND-03 (Drift open + seed) and AUTH-01 (Firebase
 init) land, since both add startup work. iOS not yet measured (needs a Mac).
+
+### FND-03 device numbers (2026-11-21, Note10, Android 12)
+
+| Measure | Result | Target |
+|---|---|---|
+| First-launch catalog import (876 exercises, debug build) | 495 ms, off the UI isolate | doesn't block first frame |
+| Exercise search, 200 mixed queries (debug build) | p50 3.6 ms · p95 22.4 ms · max 27.7 ms | p95 < 100 ms |
+| Cold start, first launch after install (profile, import running) | 1565 ms | < 2 s |
+| Cold start, later launches (profile) | 487–528 ms (was ~460 ms before the DB) | < 2 s |
+
+The search numbers came from an in-memory DB on a debug build. The integration test now opens a
+file DB on a background isolate, like the app does; re-run it on a profile build next time a
+device is attached.

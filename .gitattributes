@@ -1,0 +1,3 @@
+
+# Generated exercise seed: keep LF so the rebuild test matches byte for byte
+assets/exercises/seed.json text eol=lf

@@ -94,5 +94,40 @@ void main() {
       final result = evaluateCoverage(lcov, filesOnDisk: const []);
       expect(result.percent, 100);
     });
+
+    test('a declaration-only file missing from lcov is not untested', () {
+      final result = evaluateCoverage(
+        record('lib/core/a.dart', {1: 1}),
+        filesOnDisk: const [
+          'lib/core/a.dart',
+          'lib/core/iface.dart',
+          'lib/core/impl.dart',
+        ],
+        hasCode: (p) => p.endsWith('impl.dart'),
+      );
+      expect(result.untested, ['lib/core/impl.dart']);
+    });
+
+    test('hasExecutableCode tells bodies from declarations', () {
+      expect(
+        hasExecutableCode(
+          'abstract interface class R {\n  Future<int> f(String id);\n}',
+        ),
+        isFalse,
+      );
+      expect(
+        hasExecutableCode(
+          "enum E { a('a'); const E(this.k); final String k; }",
+        ),
+        isFalse,
+      );
+      expect(
+        hasExecutableCode('// int f() { return 1; }\nabstract class A {}'),
+        isFalse,
+      );
+      expect(hasExecutableCode('int f() => 1;'), isTrue);
+      expect(hasExecutableCode('void f() async {}'), isTrue);
+      expect(hasExecutableCode('bool get empty => true;'), isTrue);
+    });
   });
 }
