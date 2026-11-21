@@ -1,6 +1,6 @@
 # FND-01: Project bootstrap and CI
 
-Status: Draft
+Status: Done
 Phase: P1 · Priority: MVP · Screens: none (app shell only)
 
 ## Why
@@ -51,7 +51,7 @@ are enforced from the first commit instead of retrofitted.
 
 - None.
 
-## Open questions
+## Decisions (resolved open questions)
 
-- Bundle ID / application ID (proposal: `com.repforge.app`).
-- Org name for `flutter create --org`.
+- Android application ID and iOS bundle ID: `com.repforge.app` (fixed; store identity).
+- Org for `flutter create --org`: `com.repforge`.

@@ -1,0 +1,91 @@
+# FND-01 AC3, AC4: analyze, test, coverage gate; AC1 iOS build check.
+# Needs no Firebase secrets.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.41.4"
+
+jobs:
+  analyze-test:
+    name: Analyze, test, coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Generated code is up to date
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          changes="$(git status --porcelain -- '*.g.dart' '*.freezed.dart' '*.drift.dart')"
+          if [ -n "$changes" ]; then
+            echo "$changes"; echo 'Generated code is stale: run build_runner and commit'; exit 1
+          fi
+
+      - name: Folder layout (AC2)
+        run: |
+          for d in lib/app lib/core lib/core/metrics lib/data/local lib/data/remote \
+                   lib/data/sync lib/features; do
+            test -d "$d" || { echo "missing $d"; exit 1; }
+          done
+          features="auth onboarding schedule workout logger library body progress goals"
+          features="$features notifications settings"
+          for f in $features; do
+            for l in domain data presentation; do
+              test -d "lib/features/$f/$l" || { echo "missing lib/features/$f/$l"; exit 1; }
+            done
+          done
+
+      - name: Analyze (AC3)
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Test with coverage (AC3)
+        run: flutter test --coverage
+
+      - name: Coverage gate, core + domain >= 80 % (AC4)
+        run: dart run tool/check_coverage.dart coverage/lcov.info --min=80
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lcov
+          path: coverage/lcov.info
+          if-no-files-found: ignore
+
+  build-ios:
+    name: iOS build (no codesign)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install packages
+        run: flutter pub get
+
+      - name: Build iOS (AC1, iOS 15+)
+        run: flutter build ios --no-codesign --debug
