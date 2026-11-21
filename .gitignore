@@ -22,3 +22,30 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+coverage/
+*.iml
+android/.gradle/
+android/local.properties
+android/key.properties
+*.jks
+*.keystore
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# Firebase config (per-developer / secret)
+google-services.json
+GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Claude Code local settings
+.claude/settings.local.json
