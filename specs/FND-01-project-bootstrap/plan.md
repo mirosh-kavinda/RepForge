@@ -30,6 +30,9 @@ up `gen-l10n`, and add a GitHub Actions workflow with analysis, tests and a cove
 - `flutter create --org com.repforge --project-name repforge --platforms android,ios .`, then set
   Android `applicationId`/`namespace` and iOS `PRODUCT_BUNDLE_IDENTIFIER` to `com.repforge.app` (AC1)
 - `minSdkVersion 26` in `android/app/build.gradle`; iOS deployment target 15.0 in Podfile (AC1)
+- Tab screens: Home → `features/home/presentation` (presentation-only; composes other features,
+  added to docs/architecture.md), Profile → `features/settings/presentation` (SET-01),
+  Schedule/Library/Progress → their own features (AC2, AC6)
 - go_router `StatefulShellRoute.indexedStack` keeps each tab's state (AC6)
 - Coverage gate is a small Dart script, not a third-party action, so it runs locally too (AC4);
   passes when the filtered set is empty

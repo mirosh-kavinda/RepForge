@@ -48,6 +48,7 @@ lib/
   features/
     auth/ onboarding/ schedule/ workout/ logger/ library/
     body/ progress/ goals/ notifications/ settings/
+    home/                      presentation only: composes other features' providers
       <feature>/domain/        entities, use_cases, repo interface
       <feature>/data/          repo implementation
       <feature>/presentation/  screens, widgets, controllers
