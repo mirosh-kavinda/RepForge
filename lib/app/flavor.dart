@@ -65,6 +65,10 @@ class FirebaseConfig {
   FirebaseOptions? optionsFor(TargetPlatform platform) {
     if (!isConfigured) return null;
     return switch (platform) {
+      TargetPlatform.android
+          when androidApiKey.isEmpty || androidAppId.isEmpty =>
+        null,
+      TargetPlatform.iOS when iosApiKey.isEmpty || iosAppId.isEmpty => null,
       TargetPlatform.android => FirebaseOptions(
         apiKey: androidApiKey,
         appId: androidAppId,

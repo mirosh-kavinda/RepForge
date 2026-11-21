@@ -52,8 +52,13 @@ class FakeAuthRepository implements AuthRepository {
     providers: {SignInProvider.google},
   );
 
+  var online = true;
+
   @override
   AuthUser? get currentUser => _user;
+
+  @override
+  Future<bool> isOnline() async => online;
 
   @override
   Stream<AuthUser?> userChanges() async* {

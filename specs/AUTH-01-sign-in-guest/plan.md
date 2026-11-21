@@ -63,13 +63,22 @@ and without waiting for Firebase (AC1, NFR-01). Firebase starts after `runApp`.
 - **Existing account (AC8).** `credential-already-in-use` / `email-already-in-use` on link →
   `AuthFailure.accountExists(pending)` carrying the credential. Keep → set `pendingMergeFrom`,
   sign in with the pending credential. Discard → `LocalDataWiper`, then sign in. Cancel → nothing.
-- **Offline (AC9).** `connectivity_plus` is checked before a provider sign-in, and
-  `network-request-failed` also maps to `offline`. Guest always stays enabled.
+- **Offline (AC9).** `connectivity_plus` is checked before a provider sign-in and when Email is
+  tapped (`AuthRepository.isOnline`), and `network-request-failed` also maps to `offline`. The
+  message shows inline under the buttons; guest always stays enabled.
+- **Local guests sign in as anonymous first (AC7, AC8).** Before any sign-in, a local guest is
+  upgraded to anonymous; if that fails the sign-in stops with `offline`, so nobody signs in past
+  guest data without the keep/discard choice.
+- **Guest + existing email + wrong password (AC3, AC8).** Firebase can only check the password
+  by signing in, which would drop the guest session, so the keep/discard dialog comes first and
+  the wrong-password error shows after it. Nothing is wiped or flagged unless sign-in succeeds.
 - **Email (AC3–AC5).** Sign up sends verification at once. Forgot password always shows the same
   confirmation (`user-not-found` swallowed). `refresh()` reloads the user on launch and resume;
   `canBackUp` is false for unverified password accounts and for guests.
-- **Wrong provider (edge).** `account-exists-with-different-credential` and an email sign-in for
-  a Google-only email → `useProvider('google')`.
+- **Wrong provider (edge).** `account-exists-with-different-credential` names the other provider
+  (Apple tried → Google, Google tried → Apple). With email enumeration protection a Google-only
+  email looks like a wrong password, so that message names Google and the email screen offers a
+  Continue with Google button.
 - **Apple (AC2).** The button is built only when `defaultTargetPlatform == iOS`. Android tests
   assert it is absent; on-device iOS checks are recorded as pending until a Mac is available.
 - **Sign out (AC10).** Confirm dialog → wipe local user data → Firebase and Google sign-out →
@@ -122,7 +131,8 @@ and without waiting for Firebase (AC1, NFR-01). Firebase starts after `runApp`.
   Google, Email and Anonymous providers, add the Android app (SHA-1 of the debug and release keys for Google),
   and fill `config/*.json`. This blocks on-device tasks, not the fake-based ones.
 - **google_sign_in 7 API** (singleton, `authenticate()`) differs from older docs; wrapper isolates it.
-- **iOS unverified** (Apple sign-in, URL schemes, schemes per flavor) until a Mac is available; CI's
+- **iOS unverified** (Apple sign-in, the Google Sign-In URL scheme in Info.plist, schemes per
+  flavor) until a Mac is available; CI's
   no-codesign iOS build must keep compiling with the new plugins (raises iOS min to 15 if needed,
   matching NFR-07).
 - **Riverpod retry** (seen in FND-03): auth providers that fail must surface errors, so failures

@@ -29,6 +29,21 @@ void main() {
       expect(cfg.optionsFor(TargetPlatform.android), isNull);
     });
 
+    test('a copied example config (no keys) is not treated as configured', () {
+      const cfg = FirebaseConfig(
+        projectId: 'repforge-dev',
+        messagingSenderId: '',
+        storageBucket: '',
+        androidApiKey: '',
+        androidAppId: '',
+        iosApiKey: '',
+        iosAppId: '',
+        iosBundleId: 'com.repforge.app',
+      );
+      expect(cfg.optionsFor(TargetPlatform.android), isNull);
+      expect(cfg.optionsFor(TargetPlatform.iOS), isNull);
+    });
+
     test('config builds platform options', () {
       const cfg = FirebaseConfig(
         projectId: 'repforge-dev',

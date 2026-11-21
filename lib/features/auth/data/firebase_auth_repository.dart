@@ -76,6 +76,20 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
+  // A local guest must be anonymous before signing in, so linking (AC7) or
+  // the keep/discard choice (AC8) applies. If that fails, stop rather than
+  // sign in past the guest's data.
+  Future<AuthFailure?> _upgradeBeforeSignIn() async {
+    if (await _store.localGuestId() == null) return null;
+    await upgradeLocalGuest();
+    return await _store.localGuestId() == null
+        ? null
+        : const AuthFailure.offline();
+  }
+
+  @override
+  Future<bool> isOnline() async => await _onlineAuth() != null;
+
   @override
   Future<AuthFailure?> continueAsGuest() async {
     final auth = await _isOnline() ? await _auth : null;
@@ -114,7 +128,7 @@ class FirebaseAuthRepository implements AuthRepository {
       credential = await sheet();
     } on Object catch (e) {
       return e is FirebaseAuthException
-          ? _mapError(e)
+          ? _mapError(e, provider)
           : AuthFailure.unknown('$e');
     }
     if (credential == null) return const AuthFailure.cancelled();
@@ -138,6 +152,8 @@ class FirebaseAuthRepository implements AuthRepository {
       email: address,
       password: password,
     );
+    final notUpgraded = await _upgradeBeforeSignIn();
+    if (notUpgraded != null) return notUpgraded;
     final guest = auth.currentUser;
     if (guest != null && guest.isAnonymous) {
       final failure = await _signIn(auth, credential, SignInProvider.password);
@@ -247,7 +263,8 @@ class FirebaseAuthRepository implements AuthRepository {
     AuthCredential credential,
     SignInProvider provider,
   ) async {
-    await upgradeLocalGuest();
+    final notUpgraded = await _upgradeBeforeSignIn();
+    if (notUpgraded != null) return notUpgraded;
     try {
       final guest = auth.currentUser;
       if (guest != null && guest.isAnonymous) {
@@ -266,7 +283,7 @@ class FirebaseAuthRepository implements AuthRepository {
           ),
         );
       }
-      return _mapError(e);
+      return _mapError(e, provider);
     }
     await _finishSignIn();
     return null;
@@ -312,15 +329,21 @@ class FirebaseAuthRepository implements AuthRepository {
     },
   );
 
-  static AuthFailure _mapError(FirebaseAuthException e) => switch (e.code) {
+  // `attempted` names the provider just tried, so a clash points to the other.
+  static AuthFailure _mapError(
+    FirebaseAuthException e, [
+    SignInProvider? attempted,
+  ]) => switch (e.code) {
     'network-request-failed' => const AuthFailure.offline(),
     'wrong-password' ||
     'invalid-credential' ||
     'user-not-found' => const AuthFailure.wrongPassword(),
     'weak-password' => const AuthFailure.weakPassword(),
     'invalid-email' => const AuthFailure.invalidEmail(),
-    'account-exists-with-different-credential' => const AuthFailure.useProvider(
-      SignInProvider.google,
+    'account-exists-with-different-credential' => AuthFailure.useProvider(
+      attempted == SignInProvider.google
+          ? SignInProvider.apple
+          : SignInProvider.google,
     ),
     'user-cancelled' ||
     'web-context-cancelled' => const AuthFailure.cancelled(),

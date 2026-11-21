@@ -7,6 +7,9 @@ abstract interface class AuthRepository {
 
   AuthUser? get currentUser;
 
+  // False offline or when this build has no backend (AC9).
+  Future<bool> isOnline();
+
   Future<AuthFailure?> continueAsGuest();
 
   Future<AuthFailure?> signInWithGoogle();
