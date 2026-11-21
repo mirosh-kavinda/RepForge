@@ -14,6 +14,8 @@ abstract class AuthUser with _$AuthUser {
     required String uid,
     required AuthKind kind,
     String? email,
+    String? displayName,
+    String? photoUrl,
     @Default(false) bool emailVerified,
     @Default(<SignInProvider>{}) Set<SignInProvider> providers,
   }) = _AuthUser;
@@ -30,4 +32,16 @@ abstract class AuthUser with _$AuthUser {
       !providers.any((p) => p != SignInProvider.password);
 
   bool get canBackUp => kind == AuthKind.account && !needsEmailVerification;
+
+  // Up to two initials from the name, else the email; '' if neither (AC13).
+  String get initials {
+    final source = (displayName?.trim().isNotEmpty ?? false)
+        ? displayName!.trim()
+        : (email ?? '').split('@').first;
+    final words = source
+        .split(RegExp(r'[\s._-]+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    return words.take(2).map((w) => w[0].toUpperCase()).join();
+  }
 }

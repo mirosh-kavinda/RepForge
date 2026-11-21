@@ -8,6 +8,7 @@ import '../../../app/firebase_bootstrap.dart';
 import '../../../app/flavor.dart';
 import '../../../data/local/database_provider.dart';
 import '../../../data/local/local_data_wiper.dart';
+import '../domain/account_preferences.dart';
 import '../domain/auth_repository.dart';
 import '../domain/auth_user.dart';
 import 'auth_local_store.dart';
@@ -31,6 +32,10 @@ Future<bool> firebaseReady(Ref ref) async {
 @Riverpod(keepAlive: true)
 AuthLocalStore authLocalStore(Ref ref) =>
     AuthLocalStore(ref.watch(appDatabaseProvider));
+
+@Riverpod(keepAlive: true)
+AccountPreferencesStore accountPreferencesStore(Ref ref) =>
+    ref.watch(authLocalStoreProvider);
 
 @Riverpod(keepAlive: true, retry: _noRetry)
 Stream<bool> authChoiceMade(Ref ref) =>

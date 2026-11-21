@@ -44,6 +44,23 @@ and without waiting for Firebase (AC1, NFR-01). Firebase starts after `runApp`.
 | `.github/workflows/ci.yml` | changed | `rules` job: Node 22 + Java, `firebase emulators:exec` runs the rules test |
 | `.gitignore` | changed | `config/*.json` except `example.json` |
 
+## Amendment (2026-11-21: redesigned 09, new 09b)
+
+| Path | New / changed | Purpose |
+|---|---|---|
+| `lib/features/auth/presentation/sign_in_screen.dart` | changed | Google main button; "Other options" Apple (iOS) · Email; benefits; Skip for now + note; privacy line (AC2, AC6, AC9, AC14) |
+| `lib/features/auth/presentation/account_screen.dart` | new | 09b: account card, backup and personalise switches, Continue (AC13) |
+| `lib/features/auth/presentation/user_avatar.dart` | new | provider photo or initials (AC13 edge) |
+| `lib/features/auth/domain/account_preferences.dart` | new | freezed prefs (all default on) + `AccountPreferencesStore` |
+| `lib/features/auth/domain/auth_user.dart` | changed | `displayName`, `photoUrl`, `initials` |
+| `lib/features/auth/data/auth_local_store.dart` | changed | prefs in `app_meta` (`account.*`), wiped with everything else on sign-out |
+| `lib/features/auth/presentation/sign_in_flow.dart` | changed | success → Account for accounts, Home (→ onboarding) for guests |
+| `lib/app/router.dart` | changed | `/account`, allowed before and after onboarding |
+
+- Fresh install opens Welcome (ONB-01), so AUTH-01 AC1/AC10 now land on Welcome, not Sign in.
+- The 09b Restore card is not built (SYN-02). Preferences are stored now and read by SYN-01 /
+  NTF-01; nothing uploads yet.
+
 ## Data
 
 - No new tables. Auth state lives in Firebase Auth. App choice and guest state use three

@@ -12,7 +12,8 @@ import 'existing_account_dialog.dart';
 import 'sign_in_controller.dart';
 
 // Shared by the Sign in and Email screens: runs an action, asks keep/discard
-// when the account already exists (AC8), and goes Home on success.
+// when the account already exists (AC8). An account then sees Account (09b,
+// AC13); a guest goes on to onboarding or Home.
 Future<void> runSignIn(
   BuildContext context,
   WidgetRef ref,
@@ -30,15 +31,15 @@ Future<void> runSignIn(
       (repo) =>
           repo.completeExistingAccount(failure.pending, keepGuestData: keep),
     );
-    if (done == null && context.mounted) await _goHome(context, ref);
+    if (done == null && context.mounted) await _goNext(context, ref);
     return;
   }
-  if (failure == null) await _goHome(context, ref);
+  if (failure == null) await _goNext(context, ref);
 }
 
 // The stored choice reaches the router through a stream; going Home before it
 // arrives would be redirected straight back to Sign in.
-Future<void> _goHome(BuildContext context, WidgetRef ref) async {
+Future<void> _goNext(BuildContext context, WidgetRef ref) async {
   if (!(ref.read(authChoiceMadeProvider).value ?? false)) {
     final made = Completer<void>();
     final sub = ref.listenManual(authChoiceMadeProvider, (_, next) {
@@ -47,5 +48,8 @@ Future<void> _goHome(BuildContext context, WidgetRef ref) async {
     await made.future.timeout(const Duration(seconds: 2), onTimeout: () {});
     sub.close();
   }
-  if (context.mounted) context.go(Routes.home);
+  if (!context.mounted) return;
+  final isAccount =
+      !(ref.read(authRepositoryProvider).currentUser?.isGuest ?? true);
+  context.go(isAccount ? Routes.account : Routes.home);
 }

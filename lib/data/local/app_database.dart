@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../../core/ids.dart';
 import '../sync/outbox_table.dart';
 import '../sync/sync_state.dart';
+import 'base_columns.dart';
 
 part 'app_database.g.dart';
 
@@ -41,14 +43,41 @@ class AppMeta extends Table {
   Set<Column<Object>> get primaryKey => {key};
 }
 
+// ONB-01. Enum values are stored by name; the onboarding repository maps them.
+class UserProfiles extends Table with SyncedTable {
+  TextColumn get goal => text().nullable()();
+  TextColumn get level => text().nullable()();
+  TextColumn get units => text()();
+  TextColumn get sex => text().nullable()();
+  IntColumn get birthYear => integer().nullable()();
+  RealColumn get heightCm => real().nullable()();
+  TextColumn get activityLevel => text().nullable()();
+}
+
+// ONB-01 creates it with weight and waist; BOD-01 adds the other measurements.
+class BodySnapshots extends Table with SyncedTable {
+  DateTimeColumn get date => dateTime()();
+  RealColumn get weightKg => real().nullable()();
+  RealColumn get waistCm => real().nullable()();
+}
+
 const catalogVersionKey = 'catalogVersion';
 
-@DriftDatabase(tables: [CatalogExercises, ExerciseMuscles, AppMeta, Outbox])
+@DriftDatabase(
+  tables: [
+    CatalogExercises,
+    ExerciseMuscles,
+    AppMeta,
+    Outbox,
+    UserProfiles,
+    BodySnapshots,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -59,6 +88,12 @@ class AppDatabase extends _$AppDatabase {
         "content='catalog_exercises', content_rowid='rowid', "
         "tokenize='unicode61 remove_diacritics 2')",
       );
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(userProfiles);
+        await m.createTable(bodySnapshots);
+      }
     },
   );
 

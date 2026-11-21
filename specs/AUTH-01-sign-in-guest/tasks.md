@@ -16,5 +16,7 @@ Plan: ./plan.md · One commit for the slice once integrated (user preference).
 - [x] T12 Email screen (sign up / in / forgot; inline errors) — test: `email_sign_in_screen_test.dart` (AC3, AC4, edges)
 - [x] T13 Existing-account dialog, verify-email banner on Home, account section on Profile — test: `sign_in_screen_test.dart` "AC8 existing account …", `account_widgets_test.dart` (AC5, AC8, AC10)
 - [x] T14 `firestore.rules`, `firebase.json`, `.firebaserc`; rules test on the emulator; CI `rules` job — test: `test/firestore_rules/rules.test.mjs` (AC11)
+- [x] T17 Amendment: Sign in (09) redesign — test: `sign_in_screen_test.dart` (AC2, AC6, AC9, AC14)
+- [x] T18 Amendment: Account (09b), preferences store, name/photo/initials, flow + `/account` route — test: `account_screen_test.dart` (AC13)
 - [ ] T15 On device — test written, run pending a phone (+ Firebase projects for App Check): `integration_test/auth01_emulator_test.dart`; App Check verified in console; cold start re-measured, noted in docs/roadmap.md (AC7, AC8, AC12, NFR-01)
 - [x] T16 Run spec-reviewer against spec.md; fix gaps (local-guest upgrade before sign-in, email offline check, Google offer on email, sign-out dialog at 200 %) — spec Status: Done and requirements `Done` wait for T15

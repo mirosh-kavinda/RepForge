@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/theme/rf_scales.dart';
 import 'package:repforge/features/auth/domain/auth_failure.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
+import 'package:repforge/features/auth/presentation/account_screen.dart';
 import 'package:repforge/features/auth/presentation/email_sign_in_screen.dart';
 import 'package:repforge/features/auth/presentation/existing_account_dialog.dart';
 import 'package:repforge/features/auth/presentation/sign_in_screen.dart';
@@ -16,34 +17,34 @@ import 'auth_app.dart';
 
 void main() {
   group('AUTH-01 sign in screen', () {
-    testWidgets('AC2 Google signs in and lands on Home', (tester) async {
+    testWidgets('AC2 Google signs in and opens Account (09b)', (tester) async {
       final app = await AuthApp.pump(tester);
       expect(find.byType(SignInScreen), findsOneWidget);
       await tester.tap(find.text('Continue with Google'));
       await tester.pumpAndSettle();
       expect(app.repo.calls, ['google']);
-      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsOneWidget);
     });
 
     testWidgets('AC2 Apple is not offered on Android', (tester) async {
       await AuthApp.pump(tester);
-      expect(find.text('Continue with Apple'), findsNothing);
+      expect(find.text('Apple'), findsNothing);
       expect(find.text('Continue with Google'), findsOneWidget);
-      expect(find.text('Continue with email'), findsOneWidget);
+      expect(find.text('Email'), findsOneWidget);
     });
 
     testWidgets('AC2 Apple is offered on iPhone', (tester) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       final app = await AuthApp.pump(tester);
-      await tester.tap(find.text('Continue with Apple'));
+      await tester.tap(find.text('Apple'));
       await tester.pumpAndSettle();
       expect(app.repo.calls, ['apple']);
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets('AC6 Continue as guest enters Home', (tester) async {
+    testWidgets('AC6 Skip for now enters the app as a guest', (tester) async {
       final app = await AuthApp.pump(tester);
-      await tester.tap(find.text('Continue as guest'));
+      await tester.tap(find.text('Skip for now'));
       await tester.pumpAndSettle();
       expect(app.repo.calls, ['guest']);
       expect(find.byType(HomeScreen), findsOneWidget);
@@ -61,7 +62,7 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
       expect(find.byType(SignInScreen), findsOneWidget);
 
-      await tester.tap(find.text('Continue as guest'));
+      await tester.tap(find.text('Skip for now'));
       await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
     });
@@ -86,7 +87,7 @@ void main() {
       await tester.tap(find.text('Continue with Google'));
       await tester.pump();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      await tester.tap(find.text('Continue as guest'));
+      await tester.tap(find.text('Skip for now'));
       await tester.pump();
       expect(repo.calls, ['google']);
       repo.gate!.complete();
@@ -98,16 +99,16 @@ void main() {
     ) async {
       final repo = FakeAuthRepository()..online = false;
       await AuthApp.pump(tester, repo: repo);
-      await tester.tap(find.text('Continue with email'));
+      await tester.tap(find.text('Email'));
       await tester.pumpAndSettle();
       expect(find.textContaining('needs a connection'), findsOneWidget);
       expect(find.byType(EmailSignInScreen), findsNothing);
-      expect(find.text('Continue as guest'), findsOneWidget);
+      expect(find.text('Skip for now'), findsOneWidget);
     });
 
     testWidgets('Email opens the email form', (tester) async {
       await AuthApp.pump(tester);
-      await tester.tap(find.text('Continue with email'));
+      await tester.tap(find.text('Email'));
       await tester.pumpAndSettle();
       expect(find.byType(EmailSignInScreen), findsOneWidget);
     });
@@ -133,7 +134,7 @@ void main() {
         await tester.tap(find.text('Keep my guest data'));
         await tester.pumpAndSettle();
         expect(repo.calls, ['google', 'keep']);
-        expect(find.byType(HomeScreen), findsOneWidget);
+        expect(find.byType(AccountScreen), findsOneWidget);
       });
 
       testWidgets('discard signs in and discards guest data', (tester) async {
@@ -141,7 +142,7 @@ void main() {
         await tester.tap(find.text('Discard guest data'));
         await tester.pumpAndSettle();
         expect(repo.calls, ['google', 'discard']);
-        expect(find.byType(HomeScreen), findsOneWidget);
+        expect(find.byType(AccountScreen), findsOneWidget);
       });
 
       testWidgets('cancel leaves them a guest on Sign in', (tester) async {
@@ -161,11 +162,11 @@ void main() {
       await AuthApp.pump(tester, textScale: 2);
       for (final label in [
         'Continue with Google',
-        'Continue with email',
-        'Continue as guest',
+        'Email',
+        RegExp('^Skip for now'),
       ]) {
         final node = find.bySemanticsLabel(label);
-        expect(node, findsOneWidget, reason: label);
+        expect(node, findsOneWidget, reason: '$label');
         final size = tester.getSize(node);
         expect(size.height, greaterThanOrEqualTo(RfSize.minTarget));
       }

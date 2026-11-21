@@ -1,6 +1,7 @@
 // FND-01 AC4 / NFR-08: coverage gate for lib/core/** and lib/features/*/domain/**.
 //
 // Usage: dart run tool/check_coverage.dart [path/to/lcov.info] [--min=80]
+//        [--only=lib/core/metrics]  (gate just the files under that path)
 //
 // Exit codes: 0 pass, 1 below threshold or gated files never loaded, 2 bad input.
 // Runs the same locally and in CI. Passes when the gated set is empty.
@@ -73,13 +74,15 @@ CoverageResult evaluateCoverage(
   required Iterable<String> filesOnDisk,
   double minPercent = defaultMinPercent,
   bool Function(String path) hasCode = _always,
+  String only = '',
 }) {
+  bool gated(String path) => isGated(path) && path.startsWith(only);
   final files = <String, FileCoverage>{};
   String? current;
   for (final line in lcov.split(RegExp(r'\r?\n'))) {
     if (line.startsWith('SF:')) {
       final path = normalisePath(line.substring(3));
-      current = path != null && isGated(path) ? path : null;
+      current = path != null && gated(path) ? path : null;
       if (current != null) files.putIfAbsent(current, () => FileCoverage({}));
     } else if (line.startsWith('DA:') && current != null) {
       final parts = line.substring(3).split(',');
@@ -96,7 +99,7 @@ CoverageResult evaluateCoverage(
       filesOnDisk
           .map(normalisePath)
           .whereType<String>()
-          .where(isGated)
+          .where(gated)
           .where((p) => !files.containsKey(p))
           .where(hasCode)
           .toSet()
@@ -113,8 +116,11 @@ CoverageResult evaluateCoverage(
 void main(List<String> args) {
   var lcovPath = 'coverage/lcov.info';
   var minPercent = defaultMinPercent;
+  var only = '';
   for (final arg in args) {
-    if (arg.startsWith('--min=')) {
+    if (arg.startsWith('--only=')) {
+      only = arg.substring(7);
+    } else if (arg.startsWith('--min=')) {
       final value = double.tryParse(arg.substring(6));
       if (value == null) {
         stderr.writeln('Invalid --min value: $arg');
@@ -148,6 +154,7 @@ void main(List<String> args) {
     filesOnDisk: onDisk,
     minPercent: minPercent,
     hasCode: (path) => hasExecutableCode(File(path).readAsStringSync()),
+    only: only,
   );
 
   final out = stdout;

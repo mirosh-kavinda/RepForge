@@ -13,14 +13,14 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | FND-01 | Project bootstrap: Flutter app, folder layout, lint, CI | P1 | Done |
 | FND-02 | Theme and brand tokens (`RfColors`, type, spacing, core widgets) | P1 | Done |
 | FND-03 | Local database, outbox table, exercise catalog seed + FTS search | P1 | Done |
-| FND-04 | Metrics package (BMI, BF %, LBM, FFMI, BMR, TDEE, e1RM, volume) | P2 | — |
+| FND-04 | Metrics package (BMI, BF %, LBM, FFMI, BMR, TDEE, e1RM, volume) | P2 | Done |
 
 ## Functional requirements
 
 | ID | Requirement (short) | Priority | Phase | Screens | Status |
 |---|---|---|---|---|---|
-| AUTH-01 | Google / Apple / email sign-in, guest mode, guest data migrates | MVP | P1 | 09 | Building |
-| ONB-01 | 60-second onboarding (goal, level, units, sex, birth year, height, weight) | MVP | P2 | 08, 10–12 | — |
+| AUTH-01 | Google / Apple / email sign-in, guest mode, guest data migrates | MVP | P1 | 09, 09b | Building |
+| ONB-01 | 60-second onboarding (goal, level, units, sex, birth year, height, weight) | MVP | P2 | 08, 10–12 | Building |
 | SCH-01 | Create rolling cycle of 1–14 days, each a template or Rest | MVP | P2 | 03, 12, 18 | — |
 | SCH-02 | Cycle rolls forward from last completed day | MVP | P2 | 01, 15 | — |
 | SCH-03 | Optional weekday-locked mode | MVP | P2 | 03 | — |

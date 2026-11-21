@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/router.dart';
 import 'package:repforge/features/auth/domain/auth_failure.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
+import 'package:repforge/features/auth/presentation/account_screen.dart';
 import 'package:repforge/features/auth/presentation/email_sign_in_screen.dart';
-import 'package:repforge/features/home/presentation/home_screen.dart';
 
 import '../fake_auth_repository.dart';
 import 'auth_app.dart';
@@ -26,7 +26,7 @@ void main() {
       );
     }
 
-    testWidgets('AC3 email + password signs in or creates, then Home', (
+    testWidgets('AC3 email + password signs in or creates, then Account', (
       tester,
     ) async {
       final app = await open(tester);
@@ -34,7 +34,7 @@ void main() {
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
       expect(app.repo.calls, ['email:new@b.co']);
-      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsOneWidget);
     });
 
     testWidgets('AC3 wrong password shows inline and keeps the email', (
@@ -71,7 +71,7 @@ void main() {
       await tester.tap(find.text('Continue with Google'));
       await tester.pumpAndSettle();
       expect(repo.calls, ['email:g@b.co', 'google']);
-      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsOneWidget);
     });
 
     testWidgets(

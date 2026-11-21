@@ -4,6 +4,7 @@ import 'package:repforge/app/router.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
 import 'package:repforge/features/auth/presentation/sign_in_screen.dart';
 import 'package:repforge/features/auth/presentation/verify_email_banner.dart';
+import 'package:repforge/features/onboarding/presentation/welcome_screen.dart';
 
 import '../fake_auth_repository.dart';
 import 'auth_app.dart';
@@ -70,27 +71,28 @@ void main() {
   });
 
   group('AUTH-01 account section', () {
-    testWidgets('AC10 sign out warns, then clears and returns to Sign in', (
-      tester,
-    ) async {
-      final repo = FakeAuthRepository(user: AuthApp.googleUser);
-      await AuthApp.pump(
-        tester,
-        repo: repo,
-        choiceMade: true,
-        location: Routes.profile,
-      );
-      await tester.tap(find.text('Sign out'));
-      await tester.pumpAndSettle();
-      expect(
-        find.text('Data not yet backed up will be removed from this phone.'),
-        findsOneWidget,
-      );
-      await tester.tap(find.text('Sign out and remove'));
-      await tester.pumpAndSettle();
-      expect(repo.calls, ['signOut']);
-      expect(find.byType(SignInScreen), findsOneWidget);
-    });
+    testWidgets(
+      'AC10 sign out warns, then clears and returns to the start (Welcome)',
+      (tester) async {
+        final repo = FakeAuthRepository(user: AuthApp.googleUser);
+        await AuthApp.pump(
+          tester,
+          repo: repo,
+          choiceMade: true,
+          location: Routes.profile,
+        );
+        await tester.tap(find.text('Sign out'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Data not yet backed up will be removed from this phone.'),
+          findsOneWidget,
+        );
+        await tester.tap(find.text('Sign out and remove'));
+        await tester.pumpAndSettle();
+        expect(repo.calls, ['signOut']);
+        expect(find.byType(WelcomeScreen), findsOneWidget);
+      },
+    );
 
     testWidgets('AC10 cancelling sign out changes nothing', (tester) async {
       final repo = FakeAuthRepository(user: AuthApp.googleUser);
