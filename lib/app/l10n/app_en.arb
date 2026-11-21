@@ -27,5 +27,37 @@
   "placeholderComingSoon": "Coming soon",
   "@placeholderComingSoon": {
     "description": "Body text on screens not built yet."
-  }
+  },
+  "loading": "Loading",
+  "@loading": {
+    "description": "Screen-reader suffix for a button that is busy."
+  },
+  "stepperDecrease": "Decrease {label}",
+  "@stepperDecrease": {
+    "description": "Screen-reader label for a stepper's minus button.",
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "stepperIncrease": "Increase {label}",
+  "@stepperIncrease": {
+    "description": "Screen-reader label for a stepper's plus button.",
+    "placeholders": { "label": { "type": "String" } }
+  },
+  "stepperAtMin": "at minimum",
+  "@stepperAtMin": {
+    "description": "Screen-reader hint when a stepper is at its lowest value."
+  },
+  "stepperAtMax": "at maximum",
+  "@stepperAtMax": {
+    "description": "Screen-reader hint when a stepper is at its highest value."
+  },
+  "dayDone": "Done",
+  "@dayDone": { "description": "Day tile state: workout completed." },
+  "dayToday": "Today",
+  "@dayToday": { "description": "Day tile state: today." },
+  "dayRest": "Rest",
+  "@dayRest": { "description": "Day tile state: planned rest day." },
+  "dayMissed": "Missed",
+  "@dayMissed": { "description": "Day tile state: planned workout not done." },
+  "dayPlanned": "Planned",
+  "@dayPlanned": { "description": "Day tile state: upcoming workout." }
 }

@@ -38,7 +38,8 @@ on white.
 | Token | Dark | Light |
 |---|---|---|
 | bg | #0E0F12 | #F3F4F6 |
-| surface / navBar | #1A1C22 | #FFFFFF |
+| navBar | #15171C | #FFFFFF |
+| surface | #1A1C22 | #FFFFFF |
 | divider | #23262D | #E6E8EC |
 | border | #2A2D35 | #D9DCE2 |
 | textPrimary | #F4F5F7 | #12141A |
@@ -97,7 +98,7 @@ Radius: xs 4 · sm 8 · md 12 (buttons) · lg 16 (cards) · pill. Spacing: 4-pt 
 - **RfSetRow** — pending (surface), done (Volt tint + border), PR (adds PR chip); ghost line in
   textMuted; swipe left delete; long-press notes / RPE.
 - **RfChip / RfDayTile** — filter chip (outline → Ember when on), status chip (tint + on-tint);
-  day tile states done, today (Ember 2 px), rest, missed, planned (dashed); always a text label.
+  day tile states done, today (2 px Ember-ink border, `actionInk`, for ≥ 3:1 in light), rest, missed, planned (dashed); always a text label.
 
 ## Screen inventory
 

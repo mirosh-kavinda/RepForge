@@ -53,18 +53,23 @@ None. The theme mode is in memory only; SET-01 persists it.
   (AC5, AC6). Both fonts were checked: each has `tnum`.
 - Theme mode is a `riverpod_generator` notifier. `MaterialApp.theme`/`darkTheme` switch through
   the framework, so widget state survives a switch (AC4, edge case).
-- RfButton wraps Material `ButtonStyleButton`s. A `WidgetStateProperty` gives pressed = HSL
-  lightness −0.08 and disabled = 40 % opacity. Loading shows a spinner beside the kept label,
+- RfButton is a custom control (not `ButtonStyleButton`) so the design.md states are exact:
+  pressed = HSL lightness −0.08 of the fill (primary) or ink (secondary, ghost), disabled = 40 %
+  opacity. Loading shows a spinner beside the kept label,
   with `onPressed` null and semantics "loading" (AC8).
-- RfStepper keeps the value as an integer count of steps from min (`value = min + n·step`), and
-  formats with `NumberFormat` at the step's decimal places, so no float noise. Long-press uses
-  `Timer.periodic(120 ms)` after a 400 ms hold and cancels on release or at a bound. Each step
+- RfStepper counts steps from min (`value = min + n·step`, so off-grid values snap to the
+  grid), clamps to min/max, rounds to the step's decimal places and formats with `NumberFormat`,
+  so no float noise. Long-press uses `Timer.periodic(120 ms)` after Flutter's standard
+  long-press delay (500 ms) and cancels on release or at a bound. Each step
   calls `HapticFeedback.selectionClick`. `Semantics(value, increasedValue, decreasedValue,
   onIncrease, onDecrease)` makes it adjustable for TalkBack and VoiceOver (AC9).
 - md buttons (44 high) and the stepper's 44 × 44 buttons get a 48 × 48 hit area through
   padded tap targets and `ConstrainedBox(minWidth/minHeight: 48)` (AC12).
+- All four controls share `RfTappable` (`lib/app/widgets/rf_tappable.dart`): keyboard and
+  switch-access focus, Enter/Space activation, a 2 px Ember-ink focus ring; disabled controls
+  are skipped by focus (AC12, NFR-06).
 - RfDayTile always renders its state word (Done, Today, Rest, Missed, Planned) from the ARB.
-  Today has a 2 px Ember border, and planned has a dashed `border` drawn by a small CustomPainter
+  Today has a 2 px Ember-ink border (`actionInk`, ≥ 3:1 in light), and planned has a dashed `border` drawn by a small CustomPainter
   (AC11).
 
 ## Packages
