@@ -87,9 +87,10 @@ jobs:
       - name: Install packages
         run: flutter pub get
 
-      # The runner's CocoaPods CDN cache lags new Firebase pods.
-      - name: Update CocoaPods specs
-        run: pod repo update
+      # Firebase iOS pods at the version the plugins need (12.19.3) are not
+      # on CocoaPods; the plugins' Package.swift resolves them through SPM.
+      - name: Use Swift Package Manager for plugins
+        run: flutter config --enable-swift-package-manager
 
       - name: Build iOS (AC1, iOS 15+)
         run: flutter build ios --no-codesign --debug
