@@ -3,5 +3,29 @@
   "appTitle": "RepForge",
   "@appTitle": {
     "description": "App name shown in the title bar and task switcher."
+  },
+  "tabHome": "Home",
+  "@tabHome": {
+    "description": "Bottom navigation tab: today's overview."
+  },
+  "tabSchedule": "Schedule",
+  "@tabSchedule": {
+    "description": "Bottom navigation tab: training cycle."
+  },
+  "tabLibrary": "Library",
+  "@tabLibrary": {
+    "description": "Bottom navigation tab: exercise library."
+  },
+  "tabProgress": "Progress",
+  "@tabProgress": {
+    "description": "Bottom navigation tab: charts and records."
+  },
+  "tabProfile": "Profile",
+  "@tabProfile": {
+    "description": "Bottom navigation tab: profile and settings."
+  },
+  "placeholderComingSoon": "Coming soon",
+  "@placeholderComingSoon": {
+    "description": "Body text on screens not built yet."
   }
 }

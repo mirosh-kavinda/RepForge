@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'l10n/generated/app_localizations.dart';
+import 'router.dart';
 
-/// Root widget. Theme tokens arrive with FND-02; routing with the shell.
-class RepForgeApp extends StatelessWidget {
+/// Root widget. Theme tokens arrive with FND-02.
+class RepForgeApp extends ConsumerWidget {
   const RepForgeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      routerConfig: ref.watch(routerProvider),
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -19,11 +22,6 @@ class RepForgeApp extends StatelessWidget {
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       themeMode: ThemeMode.system,
-      home: Builder(
-        builder: (context) => Scaffold(
-          appBar: AppBar(title: Text(AppLocalizations.of(context).appTitle)),
-        ),
-      ),
     );
   }
 }
