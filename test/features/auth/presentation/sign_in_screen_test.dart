@@ -93,6 +93,18 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('AC9 offline: tapping email shows the offline message', (
+      tester,
+    ) async {
+      final repo = FakeAuthRepository()..online = false;
+      await AuthApp.pump(tester, repo: repo);
+      await tester.tap(find.text('Continue with email'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('needs a connection'), findsOneWidget);
+      expect(find.byType(EmailSignInScreen), findsNothing);
+      expect(find.text('Continue as guest'), findsOneWidget);
+    });
+
     testWidgets('Email opens the email form', (tester) async {
       await AuthApp.pump(tester);
       await tester.tap(find.text('Continue with email'));

@@ -6,6 +6,8 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../domain/auth_failure.dart';
+import '../domain/auth_user.dart';
 import 'auth_messages.dart';
 import 'sign_in_controller.dart';
 import 'sign_in_flow.dart';
@@ -60,6 +62,11 @@ class _EmailSignInScreenState extends ConsumerState<EmailSignInScreen> {
     final state = ref.watch(signInControllerProvider);
     final busy = state.busy != null;
     final message = authMessage(l10n, state.failure);
+    final offerGoogle = switch (state.failure) {
+      AuthWrongPassword() => true,
+      AuthUseProvider(provider: SignInProvider.google) => true,
+      _ => false,
+    };
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.emailTitle)),
@@ -93,6 +100,24 @@ class _EmailSignInScreenState extends ConsumerState<EmailSignInScreen> {
                   style: t.label.copyWith(color: c.textSecondary),
                 ),
                 if (message != null) AuthMessage(message),
+                // Edge: the email may belong to a Google account; offer it.
+                if (offerGoogle)
+                  SizedBox(
+                    width: double.infinity,
+                    child: RfButton(
+                      label: l10n.signInGoogle,
+                      variant: RfButtonVariant.secondary,
+                      loading: state.busy == SignInAction.google,
+                      onPressed: busy
+                          ? null
+                          : () => runSignIn(
+                              context,
+                              ref,
+                              SignInAction.google,
+                              (r) => r.signInWithGoogle(),
+                            ),
+                    ),
+                  ),
                 if (_resetSentTo != null)
                   AuthMessage(
                     l10n.resetSent(_resetSentTo!),

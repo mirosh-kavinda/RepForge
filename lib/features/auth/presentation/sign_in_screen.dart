@@ -9,6 +9,7 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../domain/auth_failure.dart';
 import 'auth_messages.dart';
 import 'sign_in_controller.dart';
 import 'sign_in_flow.dart';
@@ -85,9 +86,18 @@ class SignInScreen extends ConsumerWidget {
                     (r) => r.signInWithApple(),
                   ),
                 ),
-              button(SignInAction.email, l10n.signInEmail, () {
-                ref.read(signInControllerProvider.notifier).clear();
-                context.push(Routes.signInEmail);
+              // AC9: the email option needs the network too, so say so here.
+              button(SignInAction.email, l10n.signInEmail, () async {
+                final controller = ref.read(signInControllerProvider.notifier);
+                final failure = await controller.run(
+                  SignInAction.email,
+                  (r) async =>
+                      await r.isOnline() ? null : const AuthFailure.offline(),
+                );
+                if (failure == null && context.mounted) {
+                  controller.clear();
+                  await context.push(Routes.signInEmail);
+                }
               }),
               if (message != null) AuthMessage(message),
               const SizedBox(height: RfSpace.s12),

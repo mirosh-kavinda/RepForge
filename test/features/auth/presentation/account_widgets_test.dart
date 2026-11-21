@@ -108,6 +108,28 @@ void main() {
       expect(find.text('Sign out'), findsOneWidget);
     });
 
+    testWidgets('NFR-06 the sign-out dialog fits at 200 % text', (
+      tester,
+    ) async {
+      await AuthApp.pump(
+        tester,
+        repo: FakeAuthRepository(user: AuthApp.googleUser),
+        choiceMade: true,
+        location: Routes.profile,
+        textScale: 2,
+      );
+      await tester.tap(find.text('Sign out'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Sign out and remove'), findsOneWidget);
+    });
+
+    testWidgets('nothing is offered until the user is known', (tester) async {
+      await AuthApp.pump(tester, choiceMade: true, location: Routes.profile);
+      expect(find.text('Sign out'), findsNothing);
+      expect(find.text('Sign in to back up'), findsNothing);
+    });
+
     testWidgets('edge: guests get Sign in to back up, not Sign out', (
       tester,
     ) async {

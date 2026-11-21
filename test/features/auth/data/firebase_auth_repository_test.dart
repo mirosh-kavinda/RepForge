@@ -242,6 +242,16 @@ void main() {
       expect(await store.choiceMade(), isFalse);
     });
 
+    test('edge: a Google clash points to Apple', () async {
+      when(() => auth.signInWithCredential(any())).thenThrow(
+        FirebaseAuthException(code: 'account-exists-with-different-credential'),
+      );
+      expect(
+        await repo.signInWithGoogle(),
+        const AuthFailure.useProvider(SignInProvider.apple),
+      );
+    });
+
     test('edge: email registered with another provider names Google', () async {
       when(() => auth.signInWithCredential(any())).thenThrow(
         FirebaseAuthException(code: 'account-exists-with-different-credential'),
@@ -250,6 +260,57 @@ void main() {
         await repo.signInWithApple(),
         const AuthFailure.useProvider(SignInProvider.google),
       );
+    });
+  });
+
+  group('AUTH-01 local guest signing in', () {
+    test(
+      'AC8 a local guest is upgraded first, so an existing account asks',
+      () async {
+        await store.setLocalGuestId('local-1');
+        when(() => auth.signInAnonymously()).thenAnswer((_) async {
+          signedIn = FakeUser('anon', isAnonymous: true)
+            ..onLink = (_) async => throw FirebaseAuthException(
+              code: 'email-already-in-use',
+              email: 'a@b.co',
+            );
+          return FakeCredential();
+        });
+        final failure = await repo.signInWithEmail('a@b.co', 'password1');
+        expect(failure, isA<AuthAccountExists>());
+        verifyNever(
+          () => auth.signInWithEmailAndPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'AC8 if the upgrade fails, nothing signs in past the guest data',
+      () async {
+        await store.setLocalGuestId('local-1');
+        when(
+          () => auth.signInAnonymously(),
+        ).thenThrow(FirebaseAuthException(code: 'network-request-failed'));
+        expect(
+          await repo.signInWithEmail('a@b.co', 'password1'),
+          const AuthFailure.offline(),
+        );
+        expect(await repo.signInWithGoogle(), const AuthFailure.offline());
+        verifyNever(() => auth.signInWithCredential(any()));
+        expect(await store.localGuestId(), 'local-1');
+        expect(await store.choiceMade(), isFalse);
+      },
+    );
+  });
+
+  group('AUTH-01 reachability', () {
+    test('AC9 isOnline is false offline', () async {
+      expect(await repo.isOnline(), isTrue);
+      online = false;
+      expect(await repo.isOnline(), isFalse);
     });
   });
 

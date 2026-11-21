@@ -19,17 +19,23 @@ class AccountSection extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Text(l10n.signOutTitle),
         content: Text(l10n.signOutBody),
+        // Stacked full width so both labels fit at 200 % text (NFR-06).
         actions: [
-          RfButton(
-            label: l10n.cancel,
-            variant: RfButtonVariant.ghost,
-            size: RfButtonSize.md,
-            onPressed: () => Navigator.of(context).pop(false),
+          SizedBox(
+            width: double.infinity,
+            child: RfButton(
+              label: l10n.signOutConfirm,
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
           ),
-          RfButton(
-            label: l10n.signOutConfirm,
-            size: RfButtonSize.md,
-            onPressed: () => Navigator.of(context).pop(true),
+          const SizedBox(height: RfSpace.s8),
+          SizedBox(
+            width: double.infinity,
+            child: RfButton(
+              label: l10n.cancel,
+              variant: RfButtonVariant.ghost,
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
           ),
         ],
       ),
@@ -41,9 +47,11 @@ class AccountSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final user = ref.watch(currentUserProvider).value;
+    // Unknown until Firebase restores the session; show nothing rather than guess.
+    if (user == null) return const SizedBox.shrink();
     // Signing a guest out would erase everything, so guests are offered
     // sign-in instead (edge case).
-    final guest = user == null || user.isGuest;
+    final guest = user.isGuest;
     return Padding(
       padding: const EdgeInsets.all(RfSpace.s16),
       child: SizedBox(
