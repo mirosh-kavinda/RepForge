@@ -10,4 +10,4 @@ Plan: ./plan.md · One commit per task: `FND-01 Tn: <summary>`
 - [x] T6 `tool/check_coverage.dart` coverage gate — test: run locally on sample lcov (AC4)
 - [x] T7 `.github/workflows/ci.yml`: analyze, test --coverage, coverage gate, iOS no-codesign build (AC3, AC4)
 - [x] T8 Record cold-start baseline on a profile build in docs/roadmap.md notes (NFR-01)
-- [ ] T9 Run spec-reviewer against spec.md; fix gaps; set spec Status: Done
+- [x] T9 Run spec-reviewer against spec.md; fix gaps; set spec Status: Done

@@ -1,6 +1,6 @@
 # FND-01: Project bootstrap and CI
 
-Status: Approved
+Status: Done
 Phase: P1 · Priority: MVP · Screens: none (app shell only)
 
 ## Why
