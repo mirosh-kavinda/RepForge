@@ -61,6 +61,23 @@ class BodySnapshots extends Table with SyncedTable {
   RealColumn get waistCm => real().nullable()();
 }
 
+// WKT-01. Exercises are a JSON list, matching the Firestore template document.
+@DataClassName('WorkoutTemplateRow')
+class WorkoutTemplates extends Table with SyncedTable {
+  TextColumn get name => text()();
+  TextColumn get exercises => text()();
+}
+
+// SCH-01. Days are a JSON list of {id, workoutId|null}.
+@DataClassName('CycleRow')
+class Cycles extends Table with SyncedTable {
+  TextColumn get name => text()();
+  TextColumn get days => text()();
+  BoolColumn get isActive => boolean()();
+  DateTimeColumn get startDate => dateTime()();
+  IntColumn get startDayIndex => integer()();
+}
+
 const catalogVersionKey = 'catalogVersion';
 
 @DriftDatabase(
@@ -71,13 +88,15 @@ const catalogVersionKey = 'catalogVersion';
     Outbox,
     UserProfiles,
     BodySnapshots,
+    WorkoutTemplates,
+    Cycles,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -94,6 +113,8 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(userProfiles);
         await m.createTable(bodySnapshots);
       }
+      if (from < 3) await m.createTable(workoutTemplates);
+      if (from < 4) await m.createTable(cycles);
     },
   );
 

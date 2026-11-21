@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
@@ -15,8 +17,7 @@ import '../domain/answer_validation.dart';
 import 'onboarding_controller.dart';
 import 'step_header.dart';
 
-// Screen 11 (AC4–AC6). Finishing flips the onboarded gate, and the router
-// then moves to Home by itself.
+// Screen 11 (AC4, AC5). Continue checks the answers and opens step 3.
 class AboutYouScreen extends ConsumerStatefulWidget {
   const AboutYouScreen({super.key});
 
@@ -33,24 +34,12 @@ class AboutYouScreen extends ConsumerStatefulWidget {
 
 class _AboutYouScreenState extends ConsumerState<AboutYouScreen> {
   Set<AnswerField> _invalid = const {};
-  var _saving = false;
-  var _failed = false;
 
-  Future<void> _finish() async {
-    setState(() {
-      _saving = true;
-      _failed = false;
-    });
-    try {
-      final invalid = await ref
-          .read(onboardingControllerProvider.notifier)
-          .finish();
-      if (mounted) setState(() => _invalid = invalid);
-    } on Object {
-      if (mounted) setState(() => _failed = true);
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
+  // Validates only; saving happens on step 3 (SCH-01 AC10).
+  void _continue() {
+    final invalid = ref.read(onboardingControllerProvider.notifier).validate();
+    setState(() => _invalid = invalid);
+    if (invalid.isEmpty) context.push(Routes.onboardingPlan);
   }
 
   Map<ActivityLevel, String> _activities(AppLocalizations l10n) => {
@@ -269,7 +258,6 @@ class _AboutYouScreenState extends ConsumerState<AboutYouScreen> {
                         onTap: () => _pickActivity(l10n),
                       ),
                     ),
-                    if (_failed) AuthMessage(l10n.onbSaveFailed),
                   ],
                 ),
               ),
@@ -283,11 +271,7 @@ class _AboutYouScreenState extends ConsumerState<AboutYouScreen> {
               ),
               child: SizedBox(
                 width: double.infinity,
-                child: RfButton(
-                  label: l10n.onbFinish,
-                  loading: _saving,
-                  onPressed: _saving ? null : _finish,
-                ),
+                child: RfButton(label: l10n.onbContinue, onPressed: _continue),
               ),
             ),
           ],

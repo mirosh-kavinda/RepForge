@@ -3,24 +3,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
 import 'package:repforge/app/theme/rf_scales.dart';
+import 'package:repforge/core/clock.dart';
 import 'package:repforge/core/metrics/body.dart';
 import 'package:repforge/core/metrics/energy.dart';
 import 'package:repforge/core/metrics/units.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/home/presentation/home_screen.dart';
+import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
 import 'package:repforge/features/onboarding/domain/onboarding_answers.dart';
 import 'package:repforge/features/onboarding/presentation/about_you_screen.dart';
 import 'package:repforge/features/onboarding/presentation/goal_level_screen.dart';
+import 'package:repforge/features/onboarding/presentation/plan_screen.dart';
+import 'package:repforge/features/schedule/data/providers.dart';
+import 'package:repforge/features/schedule/presentation/cycle_editor_screen.dart';
+import 'package:repforge/features/workout/data/providers.dart';
+import 'package:repforge/features/workout/data/starter_templates.dart';
+import 'package:repforge/features/workout/domain/workout_template.dart';
 
 import '../../auth/fake_auth_repository.dart';
+import '../../schedule/fake_cycle_repository.dart';
+import '../../workout/fakes.dart';
 import '../fake_onboarding_repository.dart';
+
+final starters = [
+  for (final t in starterTemplates) t.copyWith(id: t.name.toLowerCase()),
+];
+late FakeCycleRepository cycles;
 
 Future<FakeOnboardingRepository> pumpOnboarding(
   WidgetTester tester, {
   String? region = 'GB',
   double textScale = 1,
+  List<WorkoutTemplate>? workouts,
 }) async {
+  cycles = FakeCycleRepository();
   tester.view
     ..devicePixelRatio = 1
     ..physicalSize = const Size(390, 844);
@@ -35,6 +52,12 @@ Future<FakeOnboardingRepository> pumpOnboarding(
         ),
         onboardingRepositoryProvider.overrideWithValue(repo),
         deviceRegionProvider.overrideWithValue(region),
+        templateRepositoryProvider.overrideWithValue(
+          FakeTemplateRepository(workouts ?? starters),
+        ),
+        cycleRepositoryProvider.overrideWithValue(cycles),
+        exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
+        clockProvider.overrideWithValue(() => DateTime(2026, 11, 23, 10)),
       ],
       child: MediaQuery.withClampedTextScaling(
         minScaleFactor: textScale,
@@ -45,6 +68,14 @@ Future<FakeOnboardingRepository> pumpOnboarding(
   );
   await tester.pumpAndSettle();
   return repo;
+}
+
+// Step 2 Continue; when that reaches step 3, finish without a plan.
+Future<void> finishStep2(WidgetTester tester) async {
+  await tapText(tester, 'Continue');
+  if (find.text('Skip for now').evaluate().isNotEmpty) {
+    await tapText(tester, 'Skip for now');
+  }
 }
 
 Future<void> tapText(WidgetTester tester, String text) async {
@@ -69,7 +100,7 @@ void main() {
     ) async {
       await pumpOnboarding(tester);
       expect(find.byType(GoalLevelScreen), findsOneWidget);
-      expect(find.text('Step 1 of 2'), findsOneWidget);
+      expect(find.text('Step 1 of 3'), findsOneWidget);
       for (final goal in [
         'Build muscle',
         'Get stronger',
@@ -103,15 +134,22 @@ void main() {
       );
     });
 
-    testWidgets('AC7 skip everything: Home in 2 taps', (tester) async {
+    testWidgets('AC7 skip everything: Home in 3 taps with PPL + Rest', (
+      tester,
+    ) async {
       final repo = await pumpOnboarding(tester);
       await tapText(tester, 'Continue');
-      await tapText(tester, 'Finish');
+      await tapText(tester, 'Continue');
+      expect(find.byType(PlanScreen), findsOneWidget);
+      await tester.tap(find.byKey(PlanScreen.startKey));
+      await tester.pumpAndSettle();
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(
         repo.saved.single,
         const OnboardingAnswers(units: UnitSystem.metric),
       );
+      expect(cycles.saved.single.name, 'PPL + Rest');
+      expect(find.text('Day 1 of 4 · Push'), findsOneWidget);
     });
 
     testWidgets('AC8 back and forward keeps answers', (tester) async {
@@ -158,7 +196,7 @@ void main() {
       await type(tester, AboutYouScreen.waistKey, '72');
       await tapText(tester, 'Choose (optional)');
       await tapText(tester, 'Active · on my feet most of the day');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(
         repo.saved.single,
@@ -183,7 +221,7 @@ void main() {
       await type(tester, AboutYouScreen.heightInchesKey, '10');
       await type(tester, AboutYouScreen.weightKey, '180');
       await type(tester, AboutYouScreen.waistKey, '32');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       final a = repo.saved.single;
       expect(a.units, UnitSystem.imperial);
       expect(a.heightCm, closeTo(177.8, 1e-9));
@@ -210,7 +248,7 @@ void main() {
       await tapText(tester, 'lb · in');
       await tapText(tester, 'kg · cm');
       await tapText(tester, 'lb · in');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(repo.saved.single.heightCm, 180);
       expect(repo.saved.single.weightKg, 74.2);
     });
@@ -220,11 +258,11 @@ void main() {
     ) async {
       final repo = await toStep2(tester, region: 'US');
       await type(tester, AboutYouScreen.heightKey, '5.5');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(find.textContaining('Enter a height'), findsOneWidget);
       await type(tester, AboutYouScreen.heightKey, '5');
       await type(tester, AboutYouScreen.heightInchesKey, '12');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(find.textContaining('Enter a height'), findsOneWidget);
       expect(repo.saved, isEmpty);
     });
@@ -233,7 +271,7 @@ void main() {
       // Onboarding never touches the network; the auth fake is offline too.
       final repo = await toStep2(tester);
       await type(tester, AboutYouScreen.weightKey, '70');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(repo.saved.single.weightKg, 70);
       expect(find.byType(HomeScreen), findsOneWidget);
     });
@@ -241,7 +279,7 @@ void main() {
     testWidgets('edge: Prefer not to say stores no sex', (tester) async {
       final repo = await toStep2(tester);
       await tapText(tester, 'Prefer not to say');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(repo.saved.single.sex, isNull);
     });
 
@@ -253,7 +291,7 @@ void main() {
       await type(tester, AboutYouScreen.heightKey, '30');
       await type(tester, AboutYouScreen.weightKey, '900');
       await type(tester, AboutYouScreen.waistKey, '10');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(
         find.text('Enter a birth year for an age of 13 to 100.'),
         findsOneWidget,
@@ -268,11 +306,11 @@ void main() {
     testWidgets('a failed save shows retry and stays', (tester) async {
       final repo = await toStep2(tester)
         ..failWith = Exception('disk full');
-      await tapText(tester, 'Finish');
+      await finishStep2(tester);
       expect(find.text("Couldn't save. Please try again."), findsOneWidget);
-      expect(find.byType(AboutYouScreen), findsOneWidget);
+      expect(find.byType(PlanScreen), findsOneWidget);
       repo.failWith = null;
-      await tapText(tester, 'Finish');
+      await tapText(tester, 'Skip for now');
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
@@ -288,6 +326,88 @@ void main() {
         tester.getSize(segment).height,
         greaterThanOrEqualTo(RfSize.minTarget),
       );
+    });
+  });
+
+  group('SCH-01 AC10 onboarding step 3', () {
+    Future<FakeOnboardingRepository> toStep3(
+      WidgetTester tester, {
+      List<WorkoutTemplate>? workouts,
+    }) async {
+      final repo = await pumpOnboarding(tester, workouts: workouts);
+      await tapText(tester, 'Continue');
+      await tapText(tester, 'Continue');
+      expect(find.text('Step 3 of 3'), findsOneWidget);
+      expect(find.text('Pick a starting plan'), findsOneWidget);
+      return repo;
+    }
+
+    testWidgets('step 2 saves nothing; three plans, PPL recommended', (
+      tester,
+    ) async {
+      final repo = await toStep3(tester);
+      expect(repo.saved, isEmpty);
+      for (final p in ['PPL + Rest', 'Upper / Lower', 'Full Body + Rest']) {
+        expect(find.text(p), findsOneWidget);
+      }
+      expect(find.text('Recommended'), findsOneWidget);
+    });
+
+    testWidgets('picking Upper / Lower saves it active from today', (
+      tester,
+    ) async {
+      final repo = await toStep3(tester);
+      await tapText(tester, 'Upper / Lower');
+      await tester.tap(find.byKey(PlanScreen.startKey));
+      await tester.pumpAndSettle();
+      final c = cycles.saved.single;
+      expect(c.days.map((d) => d.workoutId), [
+        'upper',
+        'lower',
+        null,
+        'upper',
+        'lower',
+        null,
+      ]);
+      expect(
+        (c.isActive, c.startDate, c.startDayIndex),
+        (true, DateTime.utc(2026, 11, 23), 0),
+      );
+      expect(repo.saved, hasLength(1));
+    });
+
+    testWidgets('Skip finishes with no cycle', (tester) async {
+      final repo = await toStep3(tester);
+      await tapText(tester, 'Skip for now');
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(repo.saved, hasLength(1));
+      expect(cycles.saved, isEmpty);
+    });
+
+    testWidgets('Build my own finishes and opens the builder', (tester) async {
+      final repo = await toStep3(tester);
+      await tapText(tester, 'Build my own cycle instead');
+      expect(repo.saved, hasLength(1));
+      expect(find.byType(CycleEditorScreen), findsOneWidget);
+    });
+
+    testWidgets('edge a plan missing a starter workout is hidden', (
+      tester,
+    ) async {
+      await toStep3(
+        tester,
+        workouts: starters.where((w) => w.name != 'Upper').toList(),
+      );
+      expect(find.text('Upper / Lower'), findsNothing);
+      expect(find.text('PPL + Rest'), findsOneWidget);
+    });
+
+    testWidgets('NFR-06 step 3 fits at 200 % text', (tester) async {
+      await pumpOnboarding(tester, textScale: 2);
+      await tapText(tester, 'Continue');
+      await tapText(tester, 'Continue');
+      expect(tester.takeException(), isNull);
+      expect(find.byType(PlanScreen), findsOneWidget);
     });
   });
 }

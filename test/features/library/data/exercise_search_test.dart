@@ -163,6 +163,18 @@ void main() {
           levels: {ExerciseLevel.intermediate},
         ),
         const ExerciseQuery(),
+        // WKT-01 picker: text plus a whole muscle group.
+        const ExerciseQuery(
+          text: 'press',
+          muscles: {
+            Muscle.quadriceps,
+            Muscle.hamstrings,
+            Muscle.glutes,
+            Muscle.calves,
+            Muscle.adductors,
+            Muscle.abductors,
+          },
+        ),
       ];
       final times = <int>[];
       for (var i = 0; i < 120; i++) {
@@ -173,6 +185,14 @@ void main() {
       times.sort();
       final p95 = times[(times.length * 0.95).floor() - 1] / 1000;
       expect(p95, lessThan(100), reason: 'p95 = $p95 ms');
+    });
+
+    test('WKT-01 text and muscle filters combine', () async {
+      final found = await names(
+        const ExerciseQuery(text: 'press', muscles: {Muscle.quadriceps}),
+      );
+      expect(found, contains('Leg Press'));
+      expect(found, isNot(contains('Barbell Bench Press - Medium Grip')));
     });
   });
 }

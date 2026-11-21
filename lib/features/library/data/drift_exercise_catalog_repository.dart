@@ -33,16 +33,20 @@ class DriftExerciseCatalogRepository implements ExerciseCatalogRepository {
       return '$column IN (${List.filled(values.length, '?').join(', ')})';
     }
 
-    final sql = StringBuffer('SELECT c.*');
-    if (query.muscles.isNotEmpty) sql.write(', MAX(m.is_primary) AS prim');
-    sql.write(' FROM catalog_exercises c');
+    // MATERIALIZED keeps SQLite from flattening the FTS hits into the
+    // grouped muscle query, where bm25() is not allowed.
+    final sql = StringBuffer();
     if (match != null) {
       sql.write(
-        ' JOIN (SELECT rowid, bm25(exercise_fts) AS rank FROM exercise_fts '
-        'WHERE exercise_fts MATCH ?) h ON h.rowid = c.rowid',
+        'WITH h AS MATERIALIZED (SELECT rowid, bm25(exercise_fts) AS rank '
+        'FROM exercise_fts WHERE exercise_fts MATCH ?) ',
       );
       vars.add(Variable.withString(match));
     }
+    sql.write('SELECT c.*');
+    if (query.muscles.isNotEmpty) sql.write(', MAX(m.is_primary) AS prim');
+    sql.write(' FROM catalog_exercises c');
+    if (match != null) sql.write(' JOIN h ON h.rowid = c.rowid');
     if (query.muscles.isNotEmpty) {
       sql.write(
         ' JOIN exercise_muscles m ON m.exercise_id = c.id AND '

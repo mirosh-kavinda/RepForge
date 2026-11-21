@@ -11,6 +11,13 @@ class SyncedWriter {
   final GeneratedDatabase _db;
   final DateTime Function() _now;
 
+  // Raw SQL does not tell Drift what changed; without this, watched queries
+  // miss soft deletes.
+  Set<TableInfo<Table, dynamic>> _touched(String table) => {
+    for (final t in _db.allTables)
+      if (t.actualTableName == table) t,
+  };
+
   // Stamps updatedAt and syncState itself, so callers cannot forget them.
   Future<void> run({
     required String table,
@@ -28,6 +35,7 @@ class SyncedWriter {
         Variable.withString(SyncState.pending.name),
         Variable.withString(id),
       ],
+      updates: _touched(table),
     );
     await _db.customInsert(
       'INSERT INTO outbox (entity, entity_id, op, created_at) VALUES (?, ?, ?, ?)',
@@ -52,6 +60,7 @@ class SyncedWriter {
     write: (now) => _db.customUpdate(
       'UPDATE "$table" SET deleted_at = ? WHERE id = ?',
       variables: [Variable.withDateTime(now), Variable.withString(id)],
+      updates: _touched(table),
     ),
   );
 }

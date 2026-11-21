@@ -35,6 +35,8 @@ void main() {
       await v1.writeMeta('auth.choiceMade', 'true');
       await v1.customStatement('DROP TABLE user_profiles');
       await v1.customStatement('DROP TABLE body_snapshots');
+      await v1.customStatement('DROP TABLE workout_templates');
+      await v1.customStatement('DROP TABLE cycles');
       await v1.customStatement('PRAGMA user_version = 1');
       await v1.close();
 
@@ -48,9 +50,62 @@ void main() {
     });
   });
 
+  group('WKT-01 schema v3', () {
+    test('v2 -> v3 upgrade adds workout_templates and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v2 = AppDatabase(NativeDatabase(file));
+      await v2.writeMeta('onboarding.done', 'true');
+      await v2.customStatement('DROP TABLE workout_templates');
+      await v2.customStatement('DROP TABLE cycles');
+      await v2.customStatement('PRAGMA user_version = 2');
+      await v2.close();
+
+      final v3 = AppDatabase(NativeDatabase(file));
+      addTearDown(v3.close);
+      final names =
+          (await v3
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('workout_templates'));
+      expect(await v3.readMeta('onboarding.done'), 'true');
+    });
+  });
+
+  group('SCH-01 schema v4', () {
+    test('v3 -> v4 upgrade adds cycles and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v3 = AppDatabase(NativeDatabase(file));
+      await v3.writeMeta('workout.startersSeeded', 'true');
+      await v3.customStatement('DROP TABLE cycles');
+      await v3.customStatement('PRAGMA user_version = 3');
+      await v3.close();
+
+      final v4 = AppDatabase(NativeDatabase(file));
+      addTearDown(v4.close);
+      final names =
+          (await v4
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('cycles'));
+      expect(await v4.readMeta('workout.startersSeeded'), 'true');
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 2);
+      expect(db.schemaVersion, 4);
       final names =
           (await db
                   .customSelect(

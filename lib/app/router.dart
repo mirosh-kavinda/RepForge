@@ -11,10 +11,15 @@ import '../features/library/presentation/library_screen.dart';
 import '../features/onboarding/data/providers.dart';
 import '../features/onboarding/presentation/about_you_screen.dart';
 import '../features/onboarding/presentation/goal_level_screen.dart';
+import '../features/onboarding/presentation/plan_screen.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/progress/presentation/progress_screen.dart';
+import '../features/schedule/presentation/cycle_editor_screen.dart';
+import '../features/schedule/presentation/cycles_screen.dart';
 import '../features/schedule/presentation/schedule_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/workout/presentation/template_editor_screen.dart';
+import '../features/workout/presentation/workouts_screen.dart';
 import 'shell.dart';
 
 part 'router.g.dart';
@@ -32,6 +37,17 @@ abstract final class Routes {
   static const library = '/library';
   static const progress = '/progress';
   static const profile = '/profile';
+  static const workouts = '/schedule/workouts';
+  static const workoutNew = '/schedule/workouts/new';
+  static String workoutEdit(String id) => '/schedule/workouts/$id';
+  static String workoutCopy(String id) =>
+      Uri(path: workoutNew, queryParameters: {'copyOf': id}).toString();
+  static const onboardingPlan = '/onboarding/plan';
+  static const cycles = '/schedule/cycles';
+  static const cycleNew = '/schedule/cycles/new';
+  static String cycleEdit(String id) => '/schedule/cycles/$id';
+  static String cycleCopy(String id) =>
+      Uri(path: cycleNew, queryParameters: {'copyOf': id}).toString();
 }
 
 // AUTH-01 AC1, ONB-01 AC1/AC2: both gates come from Drift, so they are known
@@ -97,6 +113,10 @@ GoRouter router(Ref ref) {
             path: 'about',
             builder: (context, state) => const AboutYouScreen(),
           ),
+          GoRoute(
+            path: 'plan',
+            builder: (context, state) => const PlanScreen(),
+          ),
         ],
       ),
       GoRoute(
@@ -125,6 +145,44 @@ GoRouter router(Ref ref) {
               GoRoute(
                 path: Routes.schedule,
                 builder: (context, state) => const ScheduleScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'cycles',
+                    builder: (context, state) => const CyclesScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        builder: (context, state) => CycleEditorScreen(
+                          copyOf: state.uri.queryParameters['copyOf'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: ':id',
+                        builder: (context, state) =>
+                            CycleEditorScreen(id: state.pathParameters['id']),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'workouts',
+                    builder: (context, state) => const WorkoutsScreen(),
+                    routes: [
+                      // Before ':id', so "new" is not read as an id.
+                      GoRoute(
+                        path: 'new',
+                        builder: (context, state) => TemplateEditorScreen(
+                          copyOf: state.uri.queryParameters['copyOf'],
+                        ),
+                      ),
+                      GoRoute(
+                        path: ':id',
+                        builder: (context, state) => TemplateEditorScreen(
+                          id: state.pathParameters['id'],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

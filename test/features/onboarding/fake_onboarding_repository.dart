@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:repforge/core/metrics/units.dart';
 import 'package:repforge/features/onboarding/domain/onboarding_answers.dart';
 import 'package:repforge/features/onboarding/domain/onboarding_repository.dart';
 
 class FakeOnboardingRepository implements OnboardingRepository {
-  FakeOnboardingRepository({bool done = false}) : _done = done;
+  FakeOnboardingRepository({bool done = false, this.units = UnitSystem.metric})
+    : _done = done;
+
+  UnitSystem units;
 
   final saved = <OnboardingAnswers>[];
   final _changes = StreamController<bool>.broadcast();
@@ -21,6 +25,9 @@ class FakeOnboardingRepository implements OnboardingRepository {
     yield _done;
     yield* _changes.stream;
   }
+
+  @override
+  Stream<UnitSystem> watchUnits() => Stream.value(units);
 
   @override
   Future<void> complete(OnboardingAnswers answers) async {

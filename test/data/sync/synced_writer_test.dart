@@ -129,5 +129,19 @@ void main() {
         expect(ops.last.createdAt, clock);
       },
     );
+
+    test('WKT-01 a soft delete refreshes watched queries', () async {
+      await createNote('n1', 'hello');
+      final seen = <int>[];
+      final sub = db
+          .selectActive(db.notes)
+          .watch()
+          .listen((r) => seen.add(r.length));
+      await pumpEventQueue();
+      await writer.softDelete(table: 'notes', entity: 'note', id: 'n1');
+      await pumpEventQueue();
+      await sub.cancel();
+      expect(seen, [1, 0]);
+    });
   });
 }

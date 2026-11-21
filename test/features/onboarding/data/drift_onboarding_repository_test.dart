@@ -97,4 +97,12 @@ void main() {
       expect(await db.select(db.bodySnapshots).get(), isEmpty);
     });
   });
+
+  group('WKT-01 watchUnits', () {
+    test('metric until a profile exists, then the profile units', () async {
+      expect(await repo.watchUnits().first, UnitSystem.metric);
+      await repo.complete(full);
+      expect(await repo.watchUnits().first, UnitSystem.imperial);
+    });
+  });
 }

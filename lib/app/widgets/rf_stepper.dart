@@ -20,6 +20,7 @@ class RfStepper extends StatefulWidget {
     required this.max,
     required this.onChanged,
     this.unit,
+    this.format,
     super.key,
   }) : assert(step > 0),
        assert(min < max);
@@ -33,6 +34,8 @@ class RfStepper extends StatefulWidget {
   final double min;
   final double max;
   final String? unit;
+  // Replaces the number and unit, e.g. m:ss for rest times.
+  final String Function(double value)? format;
   final ValueChanged<double> onChanged;
 
   @override
@@ -71,6 +74,7 @@ class _RfStepperState extends State<RfStepper> {
   }
 
   String _format(double v) {
+    if (widget.format case final format?) return format(v);
     final number = NumberFormat.decimalPatternDigits(
       locale: 'en',
       decimalDigits: 0,
@@ -149,10 +153,12 @@ class _RfStepperState extends State<RfStepper> {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: _format(_value).split(' ').first,
+                      text: widget.format == null
+                          ? _format(_value).split(' ').first
+                          : _format(_value),
                       style: t.heading.copyWith(color: c.textPrimary),
                     ),
-                    if (widget.unit != null)
+                    if (widget.unit != null && widget.format == null)
                       TextSpan(
                         text: ' ${widget.unit}',
                         style: t.label.copyWith(color: c.textSecondary),

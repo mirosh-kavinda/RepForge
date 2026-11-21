@@ -2,13 +2,21 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
+import 'package:repforge/features/schedule/data/providers.dart';
+import 'package:repforge/features/workout/data/providers.dart';
 
 import '../features/auth/fake_auth_repository.dart';
 import '../features/onboarding/fake_onboarding_repository.dart';
+import '../features/schedule/fake_cycle_repository.dart';
+import '../features/workout/fakes.dart';
 
 // App-level tests start past the AUTH-01 and ONB-01 gates, as a signed-in,
-// onboarded Google user.
-List<Override> signedInOverrides({FakeAuthRepository? auth}) => [
+// onboarded Google user with no workouts or cycles unless given.
+List<Override> signedInOverrides({
+  FakeAuthRepository? auth,
+  FakeTemplateRepository? templates,
+  FakeCycleRepository? cycles,
+}) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
   onboardingRepositoryProvider.overrideWithValue(
     FakeOnboardingRepository(done: true),
@@ -23,4 +31,8 @@ List<Override> signedInOverrides({FakeAuthRepository? auth}) => [
           ),
         ),
   ),
+  templateRepositoryProvider.overrideWithValue(
+    templates ?? FakeTemplateRepository(),
+  ),
+  cycleRepositoryProvider.overrideWithValue(cycles ?? FakeCycleRepository()),
 ];
