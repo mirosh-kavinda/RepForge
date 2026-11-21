@@ -56,10 +56,23 @@ String? normalisePath(String raw) {
 bool isGated(String libPath) =>
     !_generated.hasMatch(libPath) && _gated.any((r) => r.hasMatch(libPath));
 
+// The VM leaves files with no executable lines (pure interfaces, plain enums)
+// out of lcov even when loaded, so only files with a body can be "untested".
+final _body = RegExp(
+  r'(\)\s*(async\*?|sync\*)?\s*(\{|=>))|(\bget\s+\w+\s*(\{|=>))',
+);
+
+bool hasExecutableCode(String source) => _body.hasMatch(
+  source
+      .replaceAll(RegExp(r'/\*[\s\S]*?\*/'), '')
+      .replaceAll(RegExp(r'//[^\n]*'), ''),
+);
+
 CoverageResult evaluateCoverage(
   String lcov, {
   required Iterable<String> filesOnDisk,
   double minPercent = defaultMinPercent,
+  bool Function(String path) hasCode = _always,
 }) {
   final files = <String, FileCoverage>{};
   String? current;
@@ -85,6 +98,7 @@ CoverageResult evaluateCoverage(
           .whereType<String>()
           .where(isGated)
           .where((p) => !files.containsKey(p))
+          .where(hasCode)
           .toSet()
           .toList()
         ..sort();
@@ -133,6 +147,7 @@ void main(List<String> args) {
     lcovFile.readAsStringSync(),
     filesOnDisk: onDisk,
     minPercent: minPercent,
+    hasCode: (path) => hasExecutableCode(File(path).readAsStringSync()),
   );
 
   final out = stdout;
@@ -159,3 +174,5 @@ void main(List<String> args) {
   }
   out.writeln('PASS');
 }
+
+bool _always(String _) => true;

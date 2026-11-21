@@ -40,6 +40,10 @@ dependencies:
   intl: ^0.20.2
   flutter_localizations:
     sdk: flutter
+  drift: ^2.31.0
+  drift_flutter: ^0.2.8
+  uuid: ^4.6.0
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +58,10 @@ dev_dependencies:
   riverpod_generator: ^4.0.3
   build_runner: ^2.15.1
   mocktail: ^1.0.5
+  drift_dev: ^2.31.0
+  freezed: ^3.2.5
+  integration_test:
+    sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -70,6 +78,7 @@ flutter:
   assets:
     - assets/fonts/OFL-SpaceGrotesk.txt
     - assets/fonts/OFL-Inter.txt
+    - assets/exercises/seed.json
 
   fonts:
     - family: SpaceGrotesk

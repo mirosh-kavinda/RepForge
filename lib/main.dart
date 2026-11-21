@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'features/library/data/providers.dart';
 
 void main() {
   LicenseRegistry.addLicense(() async* {
@@ -16,5 +17,9 @@ void main() {
       ], await rootBundle.loadString('assets/fonts/$file'));
     }
   });
-  runApp(const ProviderScope(child: RepForgeApp()));
+  final container = ProviderContainer();
+  runApp(
+    UncontrolledProviderScope(container: container, child: const RepForgeApp()),
+  );
+  startCatalogImport(container);
 }
