@@ -11,6 +11,8 @@ import 'package:repforge/features/home/presentation/home_screen.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/library/domain/exercise_query.dart';
 
+import '../../../helpers/app_overrides.dart';
+
 void main() {
   group('FND-03 catalog status', () {
     test('AC10 catalog reads are loading until the import completes', () async {
@@ -18,6 +20,7 @@ void main() {
       final db = AppDatabase(NativeDatabase.memory());
       final container = ProviderContainer(
         overrides: [
+          ...signedInOverrides(),
           appDatabaseProvider.overrideWithValue(db),
           seedLoaderProvider.overrideWithValue(() => seed.future),
         ],
@@ -46,6 +49,7 @@ void main() {
         addTearDown(db.close);
         final failing = ProviderContainer(
           overrides: [
+            ...signedInOverrides(),
             appDatabaseProvider.overrideWithValue(db),
             seedLoaderProvider.overrideWithValue(
               () async => throw const FormatException('corrupt seed'),
@@ -62,6 +66,7 @@ void main() {
 
         final relaunch = ProviderContainer(
           overrides: [
+            ...signedInOverrides(),
             appDatabaseProvider.overrideWithValue(db),
             seedLoaderProvider.overrideWithValue(
               () async => File('assets/exercises/seed.json').readAsString(),
@@ -78,7 +83,7 @@ void main() {
       'AC3 the bundled seed asset loads through the default loader',
       () async {
         TestWidgetsFlutterBinding.ensureInitialized();
-        final container = ProviderContainer();
+        final container = ProviderContainer(overrides: signedInOverrides());
         addTearDown(container.dispose);
         final raw = await container.read(seedLoaderProvider)();
         expect(raw, startsWith('{"catalogVersion":'));
@@ -93,6 +98,7 @@ void main() {
       final never = Completer<String>();
       final container = ProviderContainer(
         overrides: [
+          ...signedInOverrides(),
           appDatabaseProvider.overrideWithValue(db),
           seedLoaderProvider.overrideWithValue(() => never.future),
         ],

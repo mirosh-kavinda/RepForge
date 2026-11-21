@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "repforge-dev",
+    "dev": "repforge-dev",
+    "prod": "repforge-prod"
+  }
+}

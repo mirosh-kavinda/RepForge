@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'features/auth/data/providers.dart';
 import 'features/library/data/providers.dart';
 
 void main() {
@@ -22,4 +23,5 @@ void main() {
     UncontrolledProviderScope(container: container, child: const RepForgeApp()),
   );
   startCatalogImport(container);
+  startAuth(container);
 }
