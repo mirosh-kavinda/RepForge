@@ -36,6 +36,10 @@ void main() {
       expect(appRedirect(yes, no, Routes.home), Routes.onboarding);
       expect(appRedirect(yes, no, Routes.onboarding), isNull);
       expect(appRedirect(yes, no, Routes.onboardingAbout), isNull);
+      // Account (09b) and a just-finished Sign in stay put until they move on.
+      expect(appRedirect(yes, no, Routes.account), isNull);
+      expect(appRedirect(yes, no, Routes.signIn), isNull);
+      expect(appRedirect(yes, yes, Routes.account), isNull);
     });
 
     test('ONB-01 AC2 onboarded: Home, never onboarding again', () {

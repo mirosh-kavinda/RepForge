@@ -6,6 +6,8 @@ abstract interface class AccountPreferencesStore {
   Future<AccountPreferences> load();
 
   Future<void> save(AccountPreferences preferences);
+
+  Stream<bool> watchUseProviderProfile();
 }
 
 // Choices made on Account (09b). Workouts and goals always back up; the

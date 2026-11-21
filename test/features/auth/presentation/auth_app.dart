@@ -27,6 +27,7 @@ class AuthApp {
     WidgetTester tester, {
     FakeAuthRepository? repo,
     bool choiceMade = false,
+    bool onboarded = true,
     String? location,
     double textScale = 1,
   }) async {
@@ -36,6 +37,7 @@ class AuthApp {
     auth.onChoice = choice.add;
     var current = choiceMade;
     final preferences = FakeAccountPreferencesStore();
+    final onboarding = FakeOnboardingRepository(done: onboarded);
     final container = ProviderContainer(
       overrides: [
         authChoiceMadeProvider.overrideWith((ref) async* {
@@ -44,9 +46,7 @@ class AuthApp {
         }),
         authRepositoryProvider.overrideWithValue(auth),
         accountPreferencesStoreProvider.overrideWithValue(preferences),
-        onboardingRepositoryProvider.overrideWithValue(
-          FakeOnboardingRepository(done: true),
-        ),
+        onboardingRepositoryProvider.overrideWithValue(onboarding),
       ],
     );
     addTearDown(container.dispose);

@@ -68,7 +68,8 @@ up — without losing anything they logged as a guest.
 - App killed mid-sign-in → next launch shows Sign in (or the next step if the choice completed).
 - Weak password (< 8 chars) or malformed email → inline error before any network call.
 - Apple with a hidden email → the relay address shows; no name → initials only.
-- Turning "Use my name and photo" off → Home and Profile show initials and no name.
+- Turning "Use my name and photo" off → Profile shows initials and no name (Home shows no
+  name until its slice adds one).
 
 ## Constraints (NFRs that apply)
 

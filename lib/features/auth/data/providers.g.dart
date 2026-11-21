@@ -131,6 +131,40 @@ final class AccountPreferencesStoreProvider
 String _$accountPreferencesStoreHash() =>
     r'ada4e30f0c8a85d24d91aa67ed1eb1ae71573b14';
 
+@ProviderFor(useProviderProfile)
+final useProviderProfileProvider = UseProviderProfileProvider._();
+
+final class UseProviderProfileProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  UseProviderProfileProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: _noRetry,
+        name: r'useProviderProfileProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$useProviderProfileHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<bool> create(Ref ref) {
+    return useProviderProfile(ref);
+  }
+}
+
+String _$useProviderProfileHash() =>
+    r'c4a9f137b7571101325be707a076ded5681fc47e';
+
 @ProviderFor(authChoiceMade)
 final authChoiceMadeProvider = AuthChoiceMadeProvider._();
 

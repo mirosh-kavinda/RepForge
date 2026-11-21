@@ -31,6 +31,11 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     @Default('') String weight,
     @Default('') String waist,
     ActivityLevel? activity,
+    // Set when a unit switch re-expresses a value; cleared when the field is
+    // edited, so switching back and forth never drifts what was typed.
+    double? exactHeightCm,
+    double? exactWeightKg,
+    double? exactWaistCm,
   }) = _OnboardingDraft;
 
   static double? _number(String text) {
@@ -40,7 +45,17 @@ abstract class OnboardingDraft with _$OnboardingDraft {
 
   static bool _blank(String text) => text.trim().isEmpty;
 
-  double? get heightCm {
+  // Whole feet and 0 <= inches < 12; blank fields are fine.
+  bool get _validFeetInches {
+    final feet = _number(height);
+    final inches = _number(heightInches);
+    if (feet != null && feet != feet.roundToDouble()) return false;
+    return inches == null || (inches >= 0 && inches < 12);
+  }
+
+  double? get heightCm => exactHeightCm ?? _typedHeightCm;
+
+  double? get _typedHeightCm {
     final main = _number(height);
     if (units == UnitSystem.metric) return main;
     final inches = _number(heightInches);
@@ -48,13 +63,17 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     return feetInchesToCm((main ?? 0).floor(), inches ?? 0);
   }
 
-  double? get weightKg {
+  double? get weightKg => exactWeightKg ?? _typedWeightKg;
+
+  double? get _typedWeightKg {
     final w = _number(weight);
     if (w == null) return null;
     return units == UnitSystem.metric ? w : lbToKg(w);
   }
 
-  double? get waistCm {
+  double? get waistCm => exactWaistCm ?? _typedWaistCm;
+
+  double? get _typedWaistCm {
     final w = _number(waist);
     if (w == null) return null;
     return units == UnitSystem.metric ? w : inToCm(w);
@@ -65,7 +84,8 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     if (!_blank(birthYear) && int.tryParse(birthYear.trim()) == null)
       AnswerField.birthYear,
     if ((!_blank(height) && _number(height) == null) ||
-        (!_blank(heightInches) && _number(heightInches) == null))
+        (!_blank(heightInches) && _number(heightInches) == null) ||
+        (units == UnitSystem.imperial && !_validFeetInches))
       AnswerField.height,
     if (!_blank(weight) && _number(weight) == null) AnswerField.weight,
     if (!_blank(waist) && _number(waist) == null) AnswerField.waist,
@@ -113,6 +133,9 @@ class OnboardingController extends _$OnboardingController {
       heightInches: '',
       weight: '',
       waist: '',
+      exactHeightCm: cm,
+      exactWeightKg: kg,
+      exactWaistCm: waistCm,
     );
     if (waistCm != null) {
       next = next.copyWith(

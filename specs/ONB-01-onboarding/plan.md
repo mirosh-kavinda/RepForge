@@ -32,9 +32,9 @@ nothing saved).
 
 ## Data
 
-- `user_profiles`: id, goal?, level?, units, sex?, birth_year?, height_cm? + updated_at,
+- `user_profiles`: id, goal?, level?, units, sex?, birth_year?, height_cm?, activity_level? + updated_at,
   deleted_at, sync_state. One live row per device owner.
-- `body_snapshots`: id, date, weight_kg? + base columns (BOD-01 adds measurements).
+- `body_snapshots`: id, date, weight_kg?, waist_cm? + base columns (BOD-01 adds measurements).
 - Schema v1 → v2: `onUpgrade` creates both tables. `LocalDataWiper` already wipes any non-catalog
   table, so sign-out and discard cover them with no change.
 - Outbox entities: `userProfile`, `bodySnapshot` (op create).
@@ -72,8 +72,8 @@ None new.
 | AC6, edge | `test/features/onboarding/data/drift_onboarding_repository_test.dart` (rows, outbox, flag, rollback, wipe) | unit |
 | schema | `test/data/local/app_database_test.dart` "v1 → v2 upgrade keeps data" | unit |
 | AC1, AC2 | `test/app/router_auth_gate_test.dart` (redirect table + flow) | unit + widget |
-| AC3, AC7, AC8 | `test/features/onboarding/presentation/goal_level_screen_test.dart` | widget |
-| AC4–AC6, AC9 | `test/features/onboarding/presentation/about_you_screen_test.dart` | widget |
+| AC3, AC7, AC8 | `test/features/onboarding/presentation/onboarding_flow_test.dart` | widget |
+| AC4–AC6, AC9 | `test/features/onboarding/presentation/onboarding_flow_test.dart` | widget |
 | NFR-06 | 200 % text + labels in both screen tests | widget |
 
 ## Risks

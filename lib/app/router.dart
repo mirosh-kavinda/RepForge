@@ -53,7 +53,8 @@ String? appRedirect(
   // Account (09b) follows a sign-in, before or after onboarding.
   final onAccount = location == Routes.account;
   if (!(onboarded.value ?? false)) {
-    return onOnboarding || onAccount ? null : Routes.onboarding;
+    // Sign in stays put while a just-finished sign-in moves on to Account.
+    return onOnboarding || onAccount || onSignIn ? null : Routes.onboarding;
   }
   return location == Routes.start || onWelcome || onOnboarding
       ? Routes.home

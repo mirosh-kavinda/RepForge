@@ -38,6 +38,10 @@ AccountPreferencesStore accountPreferencesStore(Ref ref) =>
     ref.watch(authLocalStoreProvider);
 
 @Riverpod(keepAlive: true, retry: _noRetry)
+Stream<bool> useProviderProfile(Ref ref) =>
+    ref.watch(accountPreferencesStoreProvider).watchUseProviderProfile();
+
+@Riverpod(keepAlive: true, retry: _noRetry)
 Stream<bool> authChoiceMade(Ref ref) =>
     ref.watch(authLocalStoreProvider).watchChoiceMade();
 

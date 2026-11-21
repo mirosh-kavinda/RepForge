@@ -51,6 +51,7 @@ class AuthLocalStore implements AccountPreferencesStore {
     );
   }
 
+  @override
   Stream<bool> watchUseProviderProfile() =>
       _db.watchMeta(_prefKeys.profile).map((v) => v != 'false').distinct();
 

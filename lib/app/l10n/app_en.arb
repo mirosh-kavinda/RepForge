@@ -352,7 +352,7 @@
   "@onbBirthYearError": {
     "description": "Birth year out of range."
   },
-  "onbHeightError": "Enter a height between 100 and 250 cm (3 ft 4 in to 8 ft 2 in).",
+  "onbHeightError": "Enter a height between 100 and 250 cm (3 ft 4 in to 8 ft 2 in), whole feet and under 12 in.",
   "@onbHeightError": {
     "description": "Height out of range."
   },
@@ -548,7 +548,7 @@
   "@accountUseProfile": {
     "description": "Personalise switch."
   },
-  "accountUseProfileHint": "Shown on Home and your profile",
+  "accountUseProfileHint": "Shown on your profile",
   "@accountUseProfileHint": {
     "description": "Personalise switch hint."
   },
@@ -567,5 +567,9 @@
   "accountRemindersHint": "Workout days, rest timer, weekly report",
   "@accountRemindersHint": {
     "description": "Personalise switch hint."
+  },
+  "accountSaveFailed": "Couldn't save your choices. Please try again.",
+  "@accountSaveFailed": {
+    "description": "Account screen save failed."
   }
 }

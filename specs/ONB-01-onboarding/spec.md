@@ -1,6 +1,6 @@
 # ONB-01: 60-second onboarding
 
-Status: Approved (amended 2026-11-21 to match the design canvas: goal names, waist, activity)
+Status: Done (amended 2026-11-21 to match the design canvas: goal names, waist, activity)
 Phase: P2 · Priority: MVP · Screens: 08 Welcome, 10 Goal + level, 11 About you
 (12 Starter plan moves to SCH-01)
 

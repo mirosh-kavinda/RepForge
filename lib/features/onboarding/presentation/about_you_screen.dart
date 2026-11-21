@@ -129,21 +129,26 @@ class _AboutYouScreenState extends ConsumerState<AboutYouScreen> {
               label: l10n.onbHeightFt,
               value: draft.height,
               keyboard: TextInputType.number,
-              onChanged: (v) => controller.update((d) => d.copyWith(height: v)),
+              onChanged: (v) => controller.update(
+                (d) => d.copyWith(height: v, exactHeightCm: null),
+              ),
             ),
             field(
               key: AboutYouScreen.heightInchesKey,
               label: l10n.onbHeightIn,
               value: draft.heightInches,
-              onChanged: (v) =>
-                  controller.update((d) => d.copyWith(heightInches: v)),
+              onChanged: (v) => controller.update(
+                (d) => d.copyWith(heightInches: v, exactHeightCm: null),
+              ),
             ),
           )
         : field(
             key: AboutYouScreen.heightKey,
             label: l10n.onbHeightCm,
             value: draft.height,
-            onChanged: (v) => controller.update((d) => d.copyWith(height: v)),
+            onChanged: (v) => controller.update(
+              (d) => d.copyWith(height: v, exactHeightCm: null),
+            ),
           );
 
     final activityText = draft.activity == null
@@ -222,15 +227,17 @@ class _AboutYouScreenState extends ConsumerState<AboutYouScreen> {
                         key: AboutYouScreen.weightKey,
                         label: imperial ? l10n.onbWeightLb : l10n.onbWeightKg,
                         value: draft.weight,
-                        onChanged: (v) =>
-                            controller.update((d) => d.copyWith(weight: v)),
+                        onChanged: (v) => controller.update(
+                          (d) => d.copyWith(weight: v, exactWeightKg: null),
+                        ),
                       ),
                       field(
                         key: AboutYouScreen.waistKey,
                         label: imperial ? l10n.onbWaistIn : l10n.onbWaistCm,
                         value: draft.waist,
-                        onChanged: (v) =>
-                            controller.update((d) => d.copyWith(waist: v)),
+                        onChanged: (v) => controller.update(
+                          (d) => d.copyWith(waist: v, exactWaistCm: null),
+                        ),
                       ),
                     ),
                     if (_invalid.contains(AnswerField.weight))

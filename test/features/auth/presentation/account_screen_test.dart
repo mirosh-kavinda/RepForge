@@ -79,6 +79,23 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
     });
 
+    testWidgets('AC13 a failed save says so and can be retried', (
+      tester,
+    ) async {
+      final app = await open(tester);
+      app.preferences.failWith = Exception('disk full');
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text("Couldn't save your choices. Please try again."),
+        findsOneWidget,
+      );
+      app.preferences.failWith = null;
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      expect(find.byType(HomeScreen), findsOneWidget);
+    });
+
     testWidgets('AC13 previously saved choices are shown', (tester) async {
       final app = await open(tester);
       app.preferences.stored = const AccountPreferences(syncSettings: false);
