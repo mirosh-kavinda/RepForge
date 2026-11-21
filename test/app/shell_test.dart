@@ -31,7 +31,7 @@ void main() {
       expect(find.text(l10n.appTitle), findsOneWidget);
 
       final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.supportedLocales, contains(const Locale('en')));
+      expect(app.supportedLocales, [const Locale('en')]);
     });
 
     test('AC5: Sinhala and Tamil ARB files exist and are empty', () async {

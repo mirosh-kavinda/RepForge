@@ -38,7 +38,7 @@ The outbox table exists from FND-03; the sync engine that drains it ships in SYN
 
 ```
 lib/
-  app/            app.dart, router, theme (brand tokens), l10n
+  app/            app.dart, router, shell, widgets (app-wide), theme (brand tokens), l10n
   core/           result types, errors, utils
     metrics/      pure Dart formulas (FND-04)
   data/

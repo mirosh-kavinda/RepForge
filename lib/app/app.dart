@@ -20,7 +20,8 @@ class RepForgeApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
+      // AC5: English only until si/ta are translated (their ARB files stay empty).
+      supportedLocales: const [Locale('en')],
       themeMode: ThemeMode.system,
     );
   }
