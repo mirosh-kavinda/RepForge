@@ -3,7 +3,7 @@
 Plan: ./plan.md · One commit per task: `FND-01 Tn: <summary>`
 
 - [x] T1 `flutter create` in repo root (org com.repforge, android + ios); set minSdk 26, iOS 15 — test: `flutter run` on emulator (AC1)
-- [ ] T2 Add packages and `analysis_options.yaml`; `flutter analyze` clean (AC3)
+- [x] T2 Add packages and `analysis_options.yaml`; `flutter analyze` clean (AC3)
 - [ ] T3 Create folder layout from docs/architecture.md with placeholders (AC2)
 - [ ] T4 l10n: `l10n.yaml`, en/si/ta ARB files, app title from ARB — test: `test/app/shell_test.dart` "AC5" (AC5)
 - [ ] T5 go_router shell with 5 tabs and placeholder screens — test: shell_test "AC6" (AC1, AC6)
