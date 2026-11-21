@@ -1,6 +1,6 @@
 # FND-02: Theme and brand tokens
 
-Status: Draft
+Status: Approved
 Phase: P1 · Priority: MVP · Screens: canvas "Design tokens → Flutter", "Light theme tokens"
 
 ## Why
