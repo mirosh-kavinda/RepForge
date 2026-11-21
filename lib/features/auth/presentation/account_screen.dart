@@ -10,6 +10,7 @@ import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
 import '../data/providers.dart';
 import '../domain/account_preferences.dart';
+import 'auth_messages.dart';
 import 'user_avatar.dart';
 
 // Screen 09b (AC13). Restore / Start fresh arrives with SYN-02.
@@ -23,18 +24,34 @@ class AccountScreen extends ConsumerStatefulWidget {
 class _AccountScreenState extends ConsumerState<AccountScreen> {
   AccountPreferences _prefs = const AccountPreferences();
   var _saving = false;
+  var _failed = false;
+  // A late load must not undo switches the user already flipped.
+  var _touched = false;
 
   @override
   void initState() {
     super.initState();
     ref.read(accountPreferencesStoreProvider).load().then((p) {
-      if (mounted) setState(() => _prefs = p);
+      if (mounted && !_touched) setState(() => _prefs = p);
     });
   }
 
   Future<void> _continue() async {
-    setState(() => _saving = true);
-    await ref.read(accountPreferencesStoreProvider).save(_prefs);
+    setState(() {
+      _saving = true;
+      _failed = false;
+    });
+    try {
+      await ref.read(accountPreferencesStoreProvider).save(_prefs);
+    } on Object {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _failed = true;
+        });
+      }
+      return;
+    }
     // Home redirects to onboarding when it isn't done yet.
     if (mounted) context.go(Routes.home);
   }
@@ -76,7 +93,10 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       title: Text(title, style: t.body),
       subtitle: Text(hint, style: t.label.copyWith(color: c.textSecondary)),
       value: value,
-      onChanged: (on) => setState(() => _prefs = change(on)),
+      onChanged: (on) => setState(() {
+        _touched = true;
+        _prefs = change(on);
+      }),
     );
 
     final verified = user?.canBackUp ?? false;
@@ -188,6 +208,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                       (on) => _prefs.copyWith(remindersEverywhere: on),
                     ),
                   ]),
+                  if (_failed) AuthMessage(l10n.accountSaveFailed),
                   const SizedBox(height: RfSpace.s16),
                 ],
               ),

@@ -30,7 +30,9 @@ Future<FakeOnboardingRepository> pumpOnboarding(
     ProviderScope(
       overrides: [
         authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
-        authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+        authRepositoryProvider.overrideWithValue(
+          FakeAuthRepository()..online = false,
+        ),
         onboardingRepositoryProvider.overrideWithValue(repo),
         deviceRegionProvider.overrideWithValue(region),
       ],
@@ -197,6 +199,43 @@ void main() {
       expect(find.text('5'), findsOneWidget);
       expect(find.text('10.9'), findsOneWidget);
       expect(find.text('220.5'), findsOneWidget);
+    });
+
+    testWidgets('AC4 switching units back and forth never drifts values', (
+      tester,
+    ) async {
+      final repo = await toStep2(tester);
+      await type(tester, AboutYouScreen.heightKey, '180');
+      await type(tester, AboutYouScreen.weightKey, '74.2');
+      await tapText(tester, 'lb · in');
+      await tapText(tester, 'kg · cm');
+      await tapText(tester, 'lb · in');
+      await tapText(tester, 'Finish');
+      expect(repo.saved.single.heightCm, 180);
+      expect(repo.saved.single.weightKg, 74.2);
+    });
+
+    testWidgets('edge: imperial height needs whole feet and under 12 in', (
+      tester,
+    ) async {
+      final repo = await toStep2(tester, region: 'US');
+      await type(tester, AboutYouScreen.heightKey, '5.5');
+      await tapText(tester, 'Finish');
+      expect(find.textContaining('Enter a height'), findsOneWidget);
+      await type(tester, AboutYouScreen.heightKey, '5');
+      await type(tester, AboutYouScreen.heightInchesKey, '12');
+      await tapText(tester, 'Finish');
+      expect(find.textContaining('Enter a height'), findsOneWidget);
+      expect(repo.saved, isEmpty);
+    });
+
+    testWidgets('AC9 offline: the whole flow still saves', (tester) async {
+      // Onboarding never touches the network; the auth fake is offline too.
+      final repo = await toStep2(tester);
+      await type(tester, AboutYouScreen.weightKey, '70');
+      await tapText(tester, 'Finish');
+      expect(repo.saved.single.weightKg, 70);
+      expect(find.byType(HomeScreen), findsOneWidget);
     });
 
     testWidgets('edge: Prefer not to say stores no sex', (tester) async {

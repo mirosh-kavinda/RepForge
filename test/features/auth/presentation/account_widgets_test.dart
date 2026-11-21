@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/router.dart';
+import 'package:repforge/features/auth/domain/account_preferences.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
 import 'package:repforge/features/auth/presentation/sign_in_screen.dart';
 import 'package:repforge/features/auth/presentation/verify_email_banner.dart';
@@ -124,6 +125,34 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('Sign out and remove'), findsOneWidget);
+    });
+
+    testWidgets('AC13 Profile shows name, or initials only when turned off', (
+      tester,
+    ) async {
+      final app = await AuthApp.pump(
+        tester,
+        repo: FakeAuthRepository(
+          user: const AuthUser(
+            uid: 'u1',
+            kind: AuthKind.account,
+            email: 'ada@example.com',
+            displayName: 'Ada Lovelace',
+            providers: {SignInProvider.google},
+          ),
+        ),
+        choiceMade: true,
+        location: Routes.profile,
+      );
+      expect(find.text('Ada Lovelace'), findsOneWidget);
+      expect(find.text('AL'), findsOneWidget);
+      await app.preferences.save(
+        const AccountPreferences(useProviderProfile: false),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Ada Lovelace'), findsNothing);
+      expect(find.text('AL'), findsOneWidget);
+      expect(find.text('ada@example.com'), findsOneWidget);
     });
 
     testWidgets('nothing is offered until the user is known', (tester) async {

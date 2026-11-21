@@ -11,6 +11,7 @@ import 'package:repforge/features/auth/presentation/email_sign_in_screen.dart';
 import 'package:repforge/features/auth/presentation/existing_account_dialog.dart';
 import 'package:repforge/features/auth/presentation/sign_in_screen.dart';
 import 'package:repforge/features/home/presentation/home_screen.dart';
+import 'package:repforge/features/onboarding/presentation/goal_level_screen.dart';
 
 import '../fake_auth_repository.dart';
 import 'auth_app.dart';
@@ -26,6 +27,33 @@ void main() {
       expect(find.byType(AccountScreen), findsOneWidget);
     });
 
+    testWidgets('AC2 AC13 first sign-in: Account, then onboarding step 1', (
+      tester,
+    ) async {
+      await AuthApp.pump(tester, onboarded: false);
+      await tester.tap(find.text('Continue with Google'));
+      await tester.pump();
+      // No flash of onboarding before Account opens.
+      expect(find.byType(GoalLevelScreen), findsNothing);
+      await tester.pumpAndSettle();
+      expect(find.byType(AccountScreen), findsOneWidget);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      expect(find.byType(GoalLevelScreen), findsOneWidget);
+    });
+
+    testWidgets('AC14 benefits and the privacy line', (tester) async {
+      await AuthApp.pump(tester);
+      for (final text in [
+        'Automatic backup',
+        'Restore on any phone',
+        'Personalised to you',
+        'We use only your name, email and photo. Health data is never shared.',
+      ]) {
+        expect(find.text(text), findsOneWidget, reason: text);
+      }
+    });
+
     testWidgets('AC2 Apple is not offered on Android', (tester) async {
       await AuthApp.pump(tester);
       expect(find.text('Apple'), findsNothing);
@@ -33,13 +61,32 @@ void main() {
       expect(find.text('Email'), findsOneWidget);
     });
 
-    testWidgets('AC2 Apple is offered on iPhone', (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-      final app = await AuthApp.pump(tester);
-      await tester.tap(find.text('Apple'));
+    testWidgets(
+      skip: true,
+      'AC2 Apple is offered on iPhone (iOS paused until a Mac is available)',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        final app = await AuthApp.pump(tester);
+        await tester.tap(find.text('Apple'));
+        await tester.pumpAndSettle();
+        expect(app.repo.calls, ['apple']);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
+
+    testWidgets('AC6 Skip for now says no backup; a new guest onboards', (
+      tester,
+    ) async {
+      final app = await AuthApp.pump(tester, onboarded: false);
+      expect(
+        find.text('Guest data stays on this phone only, with no backup'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Skip for now'));
       await tester.pumpAndSettle();
-      expect(app.repo.calls, ['apple']);
-      debugDefaultTargetPlatformOverride = null;
+      expect(app.repo.calls, ['guest']);
+      expect(find.byType(GoalLevelScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsNothing);
     });
 
     testWidgets('AC6 Skip for now enters the app as a guest', (tester) async {

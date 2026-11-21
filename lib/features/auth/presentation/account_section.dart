@@ -5,8 +5,11 @@ import 'package:go_router/go_router.dart';
 import '../../../app/l10n/generated/app_localizations.dart';
 import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
+import '../../../app/theme/rf_tokens.dart';
+import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
 import '../data/providers.dart';
+import 'user_avatar.dart';
 
 // AC10: temporary home for Sign out until SET-01 builds Settings.
 class AccountSection extends ConsumerWidget {
@@ -52,21 +55,53 @@ class AccountSection extends ConsumerWidget {
     // Signing a guest out would erase everything, so guests are offered
     // sign-in instead (edge case).
     final guest = user.isGuest;
+    final c = RfColors.of(context);
+    final t = RfTextStyles.of(context);
+    // AC13 edge: with "Use my name and photo" off, initials only, no name.
+    final useProfile = ref.watch(useProviderProfileProvider).value ?? true;
+    final button = SizedBox(
+      width: double.infinity,
+      child: guest
+          ? RfButton(
+              label: l10n.accountBackUp,
+              variant: RfButtonVariant.secondary,
+              onPressed: () => context.push(Routes.signIn),
+            )
+          : RfButton(
+              label: l10n.accountSignOut,
+              variant: RfButtonVariant.secondary,
+              onPressed: () => _signOut(context, ref),
+            ),
+    );
     return Padding(
       padding: const EdgeInsets.all(RfSpace.s16),
-      child: SizedBox(
-        width: double.infinity,
-        child: guest
-            ? RfButton(
-                label: l10n.accountBackUp,
-                variant: RfButtonVariant.secondary,
-                onPressed: () => context.push(Routes.signIn),
-              )
-            : RfButton(
-                label: l10n.accountSignOut,
-                variant: RfButtonVariant.secondary,
-                onPressed: () => _signOut(context, ref),
-              ),
+      child: Column(
+        children: [
+          if (!guest) ...[
+            Row(
+              children: [
+                UserAvatar(user: user, showPhoto: useProfile),
+                const SizedBox(width: RfSpace.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (useProfile && user.displayName != null)
+                        Text(user.displayName!, style: t.labelStrong),
+                      if (user.email case final email?)
+                        Text(
+                          email,
+                          style: t.label.copyWith(color: c.textSecondary),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: RfSpace.s16),
+          ],
+          button,
+        ],
       ),
     );
   }
