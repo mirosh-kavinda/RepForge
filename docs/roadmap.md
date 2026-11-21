@@ -53,3 +53,21 @@ sets · SYN-03 CSV/JSON export · tablet layout.
 | Health Connect / Apple Health sync: v1.1 or later? | BOD-01 (data shape) |
 | Sinhala and Tamil translations at launch or after? | FND-01 (l10n setup is ready either way) |
 | Figma mockup access (spec noted it couldn't be opened); the claude.ai canvas is the current design source | FND-02 |
+
+## Notes
+
+### NFR-01 cold-start baseline (FND-01, 2026-11-21)
+
+Placeholder shell only (no DB, no Firebase). Profile APK, Samsung Galaxy Note10 (SM-N970F),
+Android 12. `adb shell am start -W -S` after `am force-stop`, `TotalTime` in ms.
+
+| Condition | Samples (ms) | Typical |
+|---|---|---|
+| First launches after a fresh install | 1303, 1287, 1300, 1319 (one outlier: 3260) | ~1.3 s |
+| Steady state (later launches) | 478, 461, 459, 453, 455 | ~0.46 s |
+
+`flutter run --profile --trace-startup`: engine enter → first frame rasterized 1063 ms
+(framework init 77 ms, first frame built 96 ms).
+
+Target is < 2 s. Re-measure the same way when FND-03 (Drift open + seed) and AUTH-01 (Firebase
+init) land, since both add startup work. iOS not yet measured (needs a Mac).
