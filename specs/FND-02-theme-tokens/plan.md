@@ -1,7 +1,7 @@
 # FND-02: plan
 
 Spec: ./spec.md (Approved)
-Status: Draft
+Status: Approved
 
 ## Approach
 
