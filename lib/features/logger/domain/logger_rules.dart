@@ -9,15 +9,15 @@ typedef SetValues = ({double kg, int? reps, int? seconds});
 
 SetValues _of(LoggedSet s) => (kg: s.kg, reps: s.reps, seconds: s.seconds);
 
-// AC2, AC4: the same set number last time, else the last set logged in this
-// row now, else the template's target.
+// LOG-01 AC2, AC4, LOG-02 AC5: the suggested target from last time, else the
+// last set logged in this row now, else the template's target.
 SetValues prefill(
   SessionExercise row,
   int setNo, {
   required List<LoggedSet> loggedInRow,
-  required Map<int, LoggedSet> lastTime,
+  required Map<int, SetValues> targets,
 }) {
-  if (lastTime[setNo] case final last?) return _of(last);
+  if (targets[setNo] case final t?) return t;
   final earlier = [
     for (final s in loggedInRow)
       if (s.setNo < setNo) s,

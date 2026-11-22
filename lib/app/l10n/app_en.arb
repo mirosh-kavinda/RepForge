@@ -1814,5 +1814,39 @@
   "unitLb": "lb",
   "@unitLb": {
     "description": "Unit."
+  },
+  "loggerLast": "Last: {set}",
+  "@loggerLast": {
+    "description": "Ghost line: last session's set.",
+    "placeholders": {
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerTarget": "Target: {set}",
+  "@loggerTarget": {
+    "description": "Suggested target for this set.",
+    "placeholders": {
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerPr": "PR",
+  "@loggerPr": {
+    "description": "Personal record badge."
+  },
+  "loggerTimes": "{weight} × {reps}",
+  "@loggerTimes": {
+    "description": "Weight times reps, e.g. 60 kg × 8.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "reps": {
+        "type": "int"
+      }
+    }
   }
 }

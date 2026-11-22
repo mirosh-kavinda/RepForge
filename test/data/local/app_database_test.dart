@@ -263,9 +263,31 @@ void main() {
     });
   });
 
+  group('LOG-02 schema v10', () {
+    test('v9 -> v10 adds session_sets.is_pr, false for old sets', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v9 = AppDatabase(NativeDatabase(file));
+      await v9.customStatement('ALTER TABLE session_sets DROP COLUMN is_pr');
+      await v9.customStatement(
+        'INSERT INTO session_sets (id, session_id, row_id, exercise_id, '
+        "set_no, kg, logged_at, updated_at) VALUES ('a', 's', 'r', 'e', 1, "
+        "60, '2026-11-23T00:00:00.000Z', '2026-11-23T00:00:00.000Z')",
+      );
+      await v9.customStatement('PRAGMA user_version = 9');
+      await v9.close();
+
+      final v10 = AppDatabase(NativeDatabase(file));
+      addTearDown(v10.close);
+      expect((await v10.select(v10.sessionSets).getSingle()).isPr, isFalse);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 9);
+      expect(db.schemaVersion, 10);
       final names =
           (await db
                   .customSelect(

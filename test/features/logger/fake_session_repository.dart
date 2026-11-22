@@ -97,6 +97,12 @@ class FakeSessionRepository implements SessionRepository {
   Future<Map<int, LoggedSet>> lastSets(String exerciseId) async =>
       _last[exerciseId] ?? const {};
 
+  final Map<String, List<LoggedSet>> historyOf = {};
+
+  @override
+  Future<List<LoggedSet>> history(String exerciseId) async =>
+      historyOf[exerciseId] ?? const [];
+
   @override
   Future<void> discard(String sessionId) async {
     _fail();

@@ -81,13 +81,15 @@ Future<void> openLogger(
   bool start = true,
   WorkoutSession? active,
   List<DayRecord> records = const [],
+  Map<String, List<LoggedSet>> history = const {},
 }) async {
   tester.view
     ..devicePixelRatio = 1
     ..physicalSize = const Size(390, 844);
   addTearDown(tester.view.reset);
   days = FakeDayRecordRepository(records);
-  sessions = FakeSessionRepository(days: days, last: last, active: active);
+  sessions = FakeSessionRepository(days: days, last: last, active: active)
+    ..historyOf.addAll(history);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
@@ -201,7 +203,9 @@ void main() {
       handle.dispose();
     });
 
-    testWidgets('AC2 last time comes first, by set number', (tester) async {
+    testWidgets('AC2 LOG-02 AC5 last time drives the prefill, by set number', (
+      tester,
+    ) async {
       final handle = tester.ensureSemantics();
       await openLogger(
         tester,
@@ -211,7 +215,7 @@ void main() {
       );
       await logSet(tester, 2);
       final s = sessions.active!.sets.single;
-      expect((s.setNo, s.kg, s.reps), (2, 112.5, 5));
+      expect((s.setNo, s.kg, s.reps), (2, 112.5, 6), reason: 'target: + 1 rep');
       handle.dispose();
     });
 
@@ -451,6 +455,99 @@ void main() {
         findsOneWidget,
       );
       handle.dispose();
+    });
+  });
+
+  group('LOG-02 ghost, target and PR', () {
+    final notTop = {
+      'Barbell_Squat': {1: squat(1, 110, 6), 2: squat(2, 112.5, 5)},
+    };
+
+    testWidgets('AC1 AC5 ghost and target lines; one tap logs the target', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await openLogger(tester, last: notTop);
+      expect(find.text('Last: 110 kg × 6'), findsOneWidget);
+      expect(find.text('Target: 110 kg × 7'), findsOneWidget);
+      expect(find.text('Last: 112.5 kg × 5'), findsOneWidget);
+      await logSet(tester, 1);
+      final s = sessions.active!.sets.single;
+      expect((s.kg, s.reps), (110.0, 7));
+      handle.dispose();
+    });
+
+    testWidgets('AC2 every set at the top last time: + 2.5 kg', (tester) async {
+      await openLogger(
+        tester,
+        last: {
+          'Barbell_Squat': {1: squat(1, 100, 8), 2: squat(2, 100, 8)},
+        },
+      );
+      expect(find.text('Target: 102.5 kg × 5'), findsNWidgets(2));
+    });
+
+    testWidgets('AC5 no history: no ghost or target, LOG-01 prefill', (
+      tester,
+    ) async {
+      await openLogger(tester);
+      expect(find.textContaining('Last:'), findsNothing);
+      expect(find.textContaining('Target:'), findsNothing);
+    });
+
+    testWidgets('AC6 AC7 PR in text; deleting it moves the PR', (tester) async {
+      final handle = tester.ensureSemantics();
+      await openLogger(
+        tester,
+        last: {
+          'Barbell_Squat': {1: squat(1, 100, 5), 2: squat(2, 100, 5)},
+        },
+        history: {
+          'Barbell_Squat': [squat(1, 100, 5), squat(2, 100, 5)],
+        },
+      );
+      await logSet(tester, 1);
+      await logSet(tester, 2);
+      expect(
+        setLabel('Barbell Squat, Set 1, 100 kg · 6 reps, Done, PR'),
+        findsOneWidget,
+      );
+      expect(
+        setLabel('Barbell Squat, Set 2, 100 kg · 6 reps, Done, Last'),
+        findsOneWidget,
+        reason: 'equal to set 1, not a PR',
+      );
+      expect(find.text('PR'), findsOneWidget);
+      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete set'));
+      await tester.pumpAndSettle();
+      expect(
+        setLabel('Barbell Squat, Set 2, 100 kg · 6 reps, Done, PR'),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('NFR-06 ghost, target and PR fit at 200 % text', (
+      tester,
+    ) async {
+      await openLogger(
+        tester,
+        last: notTop,
+        history: {
+          'Barbell_Squat': [squat(1, 110, 6)],
+        },
+        textScale: 2,
+      );
+      expect(tester.takeException(), isNull);
+      await logSet(tester, 1);
+      expect(tester.takeException(), isNull);
+      for (var i = 0; i < 6; i++) {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      }
     });
   });
 }

@@ -95,6 +95,81 @@ final class ActiveSessionProvider
 
 String _$activeSessionHash() => r'4ce54ae5062fc8fa3617b8ce005ec96088ede9ce';
 
+@ProviderFor(exerciseHistory)
+final exerciseHistoryProvider = ExerciseHistoryFamily._();
+
+final class ExerciseHistoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<LoggedSet>>,
+          List<LoggedSet>,
+          FutureOr<List<LoggedSet>>
+        >
+    with $FutureModifier<List<LoggedSet>>, $FutureProvider<List<LoggedSet>> {
+  ExerciseHistoryProvider._({
+    required ExerciseHistoryFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseHistoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseHistoryHash();
+
+  @override
+  String toString() {
+    return r'exerciseHistoryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<LoggedSet>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<LoggedSet>> create(Ref ref) {
+    final argument = this.argument as String;
+    return exerciseHistory(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseHistoryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseHistoryHash() => r'1b1b273e28b283b4a3fe885c9a94881837b1ab83';
+
+final class ExerciseHistoryFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<LoggedSet>>, String> {
+  ExerciseHistoryFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseHistoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ExerciseHistoryProvider call(String exerciseId) =>
+      ExerciseHistoryProvider._(argument: exerciseId, from: this);
+
+  @override
+  String toString() => r'exerciseHistoryProvider';
+}
+
 @ProviderFor(lastSets)
 final lastSetsProvider = LastSetsFamily._();
 

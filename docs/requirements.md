@@ -29,7 +29,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | WKT-01 | Workout template builder (sets, rep range, target, rest, supersets) | MVP | P2 | 13 | Done |
 | WKT-02 | Start today's workout in one tap from Home | MVP | P2 | 01 | Done |
 | LOG-01 | Log a set in ≤ 2 taps, prefilled from ghost; steppers | MVP | P2 | 02 | Done |
-| LOG-02 | Ghost Set + suggested target; PR badge when beaten | MVP | P2 | 02 | — |
+| LOG-02 | Ghost Set + suggested target; PR badge when beaten | MVP | P2 | 02 | Done |
 | LOG-03 | Auto rest timer, notification + vibration, survives lock | MVP | P2 | 02 | — |
 | LOG-04 | Warm-up / drop sets, failure flag, notes | v1.1 | P4 | 02 | — |
 | LOG-05 | Finish summary: duration, volume, PRs, vs last session | MVP | P2 | 16 | — |

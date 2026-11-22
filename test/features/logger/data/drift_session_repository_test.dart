@@ -210,5 +210,34 @@ void main() {
       expect(await db.select(db.workoutSessions).get(), isEmpty);
       expect(await db.select(db.sessionSets).get(), isEmpty);
     });
+
+    test(
+      'LOG-02 AC6 history is every finished set; Finish stores PRs',
+      () async {
+        await repo.start(draft('old'));
+        await repo.logSet('old', set('o1', 1, 100, reps: 5));
+        await repo.finish('old');
+        expect((await repo.history('bench')).map((x) => x.kg), [100.0]);
+        expect(
+          (await db.select(db.sessionSets).getSingle()).isPr,
+          isFalse,
+          reason: 'first time: nothing to beat',
+        );
+
+        await repo.start(draft('new', date: DateTime.utc(2026, 11, 24)));
+        await repo.logSet('new', set('n1', 1, 105, reps: 5));
+        await repo.logSet('new', set('n2', 2, 95, reps: 5));
+        expect(
+          await repo.history('bench'),
+          hasLength(1),
+          reason: 'not running',
+        );
+        await repo.finish('new');
+        final rows = await (db.select(
+          db.sessionSets,
+        )..where((r) => r.sessionId.equals('new'))).get();
+        expect({for (final r in rows) r.id: r.isPr}, {'n1': true, 'n2': false});
+      },
+    );
   });
 }

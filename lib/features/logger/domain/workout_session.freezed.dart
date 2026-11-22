@@ -302,7 +302,8 @@ mixin _$LoggedSet {
 
  String get id;// The SessionExercise row it belongs to.
  String get rowId; String get exerciseId;// 1-based within its row.
- int get setNo; double get kg; int? get reps; int? get seconds;
+ int get setNo; double get kg; int? get reps; int? get seconds;// LOG-02: stored at Finish; worked out on screen while in progress.
+ bool get isPr;
 /// Create a copy of LoggedSet
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -313,16 +314,16 @@ $LoggedSetCopyWith<LoggedSet> get copyWith => _$LoggedSetCopyWithImpl<LoggedSet>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoggedSet&&(identical(other.id, id) || other.id == id)&&(identical(other.rowId, rowId) || other.rowId == rowId)&&(identical(other.exerciseId, exerciseId) || other.exerciseId == exerciseId)&&(identical(other.setNo, setNo) || other.setNo == setNo)&&(identical(other.kg, kg) || other.kg == kg)&&(identical(other.reps, reps) || other.reps == reps)&&(identical(other.seconds, seconds) || other.seconds == seconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoggedSet&&(identical(other.id, id) || other.id == id)&&(identical(other.rowId, rowId) || other.rowId == rowId)&&(identical(other.exerciseId, exerciseId) || other.exerciseId == exerciseId)&&(identical(other.setNo, setNo) || other.setNo == setNo)&&(identical(other.kg, kg) || other.kg == kg)&&(identical(other.reps, reps) || other.reps == reps)&&(identical(other.seconds, seconds) || other.seconds == seconds)&&(identical(other.isPr, isPr) || other.isPr == isPr));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,rowId,exerciseId,setNo,kg,reps,seconds);
+int get hashCode => Object.hash(runtimeType,id,rowId,exerciseId,setNo,kg,reps,seconds,isPr);
 
 @override
 String toString() {
-  return 'LoggedSet(id: $id, rowId: $rowId, exerciseId: $exerciseId, setNo: $setNo, kg: $kg, reps: $reps, seconds: $seconds)';
+  return 'LoggedSet(id: $id, rowId: $rowId, exerciseId: $exerciseId, setNo: $setNo, kg: $kg, reps: $reps, seconds: $seconds, isPr: $isPr)';
 }
 
 
@@ -333,7 +334,7 @@ abstract mixin class $LoggedSetCopyWith<$Res>  {
   factory $LoggedSetCopyWith(LoggedSet value, $Res Function(LoggedSet) _then) = _$LoggedSetCopyWithImpl;
 @useResult
 $Res call({
- String id, String rowId, String exerciseId, int setNo, double kg, int? reps, int? seconds
+ String id, String rowId, String exerciseId, int setNo, double kg, int? reps, int? seconds, bool isPr
 });
 
 
@@ -350,7 +351,7 @@ class _$LoggedSetCopyWithImpl<$Res>
 
 /// Create a copy of LoggedSet
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? rowId = null,Object? exerciseId = null,Object? setNo = null,Object? kg = null,Object? reps = freezed,Object? seconds = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? rowId = null,Object? exerciseId = null,Object? setNo = null,Object? kg = null,Object? reps = freezed,Object? seconds = freezed,Object? isPr = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,rowId: null == rowId ? _self.rowId : rowId // ignore: cast_nullable_to_non_nullable
@@ -359,7 +360,8 @@ as String,setNo: null == setNo ? _self.setNo : setNo // ignore: cast_nullable_to
 as int,kg: null == kg ? _self.kg : kg // ignore: cast_nullable_to_non_nullable
 as double,reps: freezed == reps ? _self.reps : reps // ignore: cast_nullable_to_non_nullable
 as int?,seconds: freezed == seconds ? _self.seconds : seconds // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,isPr: null == isPr ? _self.isPr : isPr // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -444,10 +446,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds,  bool isPr)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoggedSet() when $default != null:
-return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds);case _:
+return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds,_that.isPr);case _:
   return orElse();
 
 }
@@ -465,10 +467,10 @@ return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds,  bool isPr)  $default,) {final _that = this;
 switch (_that) {
 case _LoggedSet():
-return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds);case _:
+return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds,_that.isPr);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -485,10 +487,10 @@ return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String rowId,  String exerciseId,  int setNo,  double kg,  int? reps,  int? seconds,  bool isPr)?  $default,) {final _that = this;
 switch (_that) {
 case _LoggedSet() when $default != null:
-return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds);case _:
+return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that.reps,_that.seconds,_that.isPr);case _:
   return null;
 
 }
@@ -500,7 +502,7 @@ return $default(_that.id,_that.rowId,_that.exerciseId,_that.setNo,_that.kg,_that
 
 
 class _LoggedSet implements LoggedSet {
-  const _LoggedSet({required this.id, required this.rowId, required this.exerciseId, required this.setNo, required this.kg, this.reps, this.seconds});
+  const _LoggedSet({required this.id, required this.rowId, required this.exerciseId, required this.setNo, required this.kg, this.reps, this.seconds, this.isPr = false});
   
 
 @override final  String id;
@@ -512,6 +514,8 @@ class _LoggedSet implements LoggedSet {
 @override final  double kg;
 @override final  int? reps;
 @override final  int? seconds;
+// LOG-02: stored at Finish; worked out on screen while in progress.
+@override@JsonKey() final  bool isPr;
 
 /// Create a copy of LoggedSet
 /// with the given fields replaced by the non-null parameter values.
@@ -523,16 +527,16 @@ _$LoggedSetCopyWith<_LoggedSet> get copyWith => __$LoggedSetCopyWithImpl<_Logged
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoggedSet&&(identical(other.id, id) || other.id == id)&&(identical(other.rowId, rowId) || other.rowId == rowId)&&(identical(other.exerciseId, exerciseId) || other.exerciseId == exerciseId)&&(identical(other.setNo, setNo) || other.setNo == setNo)&&(identical(other.kg, kg) || other.kg == kg)&&(identical(other.reps, reps) || other.reps == reps)&&(identical(other.seconds, seconds) || other.seconds == seconds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoggedSet&&(identical(other.id, id) || other.id == id)&&(identical(other.rowId, rowId) || other.rowId == rowId)&&(identical(other.exerciseId, exerciseId) || other.exerciseId == exerciseId)&&(identical(other.setNo, setNo) || other.setNo == setNo)&&(identical(other.kg, kg) || other.kg == kg)&&(identical(other.reps, reps) || other.reps == reps)&&(identical(other.seconds, seconds) || other.seconds == seconds)&&(identical(other.isPr, isPr) || other.isPr == isPr));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,rowId,exerciseId,setNo,kg,reps,seconds);
+int get hashCode => Object.hash(runtimeType,id,rowId,exerciseId,setNo,kg,reps,seconds,isPr);
 
 @override
 String toString() {
-  return 'LoggedSet(id: $id, rowId: $rowId, exerciseId: $exerciseId, setNo: $setNo, kg: $kg, reps: $reps, seconds: $seconds)';
+  return 'LoggedSet(id: $id, rowId: $rowId, exerciseId: $exerciseId, setNo: $setNo, kg: $kg, reps: $reps, seconds: $seconds, isPr: $isPr)';
 }
 
 
@@ -543,7 +547,7 @@ abstract mixin class _$LoggedSetCopyWith<$Res> implements $LoggedSetCopyWith<$Re
   factory _$LoggedSetCopyWith(_LoggedSet value, $Res Function(_LoggedSet) _then) = __$LoggedSetCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String rowId, String exerciseId, int setNo, double kg, int? reps, int? seconds
+ String id, String rowId, String exerciseId, int setNo, double kg, int? reps, int? seconds, bool isPr
 });
 
 
@@ -560,7 +564,7 @@ class __$LoggedSetCopyWithImpl<$Res>
 
 /// Create a copy of LoggedSet
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? rowId = null,Object? exerciseId = null,Object? setNo = null,Object? kg = null,Object? reps = freezed,Object? seconds = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? rowId = null,Object? exerciseId = null,Object? setNo = null,Object? kg = null,Object? reps = freezed,Object? seconds = freezed,Object? isPr = null,}) {
   return _then(_LoggedSet(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,rowId: null == rowId ? _self.rowId : rowId // ignore: cast_nullable_to_non_nullable
@@ -569,7 +573,8 @@ as String,setNo: null == setNo ? _self.setNo : setNo // ignore: cast_nullable_to
 as int,kg: null == kg ? _self.kg : kg // ignore: cast_nullable_to_non_nullable
 as double,reps: freezed == reps ? _self.reps : reps // ignore: cast_nullable_to_non_nullable
 as int?,seconds: freezed == seconds ? _self.seconds : seconds // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,isPr: null == isPr ? _self.isPr : isPr // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

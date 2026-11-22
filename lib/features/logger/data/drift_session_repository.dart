@@ -7,6 +7,7 @@ import '../../../data/sync/sync_state.dart';
 import '../../../data/sync/synced_writer.dart';
 import '../../schedule/domain/day_record_repository.dart';
 import '../../workout/domain/workout_template.dart';
+import '../domain/ghost.dart';
 import '../domain/session_repository.dart';
 import '../domain/workout_session.dart';
 
@@ -63,6 +64,7 @@ class DriftSessionRepository implements SessionRepository {
     kg: r.kg,
     reps: r.reps,
     seconds: r.seconds,
+    isPr: r.isPr,
   );
 
   SimpleSelectStatement<$WorkoutSessionsTable, SessionRow> _inProgress() =>
@@ -73,9 +75,11 @@ class DriftSessionRepository implements SessionRepository {
   Future<WorkoutSession?> _readActive() async {
     final r = await _inProgress().getSingleOrNull();
     if (r == null) return null;
-    final sets = await (_db.select(
-      _db.sessionSets,
-    )..where((s) => s.sessionId.equals(r.id))).get();
+    final sets =
+        await (_db.select(_db.sessionSets)
+              ..where((s) => s.sessionId.equals(r.id))
+              ..orderBy([(s) => OrderingTerm.asc(s.loggedAt)]))
+            .get();
     return WorkoutSession(
       id: r.id,
       name: r.name,
@@ -201,6 +205,24 @@ class DriftSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<List<LoggedSet>> history(String exerciseId) async {
+    final q =
+        _db.select(_db.sessionSets).join([
+            innerJoin(
+              _db.workoutSessions,
+              _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+            ),
+          ])
+          ..where(
+            _db.sessionSets.exerciseId.equals(exerciseId) &
+                _db.workoutSessions.endedAt.isNotNull() &
+                _db.workoutSessions.deletedAt.isNull(),
+          )
+          ..orderBy([OrderingTerm.asc(_db.sessionSets.loggedAt)]);
+    return [for (final r in await q.get()) _set(r.readTable(_db.sessionSets))];
+  }
+
+  @override
   Future<void> discard(String sessionId) => _db.transaction(() async {
     await (_db.delete(
       _db.sessionSets,
@@ -222,6 +244,22 @@ class DriftSessionRepository implements SessionRepository {
             .map((r) => r.read(_db.sessionSets.id.count()))
             .getSingle();
     if ((count ?? 0) == 0) throw NoSetsLogged();
+    final sets =
+        await (_db.select(_db.sessionSets)
+              ..where((r) => r.sessionId.equals(sessionId))
+              ..orderBy([(r) => OrderingTerm.asc(r.loggedAt)]))
+            .get();
+    for (final exerciseId in {for (final r in sets) r.exerciseId}) {
+      final mine = [
+        for (final r in sets)
+          if (r.exerciseId == exerciseId) _set(r),
+      ];
+      final prs = prSets(mine, await history(exerciseId));
+      if (prs.isEmpty) continue;
+      await (_db.update(_db.sessionSets)..where((r) => r.id.isIn(prs))).write(
+        const SessionSetsCompanion(isPr: Value(true)),
+      );
+    }
     await _writer.run(
       table: _table,
       entity: _entity,

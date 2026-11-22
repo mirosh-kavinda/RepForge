@@ -27,9 +27,13 @@ abstract interface class SessionRepository {
   // The last finished session's sets of [exerciseId] by set number (AC2).
   Future<Map<int, LoggedSet>> lastSets(String exerciseId);
 
+  // LOG-02 AC6: every finished set of [exerciseId], oldest first.
+  Future<List<LoggedSet>> history(String exerciseId);
+
   Future<void> discard(String sessionId);
 
-  // AC9: ends it, queues it once and marks its day done, together. Throws
+  // AC9: ends it, stores each set's PR flag (LOG-02), queues it once and marks
+  // its day done, together. Throws
   // [NoSetsLogged] and writes nothing when no set was logged.
   Future<void> finish(String sessionId);
 }

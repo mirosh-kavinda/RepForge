@@ -14,6 +14,7 @@ import '../../library/data/providers.dart';
 import '../../library/presentation/exercise_picker_screen.dart';
 import '../../onboarding/data/providers.dart';
 import '../data/providers.dart';
+import '../domain/ghost.dart';
 import '../domain/logger_rules.dart';
 import '../domain/session_repository.dart';
 import '../domain/workout_session.dart';
@@ -225,6 +226,16 @@ class _ExerciseCard extends ConsumerWidget {
     final last = ref.watch(lastSetsProvider(row.exerciseId)).value ?? const {};
     final logged = session.setsOf(row.id);
     final count = setCount(row, logged);
+    // LOG-02: worked out on screen, so edits and deletes re-evaluate (AC7).
+    final goals = targets(row, last, units);
+    final prs = prSets([
+      for (final x in session.sets)
+        if (x.exerciseId == row.exerciseId) x,
+    ], ref.watch(exerciseHistoryProvider(row.exerciseId)).value ?? const []);
+    SetValues? ghostOf(int n) => switch (last[n]) {
+      final g? => (kg: g.kg, reps: g.reps, seconds: g.seconds),
+      null => null,
+    };
 
     return Padding(
       padding: const EdgeInsets.only(bottom: RfSpace.s16),
@@ -266,7 +277,10 @@ class _ExerciseCard extends ConsumerWidget {
                   setNo: n,
                   units: units,
                   logged: done.isEmpty ? null : done.first,
-                  prefill: prefill(row, n, loggedInRow: logged, lastTime: last),
+                  ghost: ghostOf(n),
+                  target: goals[n],
+                  isPr: done.isNotEmpty && prs.contains(done.first.id),
+                  prefill: prefill(row, n, loggedInRow: logged, targets: goals),
                   onLog: (v) => guard(
                     () => repo.logSet(
                       session.id,

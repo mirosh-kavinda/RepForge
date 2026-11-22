@@ -46,12 +46,15 @@ Exercise ex(String id, Equipment e) => Exercise(
 
 void main() {
   group('LOG-01 prefill', () {
-    test('AC2 the same set number from last time comes first', () {
+    test('LOG-02 AC5 the suggested target for the set comes first', () {
       final v = prefill(
         bench,
         2,
         loggedInRow: [s(1, 70, 8)],
-        lastTime: {1: s(1, 65, 9), 2: s(2, 67.5, 8)},
+        targets: {
+          1: (kg: 65.0, reps: 9, seconds: null),
+          2: (kg: 67.5, reps: 8, seconds: null),
+        },
       );
       expect(v, (kg: 67.5, reps: 8, seconds: null));
     });
@@ -61,18 +64,18 @@ void main() {
         bench,
         4,
         loggedInRow: [s(1, 70, 8), s(3, 72.5, 6)],
-        lastTime: {1: s(1, 65, 9)},
+        targets: {1: (kg: 65.0, reps: 9, seconds: null)},
       );
       expect(v, (kg: 72.5, reps: 6, seconds: null));
     });
 
     test('AC2 no history: template target and the bottom of the range', () {
-      expect(prefill(bench, 1, loggedInRow: const [], lastTime: const {}), (
+      expect(prefill(bench, 1, loggedInRow: const [], targets: const {}), (
         kg: 60.0,
         reps: 6,
         seconds: null,
       ));
-      expect(prefill(plank, 1, loggedInRow: const [], lastTime: const {}), (
+      expect(prefill(plank, 1, loggedInRow: const [], targets: const {}), (
         kg: 0.0,
         reps: null,
         seconds: 40,
@@ -82,7 +85,7 @@ void main() {
           bench.copyWith(targetKg: null),
           1,
           loggedInRow: const [],
-          lastTime: const {},
+          targets: const {},
         ).kg,
         0,
       );

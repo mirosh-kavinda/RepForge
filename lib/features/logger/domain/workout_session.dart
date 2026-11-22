@@ -35,6 +35,8 @@ abstract class LoggedSet with _$LoggedSet {
     required double kg,
     int? reps,
     int? seconds,
+    // LOG-02: stored at Finish; worked out on screen while in progress.
+    @Default(false) bool isPr,
   }) = _LoggedSet;
 }
 

@@ -131,6 +131,8 @@ class SessionSets extends Table {
   RealColumn get kg => real()();
   IntColumn get reps => integer().nullable()();
   IntColumn get seconds => integer().nullable()();
+  // LOG-02: set at Finish.
+  BoolColumn get isPr => boolean().withDefault(const Constant(false))();
   DateTimeColumn get loggedAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
@@ -159,7 +161,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -204,6 +206,8 @@ class AppDatabase extends _$AppDatabase {
           'ON session_sets (exercise_id)',
         );
       }
+      // v9 created session_sets with is_pr already.
+      if (from == 9) await m.addColumn(sessionSets, sessionSets.isPr);
     },
   );
 

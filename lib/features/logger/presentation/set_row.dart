@@ -5,6 +5,7 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../../app/widgets/rf_chip.dart';
 import '../../../app/widgets/rf_stepper.dart';
 import '../../../app/widgets/rf_tappable.dart';
 import '../../../core/metrics/units.dart';
@@ -36,6 +37,18 @@ String setText(
   if (v.reps case final r?) l10n.loggerReps1(r),
   if (v.seconds case final s?) l10n.loggerSeconds1(s),
 ].join(' · ');
+
+// LOG-02 AC1, AC5: "60 kg × 8", "Bodyweight × 12" or "40 s".
+String shortSetText(
+  AppLocalizations l10n,
+  SessionExercise row,
+  SetValues v,
+  UnitSystem units,
+) {
+  if (v.seconds case final s?) return l10n.loggerSeconds1(s);
+  final w = weightText(l10n, v.kg, units, bodyweight: row.bodyweight);
+  return v.reps == null ? w : l10n.loggerTimes(w, v.reps!);
+}
 
 // Weight, then reps or seconds, as steppers in the user's unit.
 class SetSteppers extends StatelessWidget {
@@ -120,6 +133,9 @@ class SetRow extends StatefulWidget {
     required this.onLog,
     required this.onEdit,
     this.logged,
+    this.ghost,
+    this.target,
+    this.isPr = false,
     super.key,
   });
 
@@ -128,6 +144,10 @@ class SetRow extends StatefulWidget {
   final SetValues prefill;
   final UnitSystem units;
   final LoggedSet? logged;
+  // LOG-02: last session's same set and today's suggested target.
+  final SetValues? ghost;
+  final SetValues? target;
+  final bool isPr;
   final Future<void> Function(SetValues values) onLog;
   final VoidCallback onEdit;
 
@@ -154,6 +174,18 @@ class _SetRowState extends State<SetRow> {
     final c = RfColors.of(context);
     final t = RfTextStyles.of(context);
     final logged = widget.logged;
+    final ghost = widget.ghost == null
+        ? null
+        : l10n.loggerLast(
+            shortSetText(l10n, widget.row, widget.ghost!, widget.units),
+          );
+    final target = widget.target == null
+        ? null
+        : l10n.loggerTarget(
+            shortSetText(l10n, widget.row, widget.target!, widget.units),
+          );
+    Widget muted(String text) =>
+        Text(text, style: t.label.copyWith(color: c.textMuted));
 
     if (logged != null) {
       final values = (
@@ -170,6 +202,8 @@ class _SetRowState extends State<SetRow> {
           l10n.loggerSet(widget.setNo),
           text,
           l10n.homeDone,
+          if (widget.isPr) l10n.loggerPr,
+          ?ghost,
         ].join(', '),
         onTap: widget.onEdit,
         excludeSemantics: true,
@@ -198,6 +232,9 @@ class _SetRowState extends State<SetRow> {
                     Text(l10n.homeDone, style: t.labelStrong),
                   ],
                 ),
+                if (widget.isPr)
+                  RfChip.status(label: l10n.loggerPr, role: RfRole.action),
+                ?(ghost == null ? null : muted(ghost)),
               ],
             ),
           ),
@@ -215,6 +252,16 @@ class _SetRowState extends State<SetRow> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(l10n.loggerSet(widget.setNo), style: t.labelStrong),
+          if (ghost != null || target != null) ...[
+            const SizedBox(height: RfSpace.s4),
+            Wrap(
+              spacing: RfSpace.s12,
+              children: [
+                ?(ghost == null ? null : muted(ghost)),
+                ?(target == null ? null : muted(target)),
+              ],
+            ),
+          ],
           const SizedBox(height: RfSpace.s8),
           SetSteppers(
             row: widget.row,

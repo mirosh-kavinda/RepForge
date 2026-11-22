@@ -19,6 +19,11 @@ SessionRepository sessionRepository(Ref ref) => DriftSessionRepository(
 Stream<WorkoutSession?> activeSession(Ref ref) =>
     ref.watch(sessionRepositoryProvider).watchActive();
 
+// LOG-02 AC6: every finished set of one exercise, for PRs.
+@riverpod
+Future<List<LoggedSet>> exerciseHistory(Ref ref, String exerciseId) =>
+    ref.watch(sessionRepositoryProvider).history(exerciseId);
+
 // LOG-01 AC2: last finished session's sets of one exercise.
 @riverpod
 Future<Map<int, LoggedSet>> lastSets(Ref ref, String exerciseId) =>

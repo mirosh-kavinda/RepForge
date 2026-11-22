@@ -5140,6 +5140,19 @@ class $SessionSetsTable extends SessionSets
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isPrMeta = const VerificationMeta('isPr');
+  @override
+  late final GeneratedColumn<bool> isPr = GeneratedColumn<bool>(
+    'is_pr',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pr" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _loggedAtMeta = const VerificationMeta(
     'loggedAt',
   );
@@ -5172,6 +5185,7 @@ class $SessionSetsTable extends SessionSets
     kg,
     reps,
     seconds,
+    isPr,
     loggedAt,
     updatedAt,
   ];
@@ -5241,6 +5255,12 @@ class $SessionSetsTable extends SessionSets
         seconds.isAcceptableOrUnknown(data['seconds']!, _secondsMeta),
       );
     }
+    if (data.containsKey('is_pr')) {
+      context.handle(
+        _isPrMeta,
+        isPr.isAcceptableOrUnknown(data['is_pr']!, _isPrMeta),
+      );
+    }
     if (data.containsKey('logged_at')) {
       context.handle(
         _loggedAtMeta,
@@ -5298,6 +5318,10 @@ class $SessionSetsTable extends SessionSets
         DriftSqlType.int,
         data['${effectivePrefix}seconds'],
       ),
+      isPr: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pr'],
+      )!,
       loggedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}logged_at'],
@@ -5324,6 +5348,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
   final double kg;
   final int? reps;
   final int? seconds;
+  final bool isPr;
   final DateTime loggedAt;
   final DateTime updatedAt;
   const SessionSetRow({
@@ -5335,6 +5360,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
     required this.kg,
     this.reps,
     this.seconds,
+    required this.isPr,
     required this.loggedAt,
     required this.updatedAt,
   });
@@ -5353,6 +5379,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
     if (!nullToAbsent || seconds != null) {
       map['seconds'] = Variable<int>(seconds);
     }
+    map['is_pr'] = Variable<bool>(isPr);
     map['logged_at'] = Variable<DateTime>(loggedAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -5370,6 +5397,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
       seconds: seconds == null && nullToAbsent
           ? const Value.absent()
           : Value(seconds),
+      isPr: Value(isPr),
       loggedAt: Value(loggedAt),
       updatedAt: Value(updatedAt),
     );
@@ -5389,6 +5417,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
       kg: serializer.fromJson<double>(json['kg']),
       reps: serializer.fromJson<int?>(json['reps']),
       seconds: serializer.fromJson<int?>(json['seconds']),
+      isPr: serializer.fromJson<bool>(json['isPr']),
       loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -5405,6 +5434,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
       'kg': serializer.toJson<double>(kg),
       'reps': serializer.toJson<int?>(reps),
       'seconds': serializer.toJson<int?>(seconds),
+      'isPr': serializer.toJson<bool>(isPr),
       'loggedAt': serializer.toJson<DateTime>(loggedAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -5419,6 +5449,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
     double? kg,
     Value<int?> reps = const Value.absent(),
     Value<int?> seconds = const Value.absent(),
+    bool? isPr,
     DateTime? loggedAt,
     DateTime? updatedAt,
   }) => SessionSetRow(
@@ -5430,6 +5461,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
     kg: kg ?? this.kg,
     reps: reps.present ? reps.value : this.reps,
     seconds: seconds.present ? seconds.value : this.seconds,
+    isPr: isPr ?? this.isPr,
     loggedAt: loggedAt ?? this.loggedAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -5445,6 +5477,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
       kg: data.kg.present ? data.kg.value : this.kg,
       reps: data.reps.present ? data.reps.value : this.reps,
       seconds: data.seconds.present ? data.seconds.value : this.seconds,
+      isPr: data.isPr.present ? data.isPr.value : this.isPr,
       loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -5461,6 +5494,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
           ..write('kg: $kg, ')
           ..write('reps: $reps, ')
           ..write('seconds: $seconds, ')
+          ..write('isPr: $isPr, ')
           ..write('loggedAt: $loggedAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -5477,6 +5511,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
     kg,
     reps,
     seconds,
+    isPr,
     loggedAt,
     updatedAt,
   );
@@ -5492,6 +5527,7 @@ class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
           other.kg == this.kg &&
           other.reps == this.reps &&
           other.seconds == this.seconds &&
+          other.isPr == this.isPr &&
           other.loggedAt == this.loggedAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -5505,6 +5541,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
   final Value<double> kg;
   final Value<int?> reps;
   final Value<int?> seconds;
+  final Value<bool> isPr;
   final Value<DateTime> loggedAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -5517,6 +5554,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
     this.kg = const Value.absent(),
     this.reps = const Value.absent(),
     this.seconds = const Value.absent(),
+    this.isPr = const Value.absent(),
     this.loggedAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -5530,6 +5568,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
     required double kg,
     this.reps = const Value.absent(),
     this.seconds = const Value.absent(),
+    this.isPr = const Value.absent(),
     required DateTime loggedAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -5550,6 +5589,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
     Expression<double>? kg,
     Expression<int>? reps,
     Expression<int>? seconds,
+    Expression<bool>? isPr,
     Expression<DateTime>? loggedAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -5563,6 +5603,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
       if (kg != null) 'kg': kg,
       if (reps != null) 'reps': reps,
       if (seconds != null) 'seconds': seconds,
+      if (isPr != null) 'is_pr': isPr,
       if (loggedAt != null) 'logged_at': loggedAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -5578,6 +5619,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
     Value<double>? kg,
     Value<int?>? reps,
     Value<int?>? seconds,
+    Value<bool>? isPr,
     Value<DateTime>? loggedAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -5591,6 +5633,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
       kg: kg ?? this.kg,
       reps: reps ?? this.reps,
       seconds: seconds ?? this.seconds,
+      isPr: isPr ?? this.isPr,
       loggedAt: loggedAt ?? this.loggedAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -5624,6 +5667,9 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
     if (seconds.present) {
       map['seconds'] = Variable<int>(seconds.value);
     }
+    if (isPr.present) {
+      map['is_pr'] = Variable<bool>(isPr.value);
+    }
     if (loggedAt.present) {
       map['logged_at'] = Variable<DateTime>(loggedAt.value);
     }
@@ -5647,6 +5693,7 @@ class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
           ..write('kg: $kg, ')
           ..write('reps: $reps, ')
           ..write('seconds: $seconds, ')
+          ..write('isPr: $isPr, ')
           ..write('loggedAt: $loggedAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -8529,6 +8576,7 @@ typedef $$SessionSetsTableCreateCompanionBuilder =
       required double kg,
       Value<int?> reps,
       Value<int?> seconds,
+      Value<bool> isPr,
       required DateTime loggedAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -8543,6 +8591,7 @@ typedef $$SessionSetsTableUpdateCompanionBuilder =
       Value<double> kg,
       Value<int?> reps,
       Value<int?> seconds,
+      Value<bool> isPr,
       Value<DateTime> loggedAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -8594,6 +8643,11 @@ class $$SessionSetsTableFilterComposer
 
   ColumnFilters<int> get seconds => $composableBuilder(
     column: $table.seconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPr => $composableBuilder(
+    column: $table.isPr,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8657,6 +8711,11 @@ class $$SessionSetsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isPr => $composableBuilder(
+    column: $table.isPr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get loggedAt => $composableBuilder(
     column: $table.loggedAt,
     builder: (column) => ColumnOrderings(column),
@@ -8702,6 +8761,9 @@ class $$SessionSetsTableAnnotationComposer
 
   GeneratedColumn<int> get seconds =>
       $composableBuilder(column: $table.seconds, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPr =>
+      $composableBuilder(column: $table.isPr, builder: (column) => column);
 
   GeneratedColumn<DateTime> get loggedAt =>
       $composableBuilder(column: $table.loggedAt, builder: (column) => column);
@@ -8749,6 +8811,7 @@ class $$SessionSetsTableTableManager
                 Value<double> kg = const Value.absent(),
                 Value<int?> reps = const Value.absent(),
                 Value<int?> seconds = const Value.absent(),
+                Value<bool> isPr = const Value.absent(),
                 Value<DateTime> loggedAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -8761,6 +8824,7 @@ class $$SessionSetsTableTableManager
                 kg: kg,
                 reps: reps,
                 seconds: seconds,
+                isPr: isPr,
                 loggedAt: loggedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -8775,6 +8839,7 @@ class $$SessionSetsTableTableManager
                 required double kg,
                 Value<int?> reps = const Value.absent(),
                 Value<int?> seconds = const Value.absent(),
+                Value<bool> isPr = const Value.absent(),
                 required DateTime loggedAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -8787,6 +8852,7 @@ class $$SessionSetsTableTableManager
                 kg: kg,
                 reps: reps,
                 seconds: seconds,
+                isPr: isPr,
                 loggedAt: loggedAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
