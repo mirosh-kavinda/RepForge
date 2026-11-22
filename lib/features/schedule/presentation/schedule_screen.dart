@@ -15,6 +15,7 @@ import '../../workout/domain/workout_template.dart';
 import '../data/providers.dart';
 import '../domain/cycle.dart';
 import '../domain/cycle_rules.dart' as rules;
+import '../domain/day_record.dart';
 import '../domain/starter_plans.dart';
 import 'cycle_day_tile.dart';
 import 'starter_plan_cards.dart';
@@ -127,6 +128,32 @@ class _ActiveCycleCard extends ConsumerWidget {
     final now = rolled?.cycle.id == cycle.id ? rolled!.today : null;
     final weekdays = cycle.mode == CycleMode.weekdays;
     final week = WeekdayLabels.of(context);
+    String name(String id) => workouts[id]?.name ?? l10n.cycleWorkoutDeleted;
+    // SCH-04 AC10: today's action in words, worded as on Home; a swapped or
+    // moved-in workout is today's title.
+    final record = now?.record;
+    final todayRow = now == null ? null : cycle.days[now.index];
+    final note = switch (record) {
+      null => null,
+      DayRecord(status: DayStatus.skipped) => l10n.homeSkipped,
+      DayRecord(status: DayStatus.unplannedRest) => l10n.dayActionRest,
+      DayRecord(status: DayStatus.moved, :final linkedDate?) =>
+        l10n.homeMovedTo(week.full(linkedDate.weekday - 1)),
+      DayRecord(workoutId: _?, linkedDate: final from?) => l10n.homeMovedFrom(
+        week.full(from.weekday - 1),
+      ),
+      DayRecord(workoutId: _?) when todayRow!.isRest => l10n.homeExtraSession,
+      DayRecord(workoutId: _?) => l10n.homeSwappedFrom(
+        name(todayRow!.workoutId!),
+      ),
+      _ => null,
+    };
+    final todayShown =
+        record?.workoutId != null &&
+            (record!.status == DayStatus.planned ||
+                record.status == DayStatus.done)
+        ? todayRow!.copyWith(workoutId: record.workoutId)
+        : todayRow;
     // Weekdays rows are stored Monday first and listed from the locale's
     // first day of the week.
     final order = [
@@ -170,13 +197,14 @@ class _ActiveCycleCard extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: RfSpace.s8),
               child: CycleDayTile(
                 number: i + 1,
-                day: cycle.days[i],
+                day: i == now?.index ? todayShown! : cycle.days[i],
                 workouts: workouts,
                 weekday: weekdays
                     ? (short: week.short(i), full: week.full(i))
                     : null,
                 isToday: i == now?.index,
                 isDone: i == now?.index && now!.doneToday,
+                note: i == now?.index ? note : null,
               ),
             ),
         ],

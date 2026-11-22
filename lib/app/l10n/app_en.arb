@@ -1476,5 +1476,109 @@
         "type": "String"
       }
     }
+  },
+  "homeDayActions": "Day actions",
+  "@homeDayActions": {
+    "description": "Home button that opens the day actions sheet."
+  },
+  "dayActionsTitle": "Change today",
+  "@dayActionsTitle": {
+    "description": "Day actions sheet title."
+  },
+  "dayActionSwap": "Swap workout",
+  "@dayActionSwap": {
+    "description": "Day action."
+  },
+  "dayActionSwapHint": "Do another workout today. Your cycle stays the same.",
+  "@dayActionSwapHint": {
+    "description": "Day action hint."
+  },
+  "dayActionSkip": "Skip",
+  "@dayActionSkip": {
+    "description": "Day action."
+  },
+  "dayActionSkipHintRolling": "Drop today's workout. Tomorrow is the next day.",
+  "@dayActionSkipHintRolling": {
+    "description": "Day action hint, rolling cycle."
+  },
+  "dayActionSkipHintWeekdays": "Drop today's workout. Not counted as missed.",
+  "@dayActionSkipHintWeekdays": {
+    "description": "Day action hint, weekday cycle."
+  },
+  "dayActionRest": "Unplanned rest",
+  "@dayActionRest": {
+    "description": "Day action."
+  },
+  "dayActionRestHintRolling": "Rest today. The same workout waits for tomorrow.",
+  "@dayActionRestHintRolling": {
+    "description": "Day action hint, rolling cycle."
+  },
+  "dayActionRestHintWeekdays": "Rest today. Not counted as missed.",
+  "@dayActionRestHintWeekdays": {
+    "description": "Day action hint, weekday cycle."
+  },
+  "dayActionMove": "Move to another day",
+  "@dayActionMove": {
+    "description": "Day action, weekday cycles."
+  },
+  "dayActionMoveHint": "Do today's workout later this week.",
+  "@dayActionMoveHint": {
+    "description": "Day action hint."
+  },
+  "dayActionTrainToday": "Train today",
+  "@dayActionTrainToday": {
+    "description": "Rest-day action."
+  },
+  "dayActionTrainTodayHint": "Do a workout on this rest day.",
+  "@dayActionTrainTodayHint": {
+    "description": "Rest-day action hint."
+  },
+  "dayMoveTitle": "Move {name} to",
+  "@dayMoveTitle": {
+    "description": "Move target sheet title.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSwappedFrom": "Swapped from {name}",
+  "@homeSwappedFrom": {
+    "description": "Home line under a swapped workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMovedFrom": "Moved from {weekday}",
+  "@homeMovedFrom": {
+    "description": "Home line under a moved-in workout.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMovedTo": "Moved to {weekday}",
+  "@homeMovedTo": {
+    "description": "Home line on a day whose workout was moved.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSkipped": "Skipped",
+  "@homeSkipped": {
+    "description": "Home status when today was skipped."
+  },
+  "homeExtraSession": "Extra session on a rest day",
+  "@homeExtraSession": {
+    "description": "Home line for Train today."
+  },
+  "swapNoOthers": "No other workouts yet. Build one in My workouts.",
+  "@swapNoOthers": {
+    "description": "Swap with no other workouts."
   }
 }

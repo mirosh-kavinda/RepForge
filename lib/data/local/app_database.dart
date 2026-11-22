@@ -88,6 +88,10 @@ class ScheduleDays extends Table with SyncedTable {
   TextColumn get dayId => text()();
   IntColumn get dayIndex => integer()();
   TextColumn get status => text()();
+  // SCH-04: the workout for the date when it is not the row's own, and the
+  // other date of a Move.
+  TextColumn get workoutId => text().nullable()();
+  DateTimeColumn get linkedDate => dateTime().nullable()();
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
@@ -114,7 +118,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -136,6 +140,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) await m.createTable(scheduleDays);
       // v4 created cycles with mode already.
       if (from >= 4 && from < 6) await m.addColumn(cycles, cycles.mode);
+      // v5 created schedule_days with these already.
+      if (from >= 5 && from < 7) {
+        await m.addColumn(scheduleDays, scheduleDays.workoutId);
+        await m.addColumn(scheduleDays, scheduleDays.linkedDate);
+      }
     },
   );
 

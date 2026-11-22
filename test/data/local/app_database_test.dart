@@ -164,6 +164,12 @@ void main() {
         final v5 = AppDatabase(NativeDatabase(file));
         await v5.customStatement('ALTER TABLE cycles DROP COLUMN mode');
         await v5.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN workout_id',
+        );
+        await v5.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN linked_date',
+        );
+        await v5.customStatement(
           'INSERT INTO cycles (id, name, days, is_active, start_date, '
           "start_day_index, updated_at, sync_state) VALUES ('c1', 'PPL', '[]', "
           "1, '2026-11-23T00:00:00.000Z', 0, '2026-11-23T00:00:00.000Z', "
@@ -180,9 +186,44 @@ void main() {
     );
   });
 
+  group('SCH-04 schema v7', () {
+    test(
+      'v6 -> v7 adds workout_id and linked_date; old rows read null',
+      () async {
+        final dir = await Directory.systemTemp.createTemp('rf_migration');
+        addTearDown(() => dir.delete(recursive: true));
+        final file = File('${dir.path}/app.db');
+
+        final v6 = AppDatabase(NativeDatabase(file));
+        await v6.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN workout_id',
+        );
+        await v6.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN linked_date',
+        );
+        await v6.customStatement(
+          'INSERT INTO schedule_days (id, cycle_id, date, day_id, day_index, '
+          "status, updated_at, sync_state) VALUES ('r1', 'c1', "
+          "'2026-11-23T00:00:00.000Z', 'd1', 0, 'done', "
+          "'2026-11-23T00:00:00.000Z', 'pending')",
+        );
+        await v6.customStatement('PRAGMA user_version = 6');
+        await v6.close();
+
+        final v7 = AppDatabase(NativeDatabase(file));
+        addTearDown(v7.close);
+        final row = await v7.select(v7.scheduleDays).getSingle();
+        expect(
+          (row.status, row.workoutId, row.linkedDate),
+          ('done', null, null),
+        );
+      },
+    );
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 6);
+      expect(db.schemaVersion, 7);
       final names =
           (await db
                   .customSelect(

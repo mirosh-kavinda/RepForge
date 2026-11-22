@@ -12,6 +12,7 @@ Future<String?> pickWorkout(
   BuildContext context,
   List<WorkoutTemplate> workouts, {
   String? current,
+  String? emptyText,
 }) {
   final l10n = AppLocalizations.of(context);
   return showModalBottomSheet<String>(
@@ -37,7 +38,7 @@ Future<String?> pickWorkout(
               Padding(
                 padding: const EdgeInsets.all(RfSpace.s20),
                 child: Text(
-                  l10n.cycleNoWorkouts,
+                  emptyText ?? l10n.cycleNoWorkouts,
                   style: t.body.copyWith(color: c.textSecondary),
                 ),
               )

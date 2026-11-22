@@ -3734,6 +3734,28 @@ class $ScheduleDaysTable extends ScheduleDays
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _workoutIdMeta = const VerificationMeta(
+    'workoutId',
+  );
+  @override
+  late final GeneratedColumn<String> workoutId = GeneratedColumn<String>(
+    'workout_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linkedDateMeta = const VerificationMeta(
+    'linkedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> linkedDate = GeneratedColumn<DateTime>(
+    'linked_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3745,6 +3767,8 @@ class $ScheduleDaysTable extends ScheduleDays
     dayId,
     dayIndex,
     status,
+    workoutId,
+    linkedDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3815,6 +3839,18 @@ class $ScheduleDaysTable extends ScheduleDays
     } else if (isInserting) {
       context.missing(_statusMeta);
     }
+    if (data.containsKey('workout_id')) {
+      context.handle(
+        _workoutIdMeta,
+        workoutId.isAcceptableOrUnknown(data['workout_id']!, _workoutIdMeta),
+      );
+    }
+    if (data.containsKey('linked_date')) {
+      context.handle(
+        _linkedDateMeta,
+        linkedDate.isAcceptableOrUnknown(data['linked_date']!, _linkedDateMeta),
+      );
+    }
     return context;
   }
 
@@ -3866,6 +3902,14 @@ class $ScheduleDaysTable extends ScheduleDays
         DriftSqlType.string,
         data['${effectivePrefix}status'],
       )!,
+      workoutId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workout_id'],
+      ),
+      linkedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}linked_date'],
+      ),
     );
   }
 
@@ -3888,6 +3932,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
   final String dayId;
   final int dayIndex;
   final String status;
+  final String? workoutId;
+  final DateTime? linkedDate;
   const ScheduleDayRow({
     required this.id,
     required this.updatedAt,
@@ -3898,6 +3944,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
     required this.dayId,
     required this.dayIndex,
     required this.status,
+    this.workoutId,
+    this.linkedDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3917,6 +3965,12 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
     map['day_id'] = Variable<String>(dayId);
     map['day_index'] = Variable<int>(dayIndex);
     map['status'] = Variable<String>(status);
+    if (!nullToAbsent || workoutId != null) {
+      map['workout_id'] = Variable<String>(workoutId);
+    }
+    if (!nullToAbsent || linkedDate != null) {
+      map['linked_date'] = Variable<DateTime>(linkedDate);
+    }
     return map;
   }
 
@@ -3933,6 +3987,12 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
       dayId: Value(dayId),
       dayIndex: Value(dayIndex),
       status: Value(status),
+      workoutId: workoutId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(workoutId),
+      linkedDate: linkedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedDate),
     );
   }
 
@@ -3953,6 +4013,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
       dayId: serializer.fromJson<String>(json['dayId']),
       dayIndex: serializer.fromJson<int>(json['dayIndex']),
       status: serializer.fromJson<String>(json['status']),
+      workoutId: serializer.fromJson<String?>(json['workoutId']),
+      linkedDate: serializer.fromJson<DateTime?>(json['linkedDate']),
     );
   }
   @override
@@ -3970,6 +4032,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
       'dayId': serializer.toJson<String>(dayId),
       'dayIndex': serializer.toJson<int>(dayIndex),
       'status': serializer.toJson<String>(status),
+      'workoutId': serializer.toJson<String?>(workoutId),
+      'linkedDate': serializer.toJson<DateTime?>(linkedDate),
     };
   }
 
@@ -3983,6 +4047,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
     String? dayId,
     int? dayIndex,
     String? status,
+    Value<String?> workoutId = const Value.absent(),
+    Value<DateTime?> linkedDate = const Value.absent(),
   }) => ScheduleDayRow(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -3993,6 +4059,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
     dayId: dayId ?? this.dayId,
     dayIndex: dayIndex ?? this.dayIndex,
     status: status ?? this.status,
+    workoutId: workoutId.present ? workoutId.value : this.workoutId,
+    linkedDate: linkedDate.present ? linkedDate.value : this.linkedDate,
   );
   ScheduleDayRow copyWithCompanion(ScheduleDaysCompanion data) {
     return ScheduleDayRow(
@@ -4005,6 +4073,10 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
       dayId: data.dayId.present ? data.dayId.value : this.dayId,
       dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
       status: data.status.present ? data.status.value : this.status,
+      workoutId: data.workoutId.present ? data.workoutId.value : this.workoutId,
+      linkedDate: data.linkedDate.present
+          ? data.linkedDate.value
+          : this.linkedDate,
     );
   }
 
@@ -4019,7 +4091,9 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
           ..write('date: $date, ')
           ..write('dayId: $dayId, ')
           ..write('dayIndex: $dayIndex, ')
-          ..write('status: $status')
+          ..write('status: $status, ')
+          ..write('workoutId: $workoutId, ')
+          ..write('linkedDate: $linkedDate')
           ..write(')'))
         .toString();
   }
@@ -4035,6 +4109,8 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
     dayId,
     dayIndex,
     status,
+    workoutId,
+    linkedDate,
   );
   @override
   bool operator ==(Object other) =>
@@ -4048,7 +4124,9 @@ class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
           other.date == this.date &&
           other.dayId == this.dayId &&
           other.dayIndex == this.dayIndex &&
-          other.status == this.status);
+          other.status == this.status &&
+          other.workoutId == this.workoutId &&
+          other.linkedDate == this.linkedDate);
 }
 
 class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
@@ -4061,6 +4139,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
   final Value<String> dayId;
   final Value<int> dayIndex;
   final Value<String> status;
+  final Value<String?> workoutId;
+  final Value<DateTime?> linkedDate;
   final Value<int> rowid;
   const ScheduleDaysCompanion({
     this.id = const Value.absent(),
@@ -4072,6 +4152,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
     this.dayId = const Value.absent(),
     this.dayIndex = const Value.absent(),
     this.status = const Value.absent(),
+    this.workoutId = const Value.absent(),
+    this.linkedDate = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ScheduleDaysCompanion.insert({
@@ -4084,6 +4166,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
     required String dayId,
     required int dayIndex,
     required String status,
+    this.workoutId = const Value.absent(),
+    this.linkedDate = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        cycleId = Value(cycleId),
@@ -4101,6 +4185,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
     Expression<String>? dayId,
     Expression<int>? dayIndex,
     Expression<String>? status,
+    Expression<String>? workoutId,
+    Expression<DateTime>? linkedDate,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4113,6 +4199,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
       if (dayId != null) 'day_id': dayId,
       if (dayIndex != null) 'day_index': dayIndex,
       if (status != null) 'status': status,
+      if (workoutId != null) 'workout_id': workoutId,
+      if (linkedDate != null) 'linked_date': linkedDate,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4127,6 +4215,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
     Value<String>? dayId,
     Value<int>? dayIndex,
     Value<String>? status,
+    Value<String?>? workoutId,
+    Value<DateTime?>? linkedDate,
     Value<int>? rowid,
   }) {
     return ScheduleDaysCompanion(
@@ -4139,6 +4229,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
       dayId: dayId ?? this.dayId,
       dayIndex: dayIndex ?? this.dayIndex,
       status: status ?? this.status,
+      workoutId: workoutId ?? this.workoutId,
+      linkedDate: linkedDate ?? this.linkedDate,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4175,6 +4267,12 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
+    if (workoutId.present) {
+      map['workout_id'] = Variable<String>(workoutId.value);
+    }
+    if (linkedDate.present) {
+      map['linked_date'] = Variable<DateTime>(linkedDate.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4193,6 +4291,8 @@ class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
           ..write('dayId: $dayId, ')
           ..write('dayIndex: $dayIndex, ')
           ..write('status: $status, ')
+          ..write('workoutId: $workoutId, ')
+          ..write('linkedDate: $linkedDate, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6379,6 +6479,8 @@ typedef $$ScheduleDaysTableCreateCompanionBuilder =
       required String dayId,
       required int dayIndex,
       required String status,
+      Value<String?> workoutId,
+      Value<DateTime?> linkedDate,
       Value<int> rowid,
     });
 typedef $$ScheduleDaysTableUpdateCompanionBuilder =
@@ -6392,6 +6494,8 @@ typedef $$ScheduleDaysTableUpdateCompanionBuilder =
       Value<String> dayId,
       Value<int> dayIndex,
       Value<String> status,
+      Value<String?> workoutId,
+      Value<DateTime?> linkedDate,
       Value<int> rowid,
     });
 
@@ -6449,6 +6553,16 @@ class $$ScheduleDaysTableFilterComposer
     column: $table.status,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$ScheduleDaysTableOrderingComposer
@@ -6504,6 +6618,16 @@ class $$ScheduleDaysTableOrderingComposer
     column: $table.status,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ScheduleDaysTableAnnotationComposer
@@ -6541,6 +6665,14 @@ class $$ScheduleDaysTableAnnotationComposer
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get workoutId =>
+      $composableBuilder(column: $table.workoutId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => column,
+  );
 }
 
 class $$ScheduleDaysTableTableManager
@@ -6583,6 +6715,8 @@ class $$ScheduleDaysTableTableManager
                 Value<String> dayId = const Value.absent(),
                 Value<int> dayIndex = const Value.absent(),
                 Value<String> status = const Value.absent(),
+                Value<String?> workoutId = const Value.absent(),
+                Value<DateTime?> linkedDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ScheduleDaysCompanion(
                 id: id,
@@ -6594,6 +6728,8 @@ class $$ScheduleDaysTableTableManager
                 dayId: dayId,
                 dayIndex: dayIndex,
                 status: status,
+                workoutId: workoutId,
+                linkedDate: linkedDate,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6607,6 +6743,8 @@ class $$ScheduleDaysTableTableManager
                 required String dayId,
                 required int dayIndex,
                 required String status,
+                Value<String?> workoutId = const Value.absent(),
+                Value<DateTime?> linkedDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ScheduleDaysCompanion.insert(
                 id: id,
@@ -6618,6 +6756,8 @@ class $$ScheduleDaysTableTableManager
                 dayId: dayId,
                 dayIndex: dayIndex,
                 status: status,
+                workoutId: workoutId,
+                linkedDate: linkedDate,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

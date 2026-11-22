@@ -31,6 +31,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
     }
   }
 
+  // Mirrors DriftDayRecordRepository's rules (SCH-02, SCH-04).
   @override
   Future<void> markDone({
     required String cycleId,
@@ -39,8 +40,12 @@ class FakeDayRecordRepository implements DayRecordRepository {
     required int dayIndex,
   }) async {
     if (failWith case final e?) throw e;
-    final existing = _all[(cycleId, date)];
-    if (existing != null && existing.status != DayStatus.done) return;
+    final existing = _onRow(_all[(cycleId, date)], dayId);
+    if (existing != null &&
+        existing.status != DayStatus.done &&
+        existing.status != DayStatus.planned) {
+      return;
+    }
     _all[(cycleId, date)] = DayRecord(
       id: existing?.id ?? 'done-${date.toIso8601String()}',
       cycleId: cycleId,
@@ -48,6 +53,8 @@ class FakeDayRecordRepository implements DayRecordRepository {
       dayId: dayId,
       dayIndex: dayIndex,
       status: DayStatus.done,
+      workoutId: existing?.workoutId,
+      linkedDate: existing?.linkedDate,
     );
     _changes.add(null);
   }
@@ -55,8 +62,134 @@ class FakeDayRecordRepository implements DayRecordRepository {
   @override
   Future<void> undo({required String cycleId, required DateTime date}) async {
     if (failWith case final e?) throw e;
-    if (_all[(cycleId, date)]?.status != DayStatus.done) return;
-    _all.remove((cycleId, date));
+    final r = _all[(cycleId, date)];
+    if (r == null) return;
+    switch (r.status) {
+      case DayStatus.done when r.workoutId != null:
+        _all[(cycleId, date)] = r.copyWith(status: DayStatus.planned);
+      case DayStatus.planned when r.linkedDate != null:
+        return;
+      case DayStatus.moved:
+        if (_all[(cycleId, r.linkedDate!)]?.linkedDate == date) {
+          _all.remove((cycleId, r.linkedDate!));
+        }
+        _all.remove((cycleId, date));
+      case DayStatus.missed || DayStatus.rest:
+        return;
+      case _:
+        _all.remove((cycleId, date));
+    }
+    _changes.add(null);
+  }
+
+  static DayRecord? _onRow(DayRecord? r, String dayId) =>
+      r == null ||
+          (r.dayId != dayId &&
+              r.status != DayStatus.missed &&
+              r.status != DayStatus.rest)
+      ? null
+      : r;
+
+  bool _open(String cycleId, DateTime date, String dayId) {
+    final r = _onRow(_all[(cycleId, date)], dayId);
+    return r == null || (r.status == DayStatus.planned && r.linkedDate == null);
+  }
+
+  Future<void> _act(DayRecord r) async {
+    if (failWith case final e?) throw e;
+    if (!_open(r.cycleId, r.date, r.dayId)) return;
+    _all[(r.cycleId, r.date)] = r;
+    _changes.add(null);
+  }
+
+  @override
+  Future<void> plan({
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+    required String workoutId,
+  }) => _act(
+    DayRecord(
+      id: 'plan-${date.toIso8601String()}',
+      cycleId: cycleId,
+      date: date,
+      dayId: dayId,
+      dayIndex: dayIndex,
+      status: DayStatus.planned,
+      workoutId: workoutId,
+    ),
+  );
+
+  @override
+  Future<void> skip({
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+  }) => _act(
+    DayRecord(
+      id: 'skip-${date.toIso8601String()}',
+      cycleId: cycleId,
+      date: date,
+      dayId: dayId,
+      dayIndex: dayIndex,
+      status: DayStatus.skipped,
+    ),
+  );
+
+  @override
+  Future<void> restToday({
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+  }) => _act(
+    DayRecord(
+      id: 'rest-${date.toIso8601String()}',
+      cycleId: cycleId,
+      date: date,
+      dayId: dayId,
+      dayIndex: dayIndex,
+      status: DayStatus.unplannedRest,
+    ),
+  );
+
+  @override
+  Future<void> move({
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+    required String workoutId,
+    required DateTime to,
+    required String toDayId,
+    required int toDayIndex,
+  }) async {
+    if (failWith case final e?) throw e;
+    if (!_open(cycleId, date, dayId) || _all.containsKey((cycleId, to))) {
+      return;
+    }
+    _all[(cycleId, date)] = DayRecord(
+      id: 'moved-${date.toIso8601String()}',
+      cycleId: cycleId,
+      date: date,
+      dayId: dayId,
+      dayIndex: dayIndex,
+      status: DayStatus.moved,
+      workoutId: workoutId,
+      linkedDate: to,
+    );
+    _all[(cycleId, to)] = DayRecord(
+      id: 'in-${to.toIso8601String()}',
+      cycleId: cycleId,
+      date: to,
+      dayId: toDayId,
+      dayIndex: toDayIndex,
+      status: DayStatus.planned,
+      workoutId: workoutId,
+      linkedDate: date,
+    );
     _changes.add(null);
   }
 
@@ -65,7 +198,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
     if (failSettleWith case final e?) throw e;
     final fresh = [
       for (final r in records)
-        if (!_all.containsKey((r.cycleId, r.date))) r,
+        if (_all[(r.cycleId, r.date)]?.status case null || DayStatus.planned) r,
     ];
     if (fresh.isEmpty) return;
     for (final r in fresh) {

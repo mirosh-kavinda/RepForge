@@ -17,7 +17,9 @@ mixin _$CycleToday {
  int get index; bool get doneToday;// Passed dates the current training day has waited (AC8).
  int get missedDays; int get next;// Mark done / Undo are not offered: the clock is behind a day already
 // seen, or today is already recorded missed / rest (edge: clock back).
- bool get readOnly;
+ bool get readOnly;// SCH-04: today's record when it is on today's row (a swap, skip, rest,
+// move or done), for the card to show and undo.
+ DayRecord? get record;
 /// Create a copy of CycleToday
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $CycleTodayCopyWith<CycleToday> get copyWith => _$CycleTodayCopyWithImpl<CycleTo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CycleToday&&(identical(other.index, index) || other.index == index)&&(identical(other.doneToday, doneToday) || other.doneToday == doneToday)&&(identical(other.missedDays, missedDays) || other.missedDays == missedDays)&&(identical(other.next, next) || other.next == next)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CycleToday&&(identical(other.index, index) || other.index == index)&&(identical(other.doneToday, doneToday) || other.doneToday == doneToday)&&(identical(other.missedDays, missedDays) || other.missedDays == missedDays)&&(identical(other.next, next) || other.next == next)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.record, record) || other.record == record));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,index,doneToday,missedDays,next,readOnly);
+int get hashCode => Object.hash(runtimeType,index,doneToday,missedDays,next,readOnly,record);
 
 @override
 String toString() {
-  return 'CycleToday(index: $index, doneToday: $doneToday, missedDays: $missedDays, next: $next, readOnly: $readOnly)';
+  return 'CycleToday(index: $index, doneToday: $doneToday, missedDays: $missedDays, next: $next, readOnly: $readOnly, record: $record)';
 }
 
 
@@ -48,11 +50,11 @@ abstract mixin class $CycleTodayCopyWith<$Res>  {
   factory $CycleTodayCopyWith(CycleToday value, $Res Function(CycleToday) _then) = _$CycleTodayCopyWithImpl;
 @useResult
 $Res call({
- int index, bool doneToday, int missedDays, int next, bool readOnly
+ int index, bool doneToday, int missedDays, int next, bool readOnly, DayRecord? record
 });
 
 
-
+$DayRecordCopyWith<$Res>? get record;
 
 }
 /// @nodoc
@@ -65,17 +67,30 @@ class _$CycleTodayCopyWithImpl<$Res>
 
 /// Create a copy of CycleToday
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? index = null,Object? doneToday = null,Object? missedDays = null,Object? next = null,Object? readOnly = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? index = null,Object? doneToday = null,Object? missedDays = null,Object? next = null,Object? readOnly = null,Object? record = freezed,}) {
   return _then(_self.copyWith(
 index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
 as int,doneToday: null == doneToday ? _self.doneToday : doneToday // ignore: cast_nullable_to_non_nullable
 as bool,missedDays: null == missedDays ? _self.missedDays : missedDays // ignore: cast_nullable_to_non_nullable
 as int,next: null == next ? _self.next : next // ignore: cast_nullable_to_non_nullable
 as int,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,record: freezed == record ? _self.record : record // ignore: cast_nullable_to_non_nullable
+as DayRecord?,
   ));
 }
+/// Create a copy of CycleToday
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DayRecordCopyWith<$Res>? get record {
+    if (_self.record == null) {
+    return null;
+  }
 
+  return $DayRecordCopyWith<$Res>(_self.record!, (value) {
+    return _then(_self.copyWith(record: value));
+  });
+}
 }
 
 
@@ -157,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly,  DayRecord? record)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CycleToday() when $default != null:
-return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly);case _:
+return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly,_that.record);case _:
   return orElse();
 
 }
@@ -178,10 +193,10 @@ return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.re
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly,  DayRecord? record)  $default,) {final _that = this;
 switch (_that) {
 case _CycleToday():
-return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly);case _:
+return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly,_that.record);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +213,10 @@ return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.re
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int index,  bool doneToday,  int missedDays,  int next,  bool readOnly,  DayRecord? record)?  $default,) {final _that = this;
 switch (_that) {
 case _CycleToday() when $default != null:
-return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly);case _:
+return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.readOnly,_that.record);case _:
   return null;
 
 }
@@ -213,7 +228,7 @@ return $default(_that.index,_that.doneToday,_that.missedDays,_that.next,_that.re
 
 
 class _CycleToday implements CycleToday {
-  const _CycleToday({required this.index, required this.doneToday, required this.missedDays, required this.next, this.readOnly = false});
+  const _CycleToday({required this.index, required this.doneToday, required this.missedDays, required this.next, this.readOnly = false, this.record});
   
 
 @override final  int index;
@@ -224,6 +239,9 @@ class _CycleToday implements CycleToday {
 // Mark done / Undo are not offered: the clock is behind a day already
 // seen, or today is already recorded missed / rest (edge: clock back).
 @override@JsonKey() final  bool readOnly;
+// SCH-04: today's record when it is on today's row (a swap, skip, rest,
+// move or done), for the card to show and undo.
+@override final  DayRecord? record;
 
 /// Create a copy of CycleToday
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +253,16 @@ _$CycleTodayCopyWith<_CycleToday> get copyWith => __$CycleTodayCopyWithImpl<_Cyc
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CycleToday&&(identical(other.index, index) || other.index == index)&&(identical(other.doneToday, doneToday) || other.doneToday == doneToday)&&(identical(other.missedDays, missedDays) || other.missedDays == missedDays)&&(identical(other.next, next) || other.next == next)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CycleToday&&(identical(other.index, index) || other.index == index)&&(identical(other.doneToday, doneToday) || other.doneToday == doneToday)&&(identical(other.missedDays, missedDays) || other.missedDays == missedDays)&&(identical(other.next, next) || other.next == next)&&(identical(other.readOnly, readOnly) || other.readOnly == readOnly)&&(identical(other.record, record) || other.record == record));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,index,doneToday,missedDays,next,readOnly);
+int get hashCode => Object.hash(runtimeType,index,doneToday,missedDays,next,readOnly,record);
 
 @override
 String toString() {
-  return 'CycleToday(index: $index, doneToday: $doneToday, missedDays: $missedDays, next: $next, readOnly: $readOnly)';
+  return 'CycleToday(index: $index, doneToday: $doneToday, missedDays: $missedDays, next: $next, readOnly: $readOnly, record: $record)';
 }
 
 
@@ -255,11 +273,11 @@ abstract mixin class _$CycleTodayCopyWith<$Res> implements $CycleTodayCopyWith<$
   factory _$CycleTodayCopyWith(_CycleToday value, $Res Function(_CycleToday) _then) = __$CycleTodayCopyWithImpl;
 @override @useResult
 $Res call({
- int index, bool doneToday, int missedDays, int next, bool readOnly
+ int index, bool doneToday, int missedDays, int next, bool readOnly, DayRecord? record
 });
 
 
-
+@override $DayRecordCopyWith<$Res>? get record;
 
 }
 /// @nodoc
@@ -272,18 +290,31 @@ class __$CycleTodayCopyWithImpl<$Res>
 
 /// Create a copy of CycleToday
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? index = null,Object? doneToday = null,Object? missedDays = null,Object? next = null,Object? readOnly = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? index = null,Object? doneToday = null,Object? missedDays = null,Object? next = null,Object? readOnly = null,Object? record = freezed,}) {
   return _then(_CycleToday(
 index: null == index ? _self.index : index // ignore: cast_nullable_to_non_nullable
 as int,doneToday: null == doneToday ? _self.doneToday : doneToday // ignore: cast_nullable_to_non_nullable
 as bool,missedDays: null == missedDays ? _self.missedDays : missedDays // ignore: cast_nullable_to_non_nullable
 as int,next: null == next ? _self.next : next // ignore: cast_nullable_to_non_nullable
 as int,readOnly: null == readOnly ? _self.readOnly : readOnly // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,record: freezed == record ? _self.record : record // ignore: cast_nullable_to_non_nullable
+as DayRecord?,
   ));
 }
 
+/// Create a copy of CycleToday
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DayRecordCopyWith<$Res>? get record {
+    if (_self.record == null) {
+    return null;
+  }
 
+  return $DayRecordCopyWith<$Res>(_self.record!, (value) {
+    return _then(_self.copyWith(record: value));
+  });
+}
 }
 
 // dart format on

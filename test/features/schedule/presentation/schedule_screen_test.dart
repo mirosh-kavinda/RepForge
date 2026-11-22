@@ -532,4 +532,113 @@ void main() {
       }
     });
   });
+
+  group('SCH-04 Schedule shows today\'s action', () {
+    // PPL anchored today on day 1 (Push).
+    final ppl = cycle('c1', 'PPL', active: true).copyWith(startDayIndex: 0);
+    final week = cycle(
+      'w',
+      'Week',
+      active: true,
+      days: [
+        for (final (i, w) in [
+          'push',
+          'legs',
+          null,
+          'push',
+          null,
+          'legs',
+          null,
+        ].indexed)
+          CycleDay(id: 'w$i', workoutId: w),
+      ],
+    ).copyWith(mode: CycleMode.weekdays);
+
+    DayRecord today(
+      String cycleId,
+      String dayId,
+      DayStatus s, {
+      String? workoutId,
+      DateTime? linked,
+    }) => DayRecord(
+      id: 'r',
+      cycleId: cycleId,
+      date: DateTime.utc(2026, 11, 23),
+      dayId: dayId,
+      dayIndex: 0,
+      status: s,
+      workoutId: workoutId,
+      linkedDate: linked,
+    );
+
+    testWidgets('AC10 swapped, skipped and unplanned rest are in text', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      for (final (r, text) in [
+        (today('c1', 'd1', DayStatus.planned, workoutId: 'pull'), 'SWAP'),
+        (today('c1', 'd1', DayStatus.skipped), 'Skipped'),
+        (today('c1', 'd1', DayStatus.unplannedRest), 'Unplanned rest'),
+      ]) {
+        await pumpApp(tester, cycles: [ppl], records: [r]);
+        final label = text == 'SWAP'
+            ? '^Day 1, Pull, today, Swapped from Push, '
+            : '^Day 1, Push, today, $text, ';
+        expect(
+          find.bySemanticsLabel(RegExp(label)),
+          findsOneWidget,
+          reason: text,
+        );
+        await tester.pumpWidget(const SizedBox());
+      }
+      handle.dispose();
+    });
+
+    testWidgets('AC10 a Move shows where it went and the moved-in workout', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpApp(
+        tester,
+        cycles: [week],
+        records: [
+          today(
+            'w',
+            'w0',
+            DayStatus.moved,
+            workoutId: 'push',
+            linked: DateTime.utc(2026, 11, 26),
+          ),
+        ],
+      );
+      expect(
+        find.bySemanticsLabel(
+          RegExp('^Monday, Push, today, Moved to Thursday, '),
+        ),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox());
+      // Monday has Legs moved in from Sunday.
+      await pumpApp(
+        tester,
+        cycles: [week],
+        records: [
+          today(
+            'w',
+            'w0',
+            DayStatus.planned,
+            workoutId: 'legs',
+            linked: DateTime.utc(2026, 11, 22),
+          ),
+        ],
+      );
+      expect(
+        find.bySemanticsLabel(
+          RegExp('^Monday, Legs, today, Moved from Sunday, '),
+        ),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+  });
 }

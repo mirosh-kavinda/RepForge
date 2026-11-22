@@ -72,7 +72,7 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 | CustomExercise | users/{uid}/customExercises/{id} | same as Exercise |
 | WorkoutTemplate | users/{uid}/templates/{id} | name, exercises[{exId, order, sets, repMin, repMax, targetKg, restSec, supersetGroup}] |
 | Schedule | users/{uid}/schedules/{id} | name, mode (rolling/weekdays), cycle[{dayIndex, templateId or REST}], startDate, active |
-| ScheduleDay | users/{uid}/scheduleDays/{id} (doc id settled in SYN-01) | cycleId, date, dayId (cycle row), dayIndex, status (done/missed/rest; moved with SCH-04), sessionId (LOG-05) |
+| ScheduleDay | users/{uid}/scheduleDays/{id} (doc id settled in SYN-01) | cycleId, date, dayId (cycle row), dayIndex, status (done/missed/rest/planned/skipped/unplannedRest/moved), workoutId (when not the row's own), linkedDate (other date of a Move), sessionId (LOG-05) |
 | WorkoutSession | users/{uid}/sessions/{id} | templateId, startedAt, endedAt, totalVolumeKg, prCount, notes, sets[{exId, setNo, kg, reps, rpe, isWarmup, isPR}] |
 | BodySnapshot | users/{uid}/bodySnapshots/{id} | date, weightKg, waistCm, neckCm, hipCm, bodyFatPct, bmi, lbmKg, ffmi, bmr, tdee |
 | PersonalRecord | users/{uid}/records/{exId} | bestE1rm, bestSet{kg, reps}, bestVolume, achievedAt |
@@ -88,6 +88,8 @@ Design choices:
   indexed by date so a month is one range query. Passed dates are written as missed / rest.
 - Weekday mode (SCH-03): `cycle[]` has exactly 7 rows stored Monday first, so row i is ISO
   weekday i + 1 whatever the locale; screens only rotate the order to the locale's first day.
+- Day actions (SCH-04) are today's `scheduleDays` record: `planned` is a swap, Train today or
+  moved-in workout not done yet; Undo steps back one state; a Move writes both dates at once.
 
 ## Sync rules
 
@@ -120,7 +122,8 @@ w = weight kg, h = height cm, a = age years. All results are labelled as estimat
 - e1RM (Epley) = w × (1 + reps/30); sets > 12 reps excluded
 - Volume = Σ weight × reps over working sets (warm-ups excluded)
 - Adherence % = completed training days ÷ planned training days
-- Cycle streak = walk back from today: done and rest extend it, skipped and moved are neutral,
+- Cycle streak = walk back from today: done and rest extend it, skipped, unplanned rest and
+  moved are neutral,
   a missed training day ends it; today not yet done never breaks it (FND-04 AC8)
 - Goal projection = linear regression over last 4–8 weeks; finish = where the line meets target
 - Ghost target = last set + 2.5 kg if all reps hit top of range, else same weight + 1 rep

@@ -128,10 +128,203 @@ void main() {
       expect(await repo.watchLatestDay().first, mon);
     });
 
+    test('SCH-04 AC11 new statuses and fields round-trip', () async {
+      final wed = DateTime.utc(2026, 11, 25);
+      final records = [
+        for (final (i, s) in DayStatus.values.indexed)
+          DayRecord(
+            id: 'n$i',
+            cycleId: 'c1',
+            date: sat.add(Duration(days: i)),
+            dayId: 'd1',
+            dayIndex: 0,
+            status: s,
+            workoutId: s == DayStatus.planned ? 'pull' : null,
+            linkedDate: s == DayStatus.moved ? wed : null,
+          ),
+      ];
+      await repo.writeSettled(records);
+      expect(await repo.watchSince('c1', sat).first, records);
+    });
+
     test('sign-out wipes day records', () async {
       await done(sat);
       await LocalDataWiper(db).wipeUserData();
       expect(await db.select(db.scheduleDays).get(), isEmpty);
+    });
+  });
+
+  group('SCH-04 day actions', () {
+    final thu = DateTime.utc(2026, 11, 26);
+
+    Future<List<(DateTime, DayStatus, String?, DateTime?)>> full() async => [
+      for (final r in await repo.watchSince('c1', sat).first)
+        (r.date, r.status, r.workoutId, r.linkedDate),
+    ];
+
+    Future<void> swap(DateTime date, String w) => repo.plan(
+      cycleId: 'c1',
+      date: date,
+      dayId: 'd1',
+      dayIndex: 0,
+      workoutId: w,
+    );
+
+    Future<void> moveMon() => repo.move(
+      cycleId: 'c1',
+      date: mon,
+      dayId: 'd1',
+      dayIndex: 0,
+      workoutId: 'push',
+      to: thu,
+      toDayId: 'd4',
+      toDayIndex: 3,
+    );
+
+    test(
+      'AC2 swap plans another workout; swapping again replaces it',
+      () async {
+        await swap(mon, 'pull');
+        await swap(mon, 'legs');
+        expect(await full(), [(mon, DayStatus.planned, 'legs', null)]);
+        expect(await outbox(), [
+          ('scheduleDay', OutboxOp.create),
+          ('scheduleDay', OutboxOp.update),
+        ]);
+      },
+    );
+
+    test(
+      'AC2 AC9 Mark done keeps the swap; Undo steps back one at a time',
+      () async {
+        await swap(mon, 'pull');
+        await done(mon);
+        expect(await full(), [(mon, DayStatus.done, 'pull', null)]);
+        await repo.undo(cycleId: 'c1', date: mon);
+        expect(await full(), [(mon, DayStatus.planned, 'pull', null)]);
+        await repo.undo(cycleId: 'c1', date: mon);
+        expect(await full(), isEmpty);
+      },
+    );
+
+    test(
+      'AC4 AC5 AC9 skip and unplanned rest are recorded and undone',
+      () async {
+        final ref = (cycleId: 'c1', date: mon, dayId: 'd1', dayIndex: 0);
+        await repo.skip(
+          cycleId: ref.cycleId,
+          date: ref.date,
+          dayId: ref.dayId,
+          dayIndex: ref.dayIndex,
+        );
+        expect((await full()).single.$2, DayStatus.skipped);
+        await repo.undo(cycleId: 'c1', date: mon);
+        await repo.restToday(
+          cycleId: ref.cycleId,
+          date: ref.date,
+          dayId: ref.dayId,
+          dayIndex: ref.dayIndex,
+        );
+        expect((await full()).single.$2, DayStatus.unplannedRest);
+        await repo.undo(cycleId: 'c1', date: mon);
+        expect(await full(), isEmpty);
+      },
+    );
+
+    test(
+      'edge Mark done is not taken over by skip; skip not by Mark done',
+      () async {
+        await done(mon);
+        await repo.skip(cycleId: 'c1', date: mon, dayId: 'd1', dayIndex: 0);
+        expect((await full()).single.$2, DayStatus.done);
+      },
+    );
+
+    test('AC7 AC11 move writes both dates in one step, queued each', () async {
+      await moveMon();
+      expect(await full(), [
+        (mon, DayStatus.moved, 'push', thu),
+        (thu, DayStatus.planned, 'push', mon),
+      ]);
+      final target = (await repo.watchSince('c1', thu).first).single;
+      expect((target.dayId, target.dayIndex), ('d4', 3));
+      expect(await outbox(), hasLength(2));
+    });
+
+    test('edge a date with a move in takes no second move', () async {
+      await moveMon();
+      await repo.move(
+        cycleId: 'c1',
+        date: DateTime.utc(2026, 11, 24),
+        dayId: 'd2',
+        dayIndex: 1,
+        workoutId: 'legs',
+        to: thu,
+        toDayId: 'd4',
+        toDayIndex: 3,
+      );
+      expect((await full()).map((r) => r.$1), [mon, thu]);
+    });
+
+    test('AC9 undoing a move clears the target too', () async {
+      await moveMon();
+      await repo.undo(cycleId: 'c1', date: mon);
+      expect(await full(), isEmpty);
+    });
+
+    test(
+      'edge a moved-in day is marked done and undone back to planned',
+      () async {
+        await moveMon();
+        await repo.markDone(cycleId: 'c1', date: thu, dayId: 'd4', dayIndex: 3);
+        expect((await full()).last, (thu, DayStatus.done, 'push', mon));
+        await repo.undo(cycleId: 'c1', date: thu);
+        await repo.undo(cycleId: 'c1', date: thu);
+        expect((await full()).last, (thu, DayStatus.planned, 'push', mon));
+      },
+    );
+
+    test(
+      'edge settle replaces a passed planned record, nothing else',
+      () async {
+        await swap(sat, 'pull');
+        await done(sun);
+        final id = (await repo.watchSince('c1', sat).first).first.id;
+        await repo.writeSettled([
+          settled(sat, DayStatus.missed).copyWith(id: id, workoutId: 'pull'),
+          settled(sun, DayStatus.missed),
+        ]);
+        expect((await full()).map((r) => (r.$1, r.$2, r.$3)), [
+          (sat, DayStatus.missed, 'pull'),
+          (sun, DayStatus.done, null),
+        ]);
+      },
+    );
+
+    test('edge a record left on a removed row does not block today', () async {
+      await repo.skip(cycleId: 'c1', date: mon, dayId: 'gone', dayIndex: 2);
+      await done(mon);
+      expect((await full()).single.$2, DayStatus.done);
+      await repo.undo(cycleId: 'c1', date: mon);
+      await repo.restToday(cycleId: 'c1', date: mon, dayId: 'd1', dayIndex: 0);
+      expect((await full()).single.$2, DayStatus.unplannedRest);
+    });
+
+    test('edge a missed record on another row still locks the date', () async {
+      await repo.writeSettled([settled(mon, DayStatus.missed)]);
+      await repo.skip(cycleId: 'c1', date: mon, dayId: 'd9', dayIndex: 1);
+      expect((await full()).single.$2, DayStatus.missed);
+    });
+
+    test('AC11 skip, rest and undo each queue one outbox row', () async {
+      await repo.skip(cycleId: 'c1', date: mon, dayId: 'd1', dayIndex: 0);
+      await repo.undo(cycleId: 'c1', date: mon);
+      await repo.restToday(cycleId: 'c1', date: mon, dayId: 'd1', dayIndex: 0);
+      expect(await outbox(), [
+        ('scheduleDay', OutboxOp.create),
+        ('scheduleDay', OutboxOp.delete),
+        ('scheduleDay', OutboxOp.update),
+      ]);
     });
   });
 }

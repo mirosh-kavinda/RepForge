@@ -320,4 +320,135 @@ void main() {
       expect((t.doneToday, t.readOnly), (false, true));
     });
   });
+
+  group('SCH-04 day actions in the walk', () {
+    DayRecord act(
+      int day,
+      String dayId,
+      DayStatus s, {
+      String? workoutId,
+      DateTime? linked,
+    }) => rec(
+      day,
+      dayId,
+      status: s,
+    ).copyWith(workoutId: workoutId, linkedDate: linked);
+
+    test('AC4 Rolling: a skipped day moves on to the next day', () {
+      final t = rollForward(cycle(), [
+        act(21, '1', DayStatus.skipped),
+      ], nov(22));
+      expect((t.index, t.missedDays), (1, 0));
+    });
+
+    test('AC5 Rolling: unplanned rest waits without counting missed', () {
+      final r = [act(21, '1', DayStatus.unplannedRest)];
+      final t = rollForward(cycle(), r, nov(22));
+      expect((t.index, t.missedDays), (0, 0));
+      // A later undone day still counts, from where it was.
+      expect(rollForward(cycle(), r, nov(23)).missedDays, 1);
+    });
+
+    test('AC3 a swapped day marked done moves on like the planned one', () {
+      final r = [act(21, '1', DayStatus.done, workoutId: 'pull')];
+      expect(rollForward(cycle(), r, nov(22)).index, 1);
+      final today = rollForward(cycle(), r, nov(21));
+      expect((today.doneToday, today.record?.workoutId), (true, 'pull'));
+    });
+
+    test('AC2 a planned swap today is today\'s record, not done, editable', () {
+      final t = rollForward(cycle(), [
+        act(21, '1', DayStatus.planned, workoutId: 'pull'),
+      ], nov(21));
+      expect((t.doneToday, t.readOnly), (false, false));
+      expect(t.record?.status, DayStatus.planned);
+    });
+
+    test('edge a passed planned swap counts as missed', () {
+      final t = rollForward(cycle(), [
+        act(21, '1', DayStatus.planned, workoutId: 'pull'),
+      ], nov(22));
+      expect((t.index, t.missedDays), (0, 1));
+    });
+
+    test('AC8 Train today on a rest row: the cycle moves on as for rest', () {
+      final r = [act(21, '3', DayStatus.done, workoutId: 'push')];
+      final c = cycle(index: 2);
+      expect(rollForward(c, r, nov(21)).doneToday, isTrue);
+      expect(rollForward(c, r, nov(22)).index, 3);
+    });
+
+    test('AC9 skipped, unplanned rest and moved today keep Undo open', () {
+      for (final s in [
+        DayStatus.skipped,
+        DayStatus.unplannedRest,
+        DayStatus.moved,
+      ]) {
+        final t = rollForward(cycle(), [act(21, '1', s)], nov(21));
+        expect((t.readOnly, t.record?.status), (false, s));
+      }
+    });
+
+    test('edge a record on a removed row is not today\'s action', () {
+      final t = rollForward(cycle(), [
+        act(21, 'gone', DayStatus.skipped),
+      ], nov(21));
+      expect(t.record, isNull);
+    });
+
+    test(
+      'edge settle: passed planned becomes missed, or rest on a rest row',
+      () {
+        final r = [
+          act(21, '1', DayStatus.planned, workoutId: 'pull'),
+          act(22, '1', DayStatus.done),
+          act(23, '2', DayStatus.skipped),
+        ];
+        final c = cycle();
+        final out = toSettle(c, r, nov(25));
+        expect(
+          [for (final x in out) (x.date.day, x.status, x.workoutId)],
+          [(21, DayStatus.missed, 'pull'), (24, DayStatus.rest, null)],
+        );
+        expect(out.first.id, 'r211c', reason: 'replaces the planned record');
+        final rest = toSettle(cycle(index: 2), [
+          act(21, '3', DayStatus.planned, workoutId: 'push'),
+        ], nov(22));
+        expect(rest.single.status, DayStatus.rest);
+      },
+    );
+
+    test('AC6 Weekdays: skipped and unplanned rest just pass', () {
+      final week = cycle(
+        rows: [for (var i = 0; i < 7; i++) d('$i', i.isEven ? 'push' : null)],
+      ).copyWith(mode: CycleMode.weekdays);
+      final t = rollForward(week, [act(21, '5', DayStatus.skipped)], nov(22));
+      expect((t.index, t.missedDays), (6, 0));
+    });
+
+    test(
+      'edge settle: a passed moved-in date is missed for the moved workout',
+      () {
+        final week = cycle(
+          rows: [
+            for (var i = 0; i < 7; i++) d('w$i', i.isEven ? 'push' : null),
+          ],
+        ).copyWith(mode: CycleMode.weekdays);
+        // Sat 21 is row 5 (rest); Push was moved in from Thursday.
+        final out = toSettle(week, [
+          DayRecord(
+            id: 'm',
+            cycleId: 'c',
+            date: DateTime.utc(2026, 11, 21),
+            dayId: 'w5',
+            dayIndex: 5,
+            status: DayStatus.planned,
+            workoutId: 'push',
+            linkedDate: DateTime.utc(2026, 11, 19),
+          ),
+        ], nov(22));
+        expect((out.single.id, out.single.status), ('m', DayStatus.missed));
+      },
+    );
+  });
 }
