@@ -125,6 +125,8 @@ WorkoutSession sessionFromTemplate({
         seconds: t.seconds,
         targetKg: t.targetKg,
         bodyweight: exercises[t.exerciseId]?.equipment == Equipment.bodyOnly,
+        restSec: t.restSec,
+        superset: t.superset,
       ),
   ],
 );

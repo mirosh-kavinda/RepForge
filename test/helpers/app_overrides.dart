@@ -8,6 +8,7 @@ import 'package:repforge/features/schedule/data/providers.dart';
 import 'package:repforge/features/workout/data/providers.dart';
 
 import '../features/auth/fake_auth_repository.dart';
+import '../features/logger/fake_rest_alarm.dart';
 import '../features/logger/fake_session_repository.dart';
 import '../features/onboarding/fake_onboarding_repository.dart';
 import '../features/schedule/fake_cycle_repository.dart';
@@ -22,6 +23,7 @@ List<Override> signedInOverrides({
   FakeCycleRepository? cycles,
   FakeDayRecordRepository? days,
   FakeSessionRepository? sessions,
+  FakeRestAlarm? alarm,
   UnitSystem units = UnitSystem.metric,
 }) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
@@ -48,4 +50,5 @@ List<Override> signedInOverrides({
   sessionRepositoryProvider.overrideWithValue(
     sessions ?? FakeSessionRepository(days: days),
   ),
+  restAlarmProvider.overrideWithValue(alarm ?? FakeRestAlarm()),
 ];

@@ -4,6 +4,7 @@ import 'package:repforge/data/local/app_database.dart';
 import 'package:repforge/data/local/local_data_wiper.dart';
 import 'package:repforge/data/sync/sync_state.dart';
 import 'package:repforge/features/logger/data/drift_session_repository.dart';
+import 'package:repforge/features/logger/domain/rest_timer.dart';
 import 'package:repforge/features/logger/domain/session_repository.dart';
 import 'package:repforge/features/logger/domain/workout_session.dart';
 import 'package:repforge/features/schedule/data/drift_day_record_repository.dart';
@@ -239,5 +240,45 @@ void main() {
         expect({for (final r in rows) r.id: r.isPr}, {'n1': true, 'n2': false});
       },
     );
+
+    test(
+      'LOG-03 AC6 the rest is kept with the workout; Finish clears it',
+      () async {
+        await repo.start(draft('s1'));
+        final rest = startRest(DateTime.utc(2026, 11, 23, 10), 90, (
+          rowId: 'r1',
+          setNo: 2,
+        ));
+        await repo.setRest('s1', rest);
+        expect((await repo.watchActive().first)!.rest, rest);
+        await repo.setRest(
+          's1',
+          pauseRest(rest, DateTime.utc(2026, 11, 23, 10)),
+        );
+        expect((await repo.watchActive().first)!.rest!.pausedLeftMs, 90000);
+        await repo.logSet('s1', set('a', 1, 60));
+        await repo.finish('s1');
+        final row = await db.select(db.workoutSessions).getSingle();
+        expect(row.rest, isNull);
+      },
+    );
+
+    test('LOG-03 AC3 rest and superset survive the workout copy', () async {
+      await repo.start(
+        draft('s1').copyWith(
+          exercises: const [
+            SessionExercise(
+              id: 'r1',
+              exerciseId: 'bench',
+              name: 'Bench',
+              restSec: 75,
+              superset: 'A',
+            ),
+          ],
+        ),
+      );
+      final row = (await repo.watchActive().first)!.exercises.single;
+      expect((row.restSec, row.superset), (75, 'A'));
+    });
   });
 }

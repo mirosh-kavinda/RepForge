@@ -85,6 +85,10 @@ Design choices:
   Locally (WKT-02, LOG-01): `workout_sessions` holds the workout with a JSON copy of its rows
   (ended_at null while in progress) and `session_sets` its sets. The first outbox row is the
   session's create on Finish, in the same transaction that marks the cycle day done.
+- Rest timer (LOG-03): the running or paused rest is `workout_sessions.rest` (JSON end time or
+  time left), local only. One local notification (`RestAlarm` port over
+  flutter_local_notifications, scheduled in UTC) is replaced on every change and cancelled on
+  Finish / Discard.
   One Firestore write per finished workout (NFR-10).
 - Records and stats are derived on device; cached in Firestore only to speed up restore.
 - `scheduleDays`: one per (cycle, date), since a cycle switched to today has its own today;

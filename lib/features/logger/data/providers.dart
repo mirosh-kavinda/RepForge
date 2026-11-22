@@ -2,9 +2,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/local/database_provider.dart';
 import '../../schedule/data/providers.dart';
+import '../domain/rest_alarm.dart';
 import '../domain/session_repository.dart';
 import '../domain/workout_session.dart';
 import 'drift_session_repository.dart';
+import 'local_rest_alarm.dart';
 
 part 'providers.g.dart';
 
@@ -13,6 +15,10 @@ SessionRepository sessionRepository(Ref ref) => DriftSessionRepository(
   ref.watch(appDatabaseProvider),
   ref.watch(dayRecordRepositoryProvider),
 );
+
+// LOG-03: the phone's "rest over" alert.
+@Riverpod(keepAlive: true)
+RestAlarm restAlarm(Ref ref) => LocalRestAlarm();
 
 // The workout in progress, if any (WKT-02 AC8).
 @riverpod

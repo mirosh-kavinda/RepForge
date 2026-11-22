@@ -37,6 +37,8 @@ class DriftSessionRepository implements SessionRepository {
         'seconds': r.seconds,
         'targetKg': r.targetKg,
         'bodyweight': r.bodyweight,
+        'restSec': r.restSec,
+        'superset': r.superset,
       },
   ]);
 
@@ -53,8 +55,33 @@ class DriftSessionRepository implements SessionRepository {
         seconds: j['seconds']! as int,
         targetKg: (j['targetKg'] as num?)?.toDouble(),
         bodyweight: j['bodyweight']! as bool,
+        restSec: (j['restSec'] as int?) ?? 120,
+        superset: j['superset'] as String?,
       ),
   ];
+
+  static String? _encodeRest(Rest? r) => r == null
+      ? null
+      : jsonEncode({
+          'endsAt': r.endsAt?.toUtc().toIso8601String(),
+          'pausedLeftMs': r.pausedLeftMs,
+          'nextRowId': r.nextRowId,
+          'nextSetNo': r.nextSetNo,
+        });
+
+  static Rest? _decodeRest(String? json) {
+    if (json == null) return null;
+    final j = jsonDecode(json) as Map<String, Object?>;
+    return Rest(
+      endsAt: switch (j['endsAt']) {
+        final String s => DateTime.parse(s),
+        _ => null,
+      },
+      pausedLeftMs: j['pausedLeftMs'] as int?,
+      nextRowId: j['nextRowId'] as String?,
+      nextSetNo: j['nextSetNo'] as int?,
+    );
+  }
 
   static LoggedSet _set(SessionSetRow r) => LoggedSet(
     id: r.id,
@@ -91,6 +118,7 @@ class DriftSessionRepository implements SessionRepository {
       dayId: r.dayId,
       dayIndex: r.dayIndex,
       sets: sets.map(_set).toList(),
+      rest: _decodeRest(r.rest),
     );
   }
 
@@ -205,6 +233,11 @@ class DriftSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<void> setRest(String sessionId, Rest? rest) =>
+      (_db.update(_db.workoutSessions)..where((s) => s.id.equals(sessionId)))
+          .write(WorkoutSessionsCompanion(rest: Value(_encodeRest(rest))));
+
+  @override
   Future<List<LoggedSet>> history(String exerciseId) async {
     final q =
         _db.select(_db.sessionSets).join([
@@ -269,9 +302,14 @@ class DriftSessionRepository implements SessionRepository {
       id: sessionId,
       op: OutboxOp.create,
       write: (now) =>
-          (_db.update(_db.workoutSessions)
-                ..where((r) => r.id.equals(sessionId)))
-              .write(WorkoutSessionsCompanion(endedAt: Value(now))),
+          (_db.update(
+            _db.workoutSessions,
+          )..where((r) => r.id.equals(sessionId))).write(
+            WorkoutSessionsCompanion(
+              endedAt: Value(now),
+              rest: const Value(null),
+            ),
+          ),
     );
     if ((s.cycleId, s.dayId, s.dayIndex) case (
       final cycleId?,

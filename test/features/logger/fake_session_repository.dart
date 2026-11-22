@@ -104,6 +104,14 @@ class FakeSessionRepository implements SessionRepository {
       historyOf[exerciseId] ?? const [];
 
   @override
+  Future<void> setRest(String sessionId, Rest? rest) async {
+    _fail();
+    if (_active case final a? when a.id == sessionId) {
+      _set(a.copyWith(rest: rest));
+    }
+  }
+
+  @override
   Future<void> discard(String sessionId) async {
     _fail();
     _set(null);

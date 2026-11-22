@@ -20,6 +20,9 @@ abstract class SessionExercise with _$SessionExercise {
     double? targetKg,
     // "Body only" equipment: 0 kg reads Bodyweight (edge).
     @Default(false) bool bodyweight,
+    // LOG-03: rest after its sets, and the superset group it belongs to.
+    @Default(120) int restSec,
+    String? superset,
   }) = _SessionExercise;
 }
 
@@ -57,10 +60,25 @@ abstract class WorkoutSession with _$WorkoutSession {
     String? dayId,
     int? dayIndex,
     DateTime? endedAt,
+    // LOG-03: the rest in progress, if any (rules in rest_timer.dart).
+    Rest? rest,
   }) = _WorkoutSession;
 
   List<LoggedSet> setsOf(String rowId) => [
     for (final s in sets)
       if (s.rowId == rowId) s,
   ]..sort((a, b) => a.setNo.compareTo(b.setNo));
+}
+
+// LOG-03. A running rest has [endsAt]; a paused one has [pausedLeftMs]. Time
+// left is always worked out from the clock, so leaving the app changes
+// nothing (AC6).
+@freezed
+abstract class Rest with _$Rest {
+  const factory Rest({
+    DateTime? endsAt,
+    int? pausedLeftMs,
+    String? nextRowId,
+    int? nextSetNo,
+  }) = _Rest;
 }

@@ -119,6 +119,12 @@ Future<void> openLogger(
 
 Finder setLabel(String label) => find.bySemanticsLabel(RegExp('^$label'));
 
+Future<void> tapSet(WidgetTester tester, String label) async {
+  await tester.ensureVisible(setLabel(label));
+  await tester.pumpAndSettle();
+  await tester.tap(setLabel(label));
+}
+
 Future<void> logSet(WidgetTester tester, int n, {int skip = 0}) async {
   final f = find.bySemanticsLabel('Log set $n').at(skip);
   await tester.ensureVisible(f);
@@ -250,7 +256,7 @@ void main() {
       final handle = tester.ensureSemantics();
       await openLogger(tester);
       await logSet(tester, 1);
-      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tapSet(tester, 'Barbell Squat, Set 1');
       await tester.pumpAndSettle();
       expect(find.text('Barbell Squat · Edit set 1'), findsOneWidget);
       await tester.tap(find.bySemanticsLabel('Decrease Weight').last);
@@ -258,7 +264,7 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       expect(sessions.active!.sets.single.kg, 97.5);
-      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tapSet(tester, 'Barbell Squat, Set 1');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Delete set'));
       await tester.pumpAndSettle();
@@ -518,7 +524,7 @@ void main() {
         reason: 'equal to set 1, not a PR',
       );
       expect(find.text('PR'), findsOneWidget);
-      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tapSet(tester, 'Barbell Squat, Set 1');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Delete set'));
       await tester.pumpAndSettle();
@@ -629,7 +635,7 @@ void main() {
       );
       await logSet(tester, 1);
       expect(find.text('PR'), findsOneWidget);
-      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tapSet(tester, 'Barbell Squat, Set 1');
       await tester.pumpAndSettle();
       await tester.tap(find.bySemanticsLabel('Decrease Reps').last);
       await tester.pumpAndSettle();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +21,7 @@ import '../domain/logger_rules.dart';
 import '../domain/session_repository.dart';
 import '../domain/workout_session.dart';
 import 'edit_set_sheet.dart';
+import 'rest_bar.dart';
 import 'set_row.dart';
 
 enum _RowAction { swap }
@@ -61,7 +64,9 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     final ok = await _guard(() => _repo.finish(s.id));
     if (!mounted) return;
     setState(() => _finishing = false);
-    if (ok) context.go(Routes.home);
+    if (!ok) return;
+    await RestActions(ref, AppLocalizations.of(context)).cancelAlarm();
+    if (mounted) context.go(Routes.home);
   }
 
   Future<void> _discard(WorkoutSession s) async {
@@ -84,7 +89,10 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
       ),
     );
     if (!(yes ?? false) || !mounted) return;
+    final actions = RestActions(ref, l10n);
     if (await _guard(() => _repo.discard(s.id)) && mounted) {
+      await actions.cancelAlarm();
+      if (!mounted) return;
       context.go(Routes.home);
     }
   }
@@ -175,6 +183,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: RestBar(session: s),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(RfSpace.s16),
@@ -281,20 +290,27 @@ class _ExerciseCard extends ConsumerWidget {
                   target: goals[n],
                   isPr: done.isNotEmpty && prs.contains(done.first.id),
                   prefill: prefill(row, n, loggedInRow: logged, targets: goals),
-                  onLog: (v) => guard(
-                    () => repo.logSet(
-                      session.id,
-                      LoggedSet(
-                        id: newId(),
-                        rowId: row.id,
-                        exerciseId: row.exerciseId,
-                        setNo: n,
-                        kg: v.kg,
-                        reps: v.reps,
-                        seconds: v.seconds,
+                  onLog: (v) async {
+                    final set = LoggedSet(
+                      id: newId(),
+                      rowId: row.id,
+                      exerciseId: row.exerciseId,
+                      setNo: n,
+                      kg: v.kg,
+                      reps: v.reps,
+                      seconds: v.seconds,
+                    );
+                    if (!await guard(() => repo.logSet(session.id, set))) {
+                      return;
+                    }
+                    // LOG-03: not awaited by Log's spinner (NFR-01).
+                    unawaited(
+                      RestActions(ref, l10n).afterLog(
+                        session.copyWith(sets: [...session.sets, set]),
+                        row.id,
                       ),
-                    ),
-                  ),
+                    );
+                  },
                   onEdit: () async {
                     final edit = await editSet(context, row, done.first, units);
                     switch (edit) {

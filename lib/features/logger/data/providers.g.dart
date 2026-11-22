@@ -56,6 +56,47 @@ final class SessionRepositoryProvider
 
 String _$sessionRepositoryHash() => r'ebaaa244111aae10fae81af44e4883c75609833d';
 
+@ProviderFor(restAlarm)
+final restAlarmProvider = RestAlarmProvider._();
+
+final class RestAlarmProvider
+    extends $FunctionalProvider<RestAlarm, RestAlarm, RestAlarm>
+    with $Provider<RestAlarm> {
+  RestAlarmProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restAlarmProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restAlarmHash();
+
+  @$internal
+  @override
+  $ProviderElement<RestAlarm> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  RestAlarm create(Ref ref) {
+    return restAlarm(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RestAlarm value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RestAlarm>(value),
+    );
+  }
+}
+
+String _$restAlarmHash() => r'bb9229615bdcda7cc0e74a4470bee413f2fbda55';
+
 @ProviderFor(activeSession)
 final activeSessionProvider = ActiveSessionProvider._();
 

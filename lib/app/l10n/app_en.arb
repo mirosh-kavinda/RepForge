@@ -1848,5 +1848,75 @@
         "type": "int"
       }
     }
+  },
+  "restLeft": "Rest {time}",
+  "@restLeft": {
+    "description": "Rest bar countdown.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restPausedLeft": "Paused · {time}",
+  "@restPausedLeft": {
+    "description": "Rest bar while paused.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restNext": "Next: {name}, set {n}",
+  "@restNext": {
+    "description": "What comes after the rest.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "restLastSet": "Last set done",
+  "@restLastSet": {
+    "description": "Nothing left after this rest."
+  },
+  "restOver": "Rest over",
+  "@restOver": {
+    "description": "Rest finished."
+  },
+  "restPlus": "Add 15 seconds",
+  "@restPlus": {
+    "description": "Rest control."
+  },
+  "restMinus": "Take off 15 seconds",
+  "@restMinus": {
+    "description": "Rest control."
+  },
+  "restPause": "Pause rest",
+  "@restPause": {
+    "description": "Rest control."
+  },
+  "restResume": "Resume rest",
+  "@restResume": {
+    "description": "Rest control."
+  },
+  "restSkip": "Skip rest",
+  "@restSkip": {
+    "description": "Rest control."
+  },
+  "restDismiss": "Dismiss",
+  "@restDismiss": {
+    "description": "Hide the Rest over bar."
+  },
+  "restNotificationsOff": "Turn on notifications to be alerted when locked",
+  "@restNotificationsOff": {
+    "description": "Notifications not allowed."
+  },
+  "restOpenSettings": "Open settings",
+  "@restOpenSettings": {
+    "description": "Open the phone's notification settings."
   }
 }

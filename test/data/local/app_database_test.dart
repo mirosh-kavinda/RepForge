@@ -271,6 +271,7 @@ void main() {
 
       final v9 = AppDatabase(NativeDatabase(file));
       await v9.customStatement('ALTER TABLE session_sets DROP COLUMN is_pr');
+      await v9.customStatement('ALTER TABLE workout_sessions DROP COLUMN rest');
       await v9.customStatement(
         'INSERT INTO session_sets (id, session_id, row_id, exercise_id, '
         "set_no, kg, logged_at, updated_at) VALUES ('a', 's', 'r', 'e', 1, "
@@ -285,9 +286,28 @@ void main() {
     });
   });
 
+  group('LOG-03 schema v11', () {
+    test('v10 -> v11 adds workout_sessions.rest', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v10 = AppDatabase(NativeDatabase(file));
+      await v10.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN rest',
+      );
+      await v10.customStatement('PRAGMA user_version = 10');
+      await v10.close();
+
+      final v11 = AppDatabase(NativeDatabase(file));
+      addTearDown(v11.close);
+      expect(await v11.select(v11.workoutSessions).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 10);
+      expect(db.schemaVersion, 11);
       final names =
           (await db
                   .customSelect(

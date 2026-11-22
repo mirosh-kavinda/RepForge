@@ -4440,6 +4440,15 @@ class $WorkoutSessionsTable extends WorkoutSessions
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _restMeta = const VerificationMeta('rest');
+  @override
+  late final GeneratedColumn<String> rest = GeneratedColumn<String>(
+    'rest',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4455,6 +4464,7 @@ class $WorkoutSessionsTable extends WorkoutSessions
     date,
     startedAt,
     endedAt,
+    rest,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4547,6 +4557,12 @@ class $WorkoutSessionsTable extends WorkoutSessions
         endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
       );
     }
+    if (data.containsKey('rest')) {
+      context.handle(
+        _restMeta,
+        rest.isAcceptableOrUnknown(data['rest']!, _restMeta),
+      );
+    }
     return context;
   }
 
@@ -4610,6 +4626,10 @@ class $WorkoutSessionsTable extends WorkoutSessions
         DriftSqlType.dateTime,
         data['${effectivePrefix}ended_at'],
       ),
+      rest: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rest'],
+      ),
     );
   }
 
@@ -4636,6 +4656,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
   final DateTime date;
   final DateTime startedAt;
   final DateTime? endedAt;
+  final String? rest;
   const SessionRow({
     required this.id,
     required this.updatedAt,
@@ -4650,6 +4671,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     required this.date,
     required this.startedAt,
     this.endedAt,
+    this.rest,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4683,6 +4705,9 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     if (!nullToAbsent || endedAt != null) {
       map['ended_at'] = Variable<DateTime>(endedAt);
     }
+    if (!nullToAbsent || rest != null) {
+      map['rest'] = Variable<String>(rest);
+    }
     return map;
   }
 
@@ -4713,6 +4738,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       endedAt: endedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(endedAt),
+      rest: rest == null && nullToAbsent ? const Value.absent() : Value(rest),
     );
   }
 
@@ -4737,6 +4763,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       date: serializer.fromJson<DateTime>(json['date']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      rest: serializer.fromJson<String?>(json['rest']),
     );
   }
   @override
@@ -4758,6 +4785,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       'date': serializer.toJson<DateTime>(date),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'rest': serializer.toJson<String?>(rest),
     };
   }
 
@@ -4775,6 +4803,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     DateTime? date,
     DateTime? startedAt,
     Value<DateTime?> endedAt = const Value.absent(),
+    Value<String?> rest = const Value.absent(),
   }) => SessionRow(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -4789,6 +4818,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     date: date ?? this.date,
     startedAt: startedAt ?? this.startedAt,
     endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    rest: rest.present ? rest.value : this.rest,
   );
   SessionRow copyWithCompanion(WorkoutSessionsCompanion data) {
     return SessionRow(
@@ -4807,6 +4837,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       date: data.date.present ? data.date.value : this.date,
       startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
       endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      rest: data.rest.present ? data.rest.value : this.rest,
     );
   }
 
@@ -4825,7 +4856,8 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
           ..write('dayIndex: $dayIndex, ')
           ..write('date: $date, ')
           ..write('startedAt: $startedAt, ')
-          ..write('endedAt: $endedAt')
+          ..write('endedAt: $endedAt, ')
+          ..write('rest: $rest')
           ..write(')'))
         .toString();
   }
@@ -4845,6 +4877,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     date,
     startedAt,
     endedAt,
+    rest,
   );
   @override
   bool operator ==(Object other) =>
@@ -4862,7 +4895,8 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
           other.dayIndex == this.dayIndex &&
           other.date == this.date &&
           other.startedAt == this.startedAt &&
-          other.endedAt == this.endedAt);
+          other.endedAt == this.endedAt &&
+          other.rest == this.rest);
 }
 
 class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
@@ -4879,6 +4913,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
   final Value<DateTime> date;
   final Value<DateTime> startedAt;
   final Value<DateTime?> endedAt;
+  final Value<String?> rest;
   final Value<int> rowid;
   const WorkoutSessionsCompanion({
     this.id = const Value.absent(),
@@ -4894,6 +4929,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     this.date = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.endedAt = const Value.absent(),
+    this.rest = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WorkoutSessionsCompanion.insert({
@@ -4910,6 +4946,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     required DateTime date,
     required DateTime startedAt,
     this.endedAt = const Value.absent(),
+    this.rest = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        name = Value(name),
@@ -4930,6 +4967,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     Expression<DateTime>? date,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? endedAt,
+    Expression<String>? rest,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4946,6 +4984,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
       if (date != null) 'date': date,
       if (startedAt != null) 'started_at': startedAt,
       if (endedAt != null) 'ended_at': endedAt,
+      if (rest != null) 'rest': rest,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4964,6 +5003,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     Value<DateTime>? date,
     Value<DateTime>? startedAt,
     Value<DateTime?>? endedAt,
+    Value<String?>? rest,
     Value<int>? rowid,
   }) {
     return WorkoutSessionsCompanion(
@@ -4980,6 +5020,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
       date: date ?? this.date,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
+      rest: rest ?? this.rest,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -5028,6 +5069,9 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     if (endedAt.present) {
       map['ended_at'] = Variable<DateTime>(endedAt.value);
     }
+    if (rest.present) {
+      map['rest'] = Variable<String>(rest.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -5050,6 +5094,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
           ..write('date: $date, ')
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt, ')
+          ..write('rest: $rest, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8224,6 +8269,7 @@ typedef $$WorkoutSessionsTableCreateCompanionBuilder =
       required DateTime date,
       required DateTime startedAt,
       Value<DateTime?> endedAt,
+      Value<String?> rest,
       Value<int> rowid,
     });
 typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
@@ -8241,6 +8287,7 @@ typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
       Value<DateTime> date,
       Value<DateTime> startedAt,
       Value<DateTime?> endedAt,
+      Value<String?> rest,
       Value<int> rowid,
     });
 
@@ -8318,6 +8365,11 @@ class $$WorkoutSessionsTableFilterComposer
     column: $table.endedAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get rest => $composableBuilder(
+    column: $table.rest,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$WorkoutSessionsTableOrderingComposer
@@ -8393,6 +8445,11 @@ class $$WorkoutSessionsTableOrderingComposer
     column: $table.endedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get rest => $composableBuilder(
+    column: $table.rest,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WorkoutSessionsTableAnnotationComposer
@@ -8444,6 +8501,9 @@ class $$WorkoutSessionsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get endedAt =>
       $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get rest =>
+      $composableBuilder(column: $table.rest, builder: (column) => column);
 }
 
 class $$WorkoutSessionsTableTableManager
@@ -8492,6 +8552,7 @@ class $$WorkoutSessionsTableTableManager
                 Value<DateTime> date = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> rest = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutSessionsCompanion(
                 id: id,
@@ -8507,6 +8568,7 @@ class $$WorkoutSessionsTableTableManager
                 date: date,
                 startedAt: startedAt,
                 endedAt: endedAt,
+                rest: rest,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8524,6 +8586,7 @@ class $$WorkoutSessionsTableTableManager
                 required DateTime date,
                 required DateTime startedAt,
                 Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> rest = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutSessionsCompanion.insert(
                 id: id,
@@ -8539,6 +8602,7 @@ class $$WorkoutSessionsTableTableManager
                 date: date,
                 startedAt: startedAt,
                 endedAt: endedAt,
+                rest: rest,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

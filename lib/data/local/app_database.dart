@@ -116,6 +116,8 @@ class WorkoutSessions extends Table with SyncedTable {
   DateTimeColumn get date => dateTime()();
   DateTimeColumn get startedAt => dateTime()();
   DateTimeColumn get endedAt => dateTime().nullable()();
+  // LOG-03: the running or paused rest (JSON), local only; Finish clears it.
+  TextColumn get rest => text().nullable()();
 }
 
 // LOG-01. Local only: synced inside its session, never on its own.
@@ -161,7 +163,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -208,6 +210,10 @@ class AppDatabase extends _$AppDatabase {
       }
       // v9 created session_sets with is_pr already.
       if (from == 9) await m.addColumn(sessionSets, sessionSets.isPr);
+      // v9 created workout_sessions with rest already.
+      if (from == 9 || from == 10) {
+        await m.addColumn(workoutSessions, workoutSessions.rest);
+      }
     },
   );
 

@@ -32,6 +32,9 @@ abstract interface class SessionRepository {
 
   Future<void> discard(String sessionId);
 
+  // LOG-03: the running rest, or null for none. Kept with the workout.
+  Future<void> setRest(String sessionId, Rest? rest);
+
   // AC9: ends it, stores each set's PR flag (LOG-02), queues it once and marks
   // its day done, together. Throws
   // [NoSetsLogged] and writes nothing when no set was logged.
