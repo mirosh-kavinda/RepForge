@@ -39,10 +39,17 @@ class RestActions {
 
   DateTime get _now => ref.read(clockProvider)().toUtc();
 
-  Future<void> _apply(WorkoutSession s, Rest? rest) async {
-    final alarm = ref.read(restAlarmProvider);
+  Future<void> _write(WorkoutSession s, Rest? rest) async {
     try {
       await ref.read(sessionRepositoryProvider).setRest(s.id, rest);
+    } on Object {
+      // The set is saved; only this rest is lost (plan: errors).
+    }
+  }
+
+  Future<void> _schedule(WorkoutSession s, Rest? rest) async {
+    final alarm = ref.read(restAlarmProvider);
+    try {
       await alarm.cancel();
       if (rest?.endsAt case final at? when !isOver(rest!, _now)) {
         await alarm.schedule(
@@ -52,24 +59,34 @@ class RestActions {
         );
       }
     } on Object {
-      // The set is saved; the in-app countdown still runs (plan: errors).
+      // No alert; the in-app countdown still runs.
     }
+  }
+
+  Future<void> _apply(WorkoutSession s, Rest? rest) async {
+    await _write(s, rest);
+    await _schedule(s, rest);
   }
 
   // AC1–AC3, AC7: after a set of [rowId] is logged; [s] includes it.
   Future<void> afterLog(WorkoutSession s, String rowId) async {
+    final now = _now;
+    final next = nextUp(s, rowId);
+    if (restsLater(s.exercises, rowId)) return _apply(s, nextOnly(next));
     final secs = restAfterLog(s.exercises, rowId);
     if (secs == null) return _apply(s, null);
-    final alarm = ref.read(restAlarmProvider);
-    if (!_asked) {
-      _asked = true;
-      try {
-        if (!await alarm.allowed()) await alarm.request();
-      } on Object {
-        // Permission UI failed; the in-app timer still works.
-      }
+    final rest = startRest(now, secs, next);
+    if (_asked) return _apply(s, rest);
+    _asked = true;
+    // The countdown starts at the log, not when the permission dialog closes.
+    await _write(s, rest);
+    try {
+      final alarm = ref.read(restAlarmProvider);
+      if (!await alarm.allowed()) await alarm.request();
+    } on Object {
+      // Permission UI failed; the in-app timer still works.
     }
-    await _apply(s, startRest(_now, secs, nextUp(s, rowId)));
+    await _schedule(s, rest);
   }
 
   Future<void> adjust(WorkoutSession s, int seconds) =>
@@ -112,19 +129,29 @@ class RestBar extends ConsumerStatefulWidget {
   ConsumerState<RestBar> createState() => _RestBarState();
 }
 
-class _RestBarState extends ConsumerState<RestBar> {
+class _RestBarState extends ConsumerState<RestBar> with WidgetsBindingObserver {
   Timer? _tick;
   bool? _allowed;
-  bool _wasOver = false;
-  DateTime? _announcedFor;
+  late bool _wasOver;
+  Rest? _announcedFor;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Coming back to a rest that already ended: the alert has been given.
+    final rest = widget.session.rest;
+    _wasOver = rest != null && isOver(rest, ref.read(clockProvider)().toUtc());
     _tick = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) setState(() {});
     });
     _checkAllowed();
+  }
+
+  // AC7: back from the phone's settings.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkAllowed();
   }
 
   @override
@@ -134,7 +161,7 @@ class _RestBarState extends ConsumerState<RestBar> {
   }
 
   Future<void> _checkAllowed() async {
-    if (widget.session.rest == null) return;
+    if (!(widget.session.rest?.counting ?? false)) return;
     try {
       final a = await ref.read(restAlarmProvider).allowed();
       if (mounted && a != _allowed) setState(() => _allowed = a);
@@ -145,6 +172,7 @@ class _RestBarState extends ConsumerState<RestBar> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tick?.cancel();
     super.dispose();
   }
@@ -182,13 +210,31 @@ class _RestBarState extends ConsumerState<RestBar> {
       );
     } else if (!over) {
       _wasOver = false;
-      final key = rest.endsAt;
-      if (key != null && key != _announcedFor) {
-        _announcedFor = key;
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) => _announce(l10n.restLeft(remaining)),
-        );
+      if (rest != _announcedFor) {
+        _announcedFor = rest;
+        final text = !rest.counting
+            ? next
+            : paused
+            ? l10n.restPausedLeft(remaining)
+            : l10n.restLeft(remaining);
+        WidgetsBinding.instance.addPostFrameCallback((_) => _announce(text));
       }
+    }
+
+    if (!rest.counting) {
+      return Material(
+        color: c.surface,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: RfSpace.s16,
+              vertical: RfSpace.s12,
+            ),
+            child: Text(next, style: t.label.copyWith(color: c.textMuted)),
+          ),
+        ),
+      );
     }
 
     Widget control(Key key, IconData icon, String tip, VoidCallback onTap) =>
@@ -297,10 +343,8 @@ class _RestBarState extends ConsumerState<RestBar> {
                           RfSize.minTarget,
                         ),
                       ),
-                      onPressed: () async {
-                        await ref.read(restAlarmProvider).openSettings();
-                        await _checkAllowed();
-                      },
+                      onPressed: () =>
+                          ref.read(restAlarmProvider).openSettings(),
                       child: Text(l10n.restOpenSettings),
                     ),
                   ],

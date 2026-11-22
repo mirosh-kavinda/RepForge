@@ -7,16 +7,23 @@ extension RestNext on Rest {
   NextSet? get next => nextRowId == null || nextSetNo == null
       ? null
       : (rowId: nextRowId!, setNo: nextSetNo!);
+
+  // AC3: false between superset members, where only "Next" is shown.
+  bool get counting => endsAt != null || pausedLeftMs != null;
+}
+
+// AC3: a superset member that isn't the group's last.
+bool restsLater(List<SessionExercise> rows, String rowId) {
+  final row = rows.firstWhere((r) => r.id == rowId);
+  final g = row.superset;
+  return g != null && rows.lastWhere((r) => r.superset == g).id != rowId;
 }
 
 // AC1, AC3, edge: the rest after logging a set of [rowId], or null for none
 // (a superset member that isn't the group's last, or a rest time of 0).
 int? restAfterLog(List<SessionExercise> rows, String rowId) {
+  if (restsLater(rows, rowId)) return null;
   final row = rows.firstWhere((r) => r.id == rowId);
-  if (row.superset case final g?) {
-    final group = rows.where((r) => r.superset == g).toList();
-    if (group.last.id != rowId) return null;
-  }
   return row.restSec > 0 ? row.restSec : null;
 }
 
@@ -58,14 +65,20 @@ Rest startRest(DateTime now, int seconds, NextSet? next) => Rest(
   nextSetNo: next?.setNo,
 );
 
+// AC3: "Next" only, no countdown.
+Rest nextOnly(NextSet? next) =>
+    Rest(nextRowId: next?.rowId, nextSetNo: next?.setNo);
+
 Duration left(Rest r, DateTime now) {
   if (r.pausedLeftMs case final ms?) return Duration(milliseconds: ms);
-  final d = r.endsAt!.difference(now);
+  final end = r.endsAt;
+  if (end == null) return Duration.zero;
+  final d = end.difference(now);
   return d.isNegative ? Duration.zero : d;
 }
 
 bool isOver(Rest r, DateTime now) =>
-    r.pausedLeftMs == null && !now.isBefore(r.endsAt!);
+    r.endsAt != null && r.pausedLeftMs == null && !now.isBefore(r.endsAt!);
 
 // AC4: this rest only; past zero it ends at once (edge).
 Rest adjustRest(Rest r, int seconds, DateTime now) {

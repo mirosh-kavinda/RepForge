@@ -62,6 +62,18 @@ void main() {
     test('AC3 a superset member that is not last starts no rest', () {
       expect(restAfterLog(session([]).exercises, 'r2'), isNull);
       expect(restAfterLog(session([]).exercises, 'r3'), 90);
+      expect(restsLater(session([]).exercises, 'r2'), isTrue);
+      expect(restsLater(session([]).exercises, 'r3'), isFalse);
+      expect(restsLater(session([]).exercises, 'r1'), isFalse);
+    });
+
+    test('AC3 between members only Next is kept, with no countdown', () {
+      final r = nextOnly((rowId: 'r3', setNo: 1));
+      final at = DateTime.utc(2026, 11, 23);
+      expect(r.counting, isFalse);
+      expect(isOver(r, at), isFalse);
+      expect(left(r, at), Duration.zero);
+      expect(r.next, (rowId: 'r3', setNo: 1));
     });
 
     test('edge a rest time of 0 starts no rest', () {

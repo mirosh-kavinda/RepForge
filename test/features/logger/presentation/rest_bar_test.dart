@@ -63,6 +63,7 @@ late DateTime now;
 late FakeRestAlarm alarm;
 late FakeSessionRepository sessions;
 var vibrations = 0;
+final announced = <String>[];
 
 Future<void> open(
   WidgetTester tester, {
@@ -74,6 +75,18 @@ Future<void> open(
   alarm = withAlarm ?? FakeRestAlarm();
   RestActions.resetAsked();
   vibrations = 0;
+  announced.clear();
+  tester.binding.defaultBinaryMessenger.setMockDecodedMessageHandler<Object?>(
+    SystemChannels.accessibility,
+    (message) async {
+      final m = message! as Map<Object?, Object?>;
+      if (m['type'] == 'announce') {
+        final data = m['data']! as Map<Object?, Object?>;
+        announced.add(data['message']! as String);
+      }
+      return null;
+    },
+  );
   tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
     SystemChannels.platform,
     (call) async {
@@ -150,6 +163,20 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('AC1 the rest starts at the log, not when the dialog closes', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final slow = FakeRestAlarm(granted: false);
+      await open(tester, withAlarm: slow);
+      final logged = now;
+      slow.onRequest = () => now = now.add(const Duration(seconds: 20));
+      await logSet(tester, 1);
+      expect(slow.scheduled?.at, logged.add(const Duration(minutes: 2)));
+      expect(find.text('Rest 1:40'), findsOneWidget);
+      handle.dispose();
+    });
+
     testWidgets('AC2 the next set restarts it; editing a set does not', (
       tester,
     ) async {
@@ -174,6 +201,25 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('AC2 deleting a set does not touch the rest', (tester) async {
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      await logSet(tester, 1);
+      final scheduled = alarm.scheduled?.at;
+      await wait(tester, 10);
+      final row = find.bySemanticsLabel(RegExp('^Barbell Squat, Set 1'));
+      await tester.ensureVisible(row);
+      await tester.pumpAndSettle();
+      await tester.tap(row);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete set'));
+      await tester.pumpAndSettle();
+      expect(sessions.active!.sets, isEmpty);
+      expect(alarm.scheduled?.at, scheduled);
+      expect(find.text('Rest 1:50'), findsOneWidget);
+      handle.dispose();
+    });
+
     testWidgets('AC3 a superset rests only after its last exercise', (
       tester,
     ) async {
@@ -181,10 +227,17 @@ void main() {
       await open(tester, template: pair);
       await logSet(tester, 1);
       expect(find.textContaining('Rest '), findsNothing);
+      expect(find.text('Next: Leg Press, set 1'), findsOneWidget);
       expect(alarm.scheduled, isNull);
       await logSet(tester, 1, at: 0);
       expect(find.text('Rest 1:30'), findsOneWidget);
       expect(find.text('Next: Barbell Squat, set 2'), findsOneWidget);
+
+      // A running rest is cancelled by a member that is not the last.
+      await logSet(tester, 2, at: 0);
+      expect(find.textContaining('Rest '), findsNothing);
+      expect(find.text('Next: Leg Press, set 2'), findsOneWidget);
+      expect(alarm.scheduled, isNull);
       handle.dispose();
     });
 
@@ -231,6 +284,39 @@ void main() {
       handle.dispose();
     });
 
+    testWidgets('AC5 Rest over clears when the next set is logged', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      await logSet(tester, 1);
+      await wait(tester, 121);
+      await tester.pump();
+      expect(find.text('Rest over'), findsOneWidget);
+      await logSet(tester, 2);
+      expect(find.text('Rest over'), findsNothing);
+      expect(find.text('Rest 2:00'), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('edge -15 s past zero ends the rest at once, with the alert', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      await logSet(tester, 1, at: 1);
+      expect(find.text('Rest 1:00'), findsOneWidget);
+      await wait(tester, 5);
+      for (var i = 0; i < 4; i++) {
+        await tapKey(tester, RestBar.minusKey);
+      }
+      await tester.pump();
+      expect(find.text('Rest over'), findsOneWidget);
+      expect(vibrations, 1);
+      expect(alarm.scheduled, isNull, reason: 'in-app alert instead');
+      handle.dispose();
+    });
+
     testWidgets('AC6 leaving and coming back shows the right time left', (
       tester,
     ) async {
@@ -243,6 +329,22 @@ void main() {
       await tester.tap(find.byKey(TodayCard.startKey));
       await tester.pumpAndSettle();
       expect(find.text('Rest 0:50'), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('AC6 coming back after the rest ended shows Rest over', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      await logSet(tester, 1);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      now = now.add(const Duration(minutes: 5));
+      await tester.tap(find.byKey(TodayCard.startKey));
+      await tester.pumpAndSettle();
+      expect(find.text('Rest over'), findsOneWidget);
+      expect(vibrations, 0, reason: 'the notification already alerted');
       handle.dispose();
     });
 
@@ -268,6 +370,16 @@ void main() {
       );
       await tapKey(tester, RestBar.settingsKey);
       expect(alarm.settingsOpened, 1);
+      alarm.granted = true;
+      tester.binding
+        ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
+        ..handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Turn on notifications to be alerted when locked'),
+        findsNothing,
+        reason: 'checked again on return from settings',
+      );
       await logSet(tester, 2);
       expect(alarm.requests, 1, reason: 'asked only once');
       handle.dispose();
@@ -317,6 +429,29 @@ void main() {
           greaterThanOrEqualTo(RfSize.minTarget),
         );
       }
+      handle.dispose();
+    });
+
+    testWidgets('NFR-06 announced at start, on change and at the end only', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await open(tester);
+      await logSet(tester, 1);
+      expect(announced, ['Rest 2:00']);
+      await wait(tester, 5);
+      await wait(tester, 5);
+      expect(announced, hasLength(1), reason: 'not every second');
+      await tapKey(tester, RestBar.plusKey);
+      expect(announced.last, 'Rest 2:05');
+      await tapKey(tester, RestBar.pauseKey);
+      expect(announced.last, 'Paused · 2:05');
+      await tapKey(tester, RestBar.plusKey);
+      expect(announced.last, 'Paused · 2:20');
+      await tapKey(tester, RestBar.pauseKey);
+      await wait(tester, 141);
+      await tester.pump();
+      expect(announced.last, 'Rest over. Next: Barbell Squat, set 2');
       handle.dispose();
     });
   });

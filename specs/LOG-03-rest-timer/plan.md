@@ -47,22 +47,26 @@ the clock. Because the state is an end time on disk, leaving or killing the app 
   `endsAt = now + left`. A clock change mid-rest only shifts the in-app display. The scheduled
   alarm keeps its original end time.
 - **Supersets (AC3).** Rows sharing a `superset` id form a group in workout order. Logging a
-  member that isn't the group's last cancels any rest, and Next points to the next member.
+  member that isn't the group's last cancels any rest and stores a "Next only" rest (no end
+  time, no paused time), so the bar shows "Next: <member>, set n" with no countdown or alarm.
   Logging the last member starts the rest with the last member's rest time.
 - **What's next (AC1, AC5).** The next unlogged set: in the same row, else the next row's
   first unlogged set, else nothing ("Last set done"). The alarm text is "Rest over · Next: Bench
   Press, set 3". Only the exercise name and set number appear, no body data (NFR-04).
 - **One alarm (AC2, AC4, AC8).** Every rest change cancels the alarm and schedules a new one, or
   none when paused, skipped, over or finished. A failed schedule never blocks logging.
-- **Permission (AC7).** The first rest asks for notification permission once (Android 13+ and
-  iOS). If it is denied, the bar shows the notifications-off line. Open settings uses
+- **Permission (AC7).** The first rest asks for notification permission once per app launch
+  (Android 13+ and iOS; the OS itself stops re-asking after a denial). The rest is written with
+  the log time before the dialog, so the countdown never waits on it; the alarm is scheduled
+  after. The off line is re-checked when the app resumes from settings. If it is denied, the bar shows the notifications-off line. Open settings uses
   `app_settings` (notification settings on both platforms).
 - **Alert in the app (AC5).** At zero with the logger open, the bar vibrates
   (`HapticFeedback.vibrate`) and shows "Rest over". The scheduled notification fires too and is
   shown by the system, also in the foreground.
-- **Android scheduling.** `exactAllowWhileIdle` when exact alarms are allowed, else
-  `inexactAllowWhileIdle`. Short rests during an active workout are not in deep Doze, so the
-  delay is small. That is acceptable and listed as a risk.
+- **Android scheduling.** The manifest declares `SCHEDULE_EXACT_ALARM` (granted by default on
+  Android 12–13; the user can grant it on 14+). `exactAllowWhileIdle` when exact alarms are
+  allowed, else `inexactAllowWhileIdle`, which can be over a minute late — listed as a risk.
+  Category `reminder`, not `alarm`, so Do Not Disturb is respected (edge).
 - **Logging speed (NFR-01).** Log writes the set first. The rest write and alarm schedule
   follow without being awaited by the Log button's spinner.
 
@@ -76,8 +80,9 @@ the clock. Because the state is an end time on disk, leaving or killing the app 
 
 ## Error handling
 
-- A failed rest write or alarm call is ignored for the set (the set is already saved). The bar
-  shows the in-app countdown anyway.
+- A failed rest write or alarm call is ignored for the set (the set is already saved). A failed
+  write means no rest for that set (the bar reads the stored rest); a failed alarm call still
+  leaves the in-app countdown.
 
 ## Test strategy
 
@@ -90,6 +95,6 @@ the clock. Because the state is an end time on disk, leaving or killing the app 
 
 ## Risks
 
-- Inexact Android alarms can be late in Doze. Checked on a real phone before calling it done.
+- Inexact Android alarms (exact-alarm access off on Android 14+) can be over a minute late. Checked on a real phone before calling it done.
 - Plugin set-up differs per platform. The port keeps it out of the domain and out of tests.
 - iOS can't be checked without a Mac (as in FND-01). iOS set-up is written but not run.

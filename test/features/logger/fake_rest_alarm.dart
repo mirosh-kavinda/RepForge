@@ -1,10 +1,16 @@
 import 'package:repforge/features/logger/domain/rest_alarm.dart';
 
 class FakeRestAlarm implements RestAlarm {
-  FakeRestAlarm({this.granted = true, this.allowOnRequest = true});
+  FakeRestAlarm({
+    this.granted = true,
+    this.allowOnRequest = true,
+    this.onRequest,
+  });
 
   bool granted;
   bool allowOnRequest;
+  // Runs while the permission dialog would be open.
+  void Function()? onRequest;
   var requests = 0;
   var settingsOpened = 0;
   ({DateTime at, String title, String body})? scheduled;
@@ -15,6 +21,7 @@ class FakeRestAlarm implements RestAlarm {
   @override
   Future<bool> request() async {
     requests++;
+    onRequest?.call();
     granted = allowOnRequest;
     return granted;
   }

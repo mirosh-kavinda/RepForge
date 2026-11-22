@@ -23,7 +23,8 @@ class LocalRestAlarm implements RestAlarm {
       channelDescription: 'Tells you when rest between sets is over.',
       importance: Importance.high,
       priority: Priority.high,
-      category: AndroidNotificationCategory.alarm,
+      // No alarm category: it would break through Do Not Disturb (edge).
+      category: AndroidNotificationCategory.reminder,
     ),
     iOS: DarwinNotificationDetails(
       presentAlert: true,
