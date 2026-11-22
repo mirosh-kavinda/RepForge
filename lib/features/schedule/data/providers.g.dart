@@ -247,6 +247,85 @@ final class DayRecordsFamily extends $Family
   String toString() => r'dayRecordsProvider';
 }
 
+@ProviderFor(rangeRecords)
+final rangeRecordsProvider = RangeRecordsFamily._();
+
+final class RangeRecordsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<DayRecord>>,
+          List<DayRecord>,
+          Stream<List<DayRecord>>
+        >
+    with $FutureModifier<List<DayRecord>>, $StreamProvider<List<DayRecord>> {
+  RangeRecordsProvider._({
+    required RangeRecordsFamily super.from,
+    required (DateTime, DateTime) super.argument,
+  }) : super(
+         retry: null,
+         name: r'rangeRecordsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$rangeRecordsHash();
+
+  @override
+  String toString() {
+    return r'rangeRecordsProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<DayRecord>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<DayRecord>> create(Ref ref) {
+    final argument = this.argument as (DateTime, DateTime);
+    return rangeRecords(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RangeRecordsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$rangeRecordsHash() => r'6ad8311457c65c5d36cd57173a861ac263836776';
+
+final class RangeRecordsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<DayRecord>>,
+          (DateTime, DateTime)
+        > {
+  RangeRecordsFamily._()
+    : super(
+        retry: null,
+        name: r'rangeRecordsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  RangeRecordsProvider call(DateTime from, DateTime to) =>
+      RangeRecordsProvider._(argument: (from, to), from: this);
+
+  @override
+  String toString() => r'rangeRecordsProvider';
+}
+
 @ProviderFor(latestDaySeen)
 final latestDaySeenProvider = LatestDaySeenProvider._();
 

@@ -82,6 +82,8 @@ class Cycles extends Table with SyncedTable {
 // SCH-02. One per (cycle, calendar date): a cycle switched to today has its
 // own today. `dayId` is the cycle row; status is done / missed / rest.
 @DataClassName('ScheduleDayRow')
+// SCH-05 AC7: the calendar reads all cycles by date range.
+@TableIndex(name: 'schedule_days_date', columns: {#date})
 class ScheduleDays extends Table with SyncedTable {
   TextColumn get cycleId => text()();
   DateTimeColumn get date => dateTime()();
@@ -118,7 +120,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -144,6 +146,12 @@ class AppDatabase extends _$AppDatabase {
       if (from >= 5 && from < 7) {
         await m.addColumn(scheduleDays, scheduleDays.workoutId);
         await m.addColumn(scheduleDays, scheduleDays.linkedDate);
+      }
+      if (from < 8) {
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS schedule_days_date '
+          'ON schedule_days (date)',
+        );
       }
     },
   );

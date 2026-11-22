@@ -32,6 +32,11 @@ Stream<Cycle?> activeCycle(Ref ref) =>
 Stream<List<DayRecord>> dayRecords(Ref ref, String cycleId, DateTime from) =>
     ref.watch(dayRecordRepositoryProvider).watchSince(cycleId, from);
 
+// SCH-05: every cycle's records over a calendar grid.
+@riverpod
+Stream<List<DayRecord>> rangeRecords(Ref ref, DateTime from, DateTime to) =>
+    ref.watch(dayRecordRepositoryProvider).watchRange(from, to);
+
 @riverpod
 Stream<DateTime?> latestDaySeen(Ref ref) =>
     ref.watch(dayRecordRepositoryProvider).watchLatestDay();

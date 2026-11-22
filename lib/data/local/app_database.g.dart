@@ -4321,6 +4321,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'exercise_muscles_muscle',
     'CREATE INDEX exercise_muscles_muscle ON exercise_muscles (muscle)',
   );
+  late final Index scheduleDaysDate = Index(
+    'schedule_days_date',
+    'CREATE INDEX schedule_days_date ON schedule_days (date)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4336,6 +4340,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cycles,
     scheduleDays,
     exerciseMusclesMuscle,
+    scheduleDaysDate,
   ];
   @override
   DriftDatabaseOptions get options =>

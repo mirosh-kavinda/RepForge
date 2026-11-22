@@ -4,6 +4,10 @@ abstract interface class DayRecordRepository {
   // Live records of one cycle on or after [from], oldest first.
   Stream<List<DayRecord>> watchSince(String cycleId, DateTime from);
 
+  // SCH-05: live records of every cycle from [from] to [to] inclusive, by
+  // date and then last update.
+  Stream<List<DayRecord>> watchRange(DateTime from, DateTime to);
+
   // Upserts the date's done record; marking again after Undo restores it. A
   // planned workout (SCH-04) is kept; any other record is left as it is
   // (edge: clock moved back).

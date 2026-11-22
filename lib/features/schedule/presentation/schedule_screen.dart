@@ -8,6 +8,7 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../../app/widgets/rf_segmented.dart';
 import '../../../app/widgets/rf_tappable.dart';
 import '../../../core/clock.dart';
 import '../../workout/data/providers.dart';
@@ -17,17 +18,20 @@ import '../domain/cycle.dart';
 import '../domain/cycle_rules.dart' as rules;
 import '../domain/day_record.dart';
 import '../domain/starter_plans.dart';
+import 'calendar_view.dart';
 import 'cycle_day_tile.dart';
 import 'starter_plan_cards.dart';
 import 'weekday_labels.dart';
 
-// Screen 03: the active cycle (SCH-01 AC6, SCH-03 AC8). Calendar comes later.
+// Screen 03: the active cycle (SCH-01 AC6, SCH-03 AC8) or the month calendar
+// (SCH-05).
 class ScheduleScreen extends ConsumerStatefulWidget {
   const ScheduleScreen({super.key});
 
   static const workoutsKey = ValueKey('schedule.workouts');
   static const cyclesKey = ValueKey('schedule.cycles');
   static const newCycleKey = ValueKey('schedule.newCycle');
+  static const viewKey = ValueKey('schedule.view');
 
   @override
   ConsumerState<ScheduleScreen> createState() => _ScheduleScreenState();
@@ -36,6 +40,8 @@ class ScheduleScreen extends ConsumerStatefulWidget {
 class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   // A second tap during the save would save a second cycle.
   bool _saving = false;
+  // SCH-05 AC1: starts on Cycle each time Schedule opens.
+  bool _calendar = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,44 +70,63 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       appBar: AppBar(title: Text(l10n.tabSchedule)),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(RfSpace.s20),
+          // Seven 48 dp calendar columns need the narrower gutter (NFR-06).
+          padding: EdgeInsets.symmetric(
+            horizontal: _calendar ? RfSpace.s12 : RfSpace.s20,
+            vertical: RfSpace.s20,
+          ),
           children: [
-            // In the body, not the app bar, so it wraps at 200 % text.
-            Align(
-              alignment: Alignment.centerRight,
-              child: RfButton(
-                key: ScheduleScreen.newCycleKey,
-                label: l10n.scheduleNewCycle,
-                size: RfButtonSize.md,
-                onPressed: () => context.push(Routes.cycleNew),
-              ),
+            RfSegmented<bool>(
+              key: ScheduleScreen.viewKey,
+              label: l10n.scheduleViewLabel,
+              options: {
+                false: l10n.scheduleViewCycle,
+                true: l10n.scheduleViewCalendar,
+              },
+              selected: _calendar,
+              allowNone: false,
+              onChanged: (v) => setState(() => _calendar = v ?? false),
             ),
             const SizedBox(height: RfSpace.s12),
-            switch (active) {
-              _ when templates.isLoading && !templates.hasValue => const Center(
-                child: CircularProgressIndicator(),
+            if (_calendar)
+              const CalendarView()
+            else ...[
+              // In the body, not the app bar, so it wraps at 200 % text.
+              Align(
+                alignment: Alignment.centerRight,
+                child: RfButton(
+                  key: ScheduleScreen.newCycleKey,
+                  label: l10n.scheduleNewCycle,
+                  size: RfButtonSize.md,
+                  onPressed: () => context.push(Routes.cycleNew),
+                ),
               ),
-              AsyncValue(:final value?) => _ActiveCycleCard(cycle: value),
-              AsyncValue(hasValue: true) => _EmptyCycle(
-                plans: availablePlans(workouts, today),
-                onPlan: usePlan,
+              const SizedBox(height: RfSpace.s12),
+              switch (active) {
+                _ when templates.isLoading && !templates.hasValue =>
+                  const Center(child: CircularProgressIndicator()),
+                AsyncValue(:final value?) => _ActiveCycleCard(cycle: value),
+                AsyncValue(hasValue: true) => _EmptyCycle(
+                  plans: availablePlans(workouts, today),
+                  onPlan: usePlan,
+                ),
+                AsyncValue(hasError: true) => Text(l10n.scheduleLoadFailed),
+                _ => const Center(child: CircularProgressIndicator()),
+              },
+              const SizedBox(height: RfSpace.s16),
+              _LinkCard(
+                key: ScheduleScreen.cyclesKey,
+                title: l10n.scheduleMyCycles,
+                onTap: () => context.push(Routes.cycles),
               ),
-              AsyncValue(hasError: true) => Text(l10n.scheduleLoadFailed),
-              _ => const Center(child: CircularProgressIndicator()),
-            },
-            const SizedBox(height: RfSpace.s16),
-            _LinkCard(
-              key: ScheduleScreen.cyclesKey,
-              title: l10n.scheduleMyCycles,
-              onTap: () => context.push(Routes.cycles),
-            ),
-            const SizedBox(height: RfSpace.s8),
-            _LinkCard(
-              key: ScheduleScreen.workoutsKey,
-              title: l10n.scheduleMyWorkouts,
-              hint: l10n.scheduleMyWorkoutsHint,
-              onTap: () => context.push(Routes.workouts),
-            ),
+              const SizedBox(height: RfSpace.s8),
+              _LinkCard(
+                key: ScheduleScreen.workoutsKey,
+                title: l10n.scheduleMyWorkouts,
+                hint: l10n.scheduleMyWorkoutsHint,
+                onTap: () => context.push(Routes.workouts),
+              ),
+            ],
           ],
         ),
       ),

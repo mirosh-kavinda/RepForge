@@ -4,6 +4,7 @@ import 'package:repforge/data/local/app_database.dart';
 import 'package:repforge/data/local/local_data_wiper.dart';
 import 'package:repforge/data/sync/sync_state.dart';
 import 'package:repforge/features/schedule/data/drift_day_record_repository.dart';
+import 'package:repforge/features/schedule/domain/calendar.dart';
 import 'package:repforge/features/schedule/domain/day_record.dart';
 
 final sat = DateTime.utc(2026, 11, 21);
@@ -325,6 +326,49 @@ void main() {
         ('scheduleDay', OutboxOp.delete),
         ('scheduleDay', OutboxOp.update),
       ]);
+    });
+
+    test('SCH-05 range reads every cycle between two dates, by date', () async {
+      await done(sat, cycle: 'a');
+      await done(sun, cycle: 'b');
+      await done(mon, cycle: 'a');
+      await done(DateTime.utc(2026, 11, 24), cycle: 'b');
+      final r = await repo.watchRange(sun, mon).first;
+      expect(r.map((x) => (x.date, x.cycleId)), [(sun, 'b'), (mon, 'a')]);
+    });
+
+    test('SCH-05 AC7 a month of 2 years of data reads under 300 ms', () async {
+      final start = DateTime.utc(2024, 12, 1);
+      await repo.writeSettled([
+        for (final c in ['a', 'b', 'c'])
+          for (var i = 0; i < 760; i++)
+            DayRecord(
+              id: '$c$i',
+              cycleId: c,
+              date: start.add(Duration(days: i)),
+              dayId: 'd1',
+              dayIndex: 0,
+              status: DayStatus.done,
+            ),
+      ]);
+      for (final m in [10, 11]) {
+        final sw = Stopwatch()..start();
+        final dates = monthDates(DateTime.utc(2026, m), 1);
+        final r = await repo.watchRange(dates.first, dates.last).first;
+        final days = buildMonth(
+          month: DateTime.utc(2026, m),
+          firstDay: 1,
+          today: DateTime.utc(2026, 11, 23),
+          records: r,
+          active: null,
+          rolled: null,
+          cycles: const {},
+        );
+        sw.stop();
+        expect(r.length, dates.length * 3);
+        expect(days, hasLength(dates.length));
+        expect(sw.elapsedMilliseconds, lessThan(300), reason: 'month $m');
+      }
     });
   });
 }

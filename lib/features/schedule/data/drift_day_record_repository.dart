@@ -40,6 +40,17 @@ class DriftDayRecordRepository implements DayRecordRepository {
           .watch()
           .map((rows) => rows.map(_fromRow).toList());
 
+  @override
+  Stream<List<DayRecord>> watchRange(DateTime from, DateTime to) =>
+      (_db.selectActive(_db.scheduleDays)
+            ..where((r) => r.date.isBetweenValues(from, to))
+            ..orderBy([
+              (r) => OrderingTerm(expression: r.date),
+              (r) => OrderingTerm(expression: r.updatedAt),
+            ]))
+          .watch()
+          .map((rows) => rows.map(_fromRow).toList());
+
   // Includes a soft-deleted row: the (cycle, date) key is unique.
   Future<ScheduleDayRow?> _row(String cycleId, DateTime date) =>
       (_db.select(_db.scheduleDays)

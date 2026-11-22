@@ -7,10 +7,14 @@ class FakeDayRecordRepository implements DayRecordRepository {
   FakeDayRecordRepository([List<DayRecord> initial = const []]) {
     for (final r in initial) {
       _all[(r.cycleId, r.date)] = r;
+      _written[(r.cycleId, r.date)] = ++_clock;
     }
   }
 
   final _all = <(String, DateTime), DayRecord>{};
+  // Write order per key, standing in for Drift's updatedAt (SCH-05).
+  final _written = <(String, DateTime), int>{};
+  var _clock = 0;
   final _changes = StreamController<void>.broadcast();
   final settled = <DayRecord>[];
   Object? failWith;
@@ -28,6 +32,29 @@ class FakeDayRecordRepository implements DayRecordRepository {
     yield read();
     await for (final _ in _changes.stream) {
       yield read();
+    }
+  }
+
+  @override
+  Stream<List<DayRecord>> watchRange(DateTime from, DateTime to) async* {
+    int order(DayRecord r) => _written[(r.cycleId, r.date)] ?? 0;
+    List<DayRecord> read() =>
+        [
+          for (final r in all)
+            if (!r.date.isBefore(from) && !r.date.isAfter(to)) r,
+        ]..sort((a, b) {
+          final d = a.date.compareTo(b.date);
+          return d != 0 ? d : order(a).compareTo(order(b));
+        });
+    yield read();
+    await for (final _ in _changes.stream) {
+      yield read();
+    }
+  }
+
+  void _stamp() {
+    for (final k in _all.keys) {
+      _written.putIfAbsent(k, () => ++_clock);
     }
   }
 
@@ -56,6 +83,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
       workoutId: existing?.workoutId,
       linkedDate: existing?.linkedDate,
     );
+    _stamp();
     _changes.add(null);
   }
 
@@ -79,6 +107,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
       case _:
         _all.remove((cycleId, date));
     }
+    _stamp();
     _changes.add(null);
   }
 
@@ -99,6 +128,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
     if (failWith case final e?) throw e;
     if (!_open(r.cycleId, r.date, r.dayId)) return;
     _all[(r.cycleId, r.date)] = r;
+    _stamp();
     _changes.add(null);
   }
 
@@ -190,6 +220,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
       workoutId: workoutId,
       linkedDate: date,
     );
+    _stamp();
     _changes.add(null);
   }
 
@@ -205,6 +236,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
       _all[(r.cycleId, r.date)] = r;
     }
     settled.addAll(fresh);
+    _stamp();
     _changes.add(null);
   }
 
@@ -222,6 +254,7 @@ class FakeDayRecordRepository implements DayRecordRepository {
   Future<void> seeDay(DateTime date) async {
     if (latestDay != null && !latestDay!.isBefore(date)) return;
     latestDay = date;
+    _stamp();
     _changes.add(null);
   }
 }

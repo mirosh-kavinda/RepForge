@@ -27,4 +27,6 @@ abstract final class RfSize {
   static const buttonLg = 52.0;
   static const buttonMd = 44.0;
   static const stepperButton = 44.0;
+  // Status icons inside a calendar cell (SCH-05).
+  static const iconSm = 16.0;
 }

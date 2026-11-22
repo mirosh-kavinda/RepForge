@@ -221,9 +221,32 @@ void main() {
     );
   });
 
+  group('SCH-05 schema v8', () {
+    test('v7 -> v8 adds the schedule_days date index', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v7 = AppDatabase(NativeDatabase(file));
+      await v7.customStatement('DROP INDEX schedule_days_date');
+      await v7.customStatement('PRAGMA user_version = 7');
+      await v7.close();
+
+      final v8 = AppDatabase(NativeDatabase(file));
+      addTearDown(v8.close);
+      final names = await v8
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND name = 'schedule_days_date'",
+          )
+          .get();
+      expect(names, hasLength(1));
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 7);
+      expect(db.schemaVersion, 8);
       final names =
           (await db
                   .customSelect(

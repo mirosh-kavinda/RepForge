@@ -1580,5 +1580,87 @@
   "swapNoOthers": "No other workouts yet. Build one in My workouts.",
   "@swapNoOthers": {
     "description": "Swap with no other workouts."
+  },
+  "scheduleViewLabel": "Schedule view",
+  "@scheduleViewLabel": {
+    "description": "Cycle / Calendar choice label."
+  },
+  "scheduleViewCycle": "Cycle",
+  "@scheduleViewCycle": {
+    "description": "Schedule view: the cycle card."
+  },
+  "scheduleViewCalendar": "Calendar",
+  "@scheduleViewCalendar": {
+    "description": "Schedule view: the month calendar."
+  },
+  "calendarPrevMonth": "Previous month",
+  "@calendarPrevMonth": {
+    "description": "Calendar navigation."
+  },
+  "calendarNextMonth": "Next month",
+  "@calendarNextMonth": {
+    "description": "Calendar navigation."
+  },
+  "calendarThisMonth": "This month",
+  "@calendarThisMonth": {
+    "description": "Calendar navigation back to the current month."
+  },
+  "calendarNoCycle": "No active cycle. Past days still show here.",
+  "@calendarNoCycle": {
+    "description": "Calendar with no active cycle."
+  },
+  "calendarLoadFailed": "Couldn't load your calendar.",
+  "@calendarLoadFailed": {
+    "description": "Calendar read failed."
+  },
+  "calendarPlanned": "planned",
+  "@calendarPlanned": {
+    "description": "Calendar: a date's plan, not history."
+  },
+  "calendarOtherMonth": "other month",
+  "@calendarOtherMonth": {
+    "description": "Calendar: a date outside the shown month."
+  },
+  "calendarMissed": "Missed",
+  "@calendarMissed": {
+    "description": "Calendar status."
+  },
+  "calendarMoved": "Moved",
+  "@calendarMoved": {
+    "description": "Calendar status."
+  },
+  "calendarCycle": "Cycle: {name}",
+  "@calendarCycle": {
+    "description": "Day sheet: the cycle the date belongs to.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarNothing": "Nothing recorded",
+  "@calendarNothing": {
+    "description": "Day sheet for a date with no history or plan."
+  },
+  "calendarToday": "Today: {summary}",
+  "@calendarToday": {
+    "description": "Visible line naming today on the calendar.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarSwapped": "Swapped",
+  "@calendarSwapped": {
+    "description": "Calendar legend: a swapped or moved-in workout."
+  },
+  "calendarPlannedRest": "Rest, planned",
+  "@calendarPlannedRest": {
+    "description": "Calendar legend: a planned rest day."
+  },
+  "calendarWorkoutPlanned": "Workout, planned",
+  "@calendarWorkoutPlanned": {
+    "description": "Calendar legend: a planned training day."
   }
 }
