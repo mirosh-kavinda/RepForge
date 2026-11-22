@@ -8,6 +8,7 @@ import '../features/auth/presentation/email_sign_in_screen.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/library/presentation/library_screen.dart';
+import '../features/logger/presentation/logger_screen.dart';
 import '../features/onboarding/data/providers.dart';
 import '../features/onboarding/presentation/about_you_screen.dart';
 import '../features/onboarding/presentation/goal_level_screen.dart';
@@ -33,6 +34,8 @@ abstract final class Routes {
   static const signInEmail = '/sign-in/email';
   static const account = '/account';
   static const home = '/home';
+  // LOG-01 screen 02, full screen over the tabs.
+  static const workout = '/workout';
   static const schedule = '/schedule';
   static const library = '/library';
   static const progress = '/progress';
@@ -96,6 +99,10 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: Routes.start,
         builder: (context, state) => const Scaffold(),
+      ),
+      GoRoute(
+        path: Routes.workout,
+        builder: (context, state) => const LoggerScreen(),
       ),
       GoRoute(
         path: Routes.account,

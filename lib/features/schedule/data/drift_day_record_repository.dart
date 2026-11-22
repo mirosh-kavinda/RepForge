@@ -109,12 +109,14 @@ class DriftDayRecordRepository implements DayRecordRepository {
     required DateTime date,
     required String dayId,
     required int dayIndex,
+    bool fromWorkout = false,
   }) => _db.transaction(() async {
     final existing = await _row(cycleId, date);
     final live = _onRow(_live(existing), dayId);
     if (live != null &&
         live.status != DayStatus.done &&
-        live.status != DayStatus.planned) {
+        live.status != DayStatus.planned &&
+        !(fromWorkout && live.status == DayStatus.missed)) {
       return;
     }
     await _put(

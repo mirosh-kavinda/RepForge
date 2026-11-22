@@ -244,9 +244,28 @@ void main() {
     });
   });
 
+  group('LOG-01 schema v9', () {
+    test('v8 -> v9 adds workout sessions and their sets', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v8 = AppDatabase(NativeDatabase(file));
+      await v8.customStatement('DROP TABLE workout_sessions');
+      await v8.customStatement('DROP TABLE session_sets');
+      await v8.customStatement('PRAGMA user_version = 8');
+      await v8.close();
+
+      final v9 = AppDatabase(NativeDatabase(file));
+      addTearDown(v9.close);
+      expect(await v9.select(v9.workoutSessions).get(), isEmpty);
+      expect(await v9.select(v9.sessionSets).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 8);
+      expect(db.schemaVersion, 9);
       final names =
           (await db
                   .customSelect(

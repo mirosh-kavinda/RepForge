@@ -1,12 +1,20 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../../core/clock.dart';
+import '../../../core/ids.dart';
+import '../../library/data/providers.dart';
+import '../../library/domain/exercise.dart';
+import '../../logger/data/providers.dart';
+import '../../logger/domain/logger_rules.dart';
 import '../../schedule/data/providers.dart';
 import '../../schedule/domain/cycle.dart';
 import '../../schedule/domain/cycle_rules.dart' show weekdayRow;
@@ -28,6 +36,7 @@ class TodayCard extends ConsumerStatefulWidget {
   static const actionKey = ValueKey('today.action');
   static const dayActionsKey = ValueKey('today.dayActions');
   static const undoKey = ValueKey('today.undo');
+  static const startKey = ValueKey('today.start');
 
   @override
   ConsumerState<TodayCard> createState() => _TodayCardState();
@@ -49,6 +58,58 @@ class _TodayCardState extends ConsumerState<TodayCard> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  // WKT-02 AC1, AC8: open the workout in progress, or start today's from a
+  // copy of its template.
+  // A second tap while starting would start or push the logger twice.
+  bool _starting = false;
+
+  Future<void> _startWorkout(ActiveToday a, WorkoutTemplate? t) async {
+    if (_starting) return;
+    _starting = true;
+    try {
+      await _openWorkout(a, t);
+    } finally {
+      _starting = false;
+    }
+  }
+
+  Future<void> _openWorkout(ActiveToday a, WorkoutTemplate? t) async {
+    if (ref.read(activeSessionProvider).value == null && t != null) {
+      final catalog = await ref.read(exerciseCatalogProvider.future);
+      final exercises = <String, Exercise>{};
+      for (final e in t.exercises) {
+        if (await catalog.byId(e.exerciseId) case final x?) {
+          exercises[x.id] = x;
+        }
+      }
+      final i = a.today.index;
+      var ok = true;
+      await _write(() async {
+        try {
+          await ref
+              .read(sessionRepositoryProvider)
+              .start(
+                sessionFromTemplate(
+                  id: newId(),
+                  template: t,
+                  exercises: exercises,
+                  date: a.date,
+                  startedAt: ref.read(clockProvider)().toUtc(),
+                  cycleId: a.cycle.id,
+                  dayId: a.cycle.days[i].id,
+                  dayIndex: i,
+                ),
+              );
+        } on Object {
+          ok = false;
+          rethrow;
+        }
+      });
+      if (!ok) return;
+    }
+    if (mounted) await context.push(Routes.workout);
   }
 
   Future<void> _act(
@@ -169,6 +230,8 @@ class _TodayCardState extends ConsumerState<TodayCard> {
     final actions = availableActions(cycle, a.today, moveTargets: targets);
     final locked = a.today.readOnly;
     final repo = ref.read(dayRecordRepositoryProvider);
+    final inProgress = ref.watch(activeSessionProvider).value;
+    final template = workouts[shown];
 
     // Rolling unplanned rest: the same workout waits for tomorrow (AC5).
     final nextIndex = !weekdays && status == DayStatus.unplannedRest
@@ -216,6 +279,16 @@ class _TodayCardState extends ConsumerState<TodayCard> {
       child: Text(text, style: t.label.copyWith(color: color)),
     );
 
+    // AC8: a workout in progress can always be resumed from Home.
+    final resume = inProgress == null
+        ? null
+        : button(
+            TodayCard.startKey,
+            l10n.homeResumeWorkout,
+            () => _startWorkout(a, null),
+            variant: RfButtonVariant.primary,
+          );
+
     final List<Widget> children;
     if (shown == null ||
         status == DayStatus.unplannedRest ||
@@ -231,6 +304,7 @@ class _TodayCardState extends ConsumerState<TodayCard> {
           ),
         ),
         line(weekday ?? l10n.homeDayOf(i + 1, total), c.restInk),
+        ?resume,
         if (status == DayStatus.moved && r?.linkedDate != null)
           line(
             l10n.homeMovedTo(week.full(r!.linkedDate!.weekday - 1)),
@@ -285,11 +359,21 @@ class _TodayCardState extends ConsumerState<TodayCard> {
             ],
           ),
         ],
+        if (locked || done || skipped) ?resume,
         if (!locked) ...[
           const SizedBox(height: RfSpace.s4),
           if (done || skipped)
             button(TodayCard.actionKey, l10n.undo, undo)
           else ...[
+            if (resume != null)
+              resume
+            else if (template != null)
+              button(
+                TodayCard.startKey,
+                l10n.homeStartWorkout,
+                () => _startWorkout(a, template),
+                variant: RfButtonVariant.primary,
+              ),
             button(
               TodayCard.actionKey,
               l10n.homeMarkDone,
@@ -301,7 +385,9 @@ class _TodayCardState extends ConsumerState<TodayCard> {
                   dayIndex: i,
                 ),
               ),
-              variant: RfButtonVariant.primary,
+              variant: resume == null && template == null
+                  ? RfButtonVariant.primary
+                  : RfButtonVariant.secondary,
             ),
             ?actionsButton(),
             if (status == DayStatus.planned && r?.linkedDate == null)

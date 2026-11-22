@@ -10,12 +10,15 @@ abstract interface class DayRecordRepository {
 
   // Upserts the date's done record; marking again after Undo restores it. A
   // planned workout (SCH-04) is kept; any other record is left as it is
-  // (edge: clock moved back).
+  // (edge: clock moved back). [fromWorkout]: a workout finished for this date
+  // (LOG-01) also replaces a missed record, which the settler writes once the
+  // date has passed mid-workout.
   Future<void> markDone({
     required String cycleId,
     required DateTime date,
     required String dayId,
     required int dayIndex,
+    bool fromWorkout = false,
   });
 
   // One step back (SCH-04 AC9): done with a planned workout → planned; done,

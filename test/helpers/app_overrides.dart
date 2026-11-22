@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/misc.dart';
+import 'package:repforge/core/metrics/units.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
+import 'package:repforge/features/logger/data/providers.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
 import 'package:repforge/features/schedule/data/providers.dart';
 import 'package:repforge/features/workout/data/providers.dart';
 
 import '../features/auth/fake_auth_repository.dart';
+import '../features/logger/fake_session_repository.dart';
 import '../features/onboarding/fake_onboarding_repository.dart';
 import '../features/schedule/fake_cycle_repository.dart';
 import '../features/schedule/fake_day_record_repository.dart';
@@ -18,10 +21,12 @@ List<Override> signedInOverrides({
   FakeTemplateRepository? templates,
   FakeCycleRepository? cycles,
   FakeDayRecordRepository? days,
+  FakeSessionRepository? sessions,
+  UnitSystem units = UnitSystem.metric,
 }) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
   onboardingRepositoryProvider.overrideWithValue(
-    FakeOnboardingRepository(done: true),
+    FakeOnboardingRepository(done: true, units: units),
   ),
   authRepositoryProvider.overrideWithValue(
     auth ??
@@ -39,5 +44,8 @@ List<Override> signedInOverrides({
   cycleRepositoryProvider.overrideWithValue(cycles ?? FakeCycleRepository()),
   dayRecordRepositoryProvider.overrideWithValue(
     days ?? FakeDayRecordRepository(),
+  ),
+  sessionRepositoryProvider.overrideWithValue(
+    sessions ?? FakeSessionRepository(days: days),
   ),
 ];

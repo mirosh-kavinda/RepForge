@@ -65,12 +65,14 @@ class FakeDayRecordRepository implements DayRecordRepository {
     required DateTime date,
     required String dayId,
     required int dayIndex,
+    bool fromWorkout = false,
   }) async {
     if (failWith case final e?) throw e;
     final existing = _onRow(_all[(cycleId, date)], dayId);
     if (existing != null &&
         existing.status != DayStatus.done &&
-        existing.status != DayStatus.planned) {
+        existing.status != DayStatus.planned &&
+        !(fromWorkout && existing.status == DayStatus.missed)) {
       return;
     }
     _all[(cycleId, date)] = DayRecord(

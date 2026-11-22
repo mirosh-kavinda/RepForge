@@ -1662,5 +1662,157 @@
   "calendarWorkoutPlanned": "Workout, planned",
   "@calendarWorkoutPlanned": {
     "description": "Calendar legend: a planned training day."
+  },
+  "homeStartWorkout": "Start workout",
+  "@homeStartWorkout": {
+    "description": "Home: open today's workout in the logger."
+  },
+  "homeResumeWorkout": "Resume workout",
+  "@homeResumeWorkout": {
+    "description": "Home: back to the workout in progress."
+  },
+  "loggerFinish": "Finish",
+  "@loggerFinish": {
+    "description": "Logger: end the workout."
+  },
+  "loggerLog": "Log",
+  "@loggerLog": {
+    "description": "Logger: save this set."
+  },
+  "loggerLogSet": "Log set {n}",
+  "@loggerLogSet": {
+    "description": "Logger: Log button semantics.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerSet": "Set {n}",
+  "@loggerSet": {
+    "description": "Logger: set number.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerAddSet": "+ Set",
+  "@loggerAddSet": {
+    "description": "Logger: add one more set."
+  },
+  "loggerAddExercise": "Add exercise",
+  "@loggerAddExercise": {
+    "description": "Logger: add an exercise at the end."
+  },
+  "loggerSwapExercise": "Swap exercise",
+  "@loggerSwapExercise": {
+    "description": "Logger: replace an exercise."
+  },
+  "loggerExerciseActions": "Actions for {name}",
+  "@loggerExerciseActions": {
+    "description": "Logger: exercise menu.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerMenu": "Workout actions",
+  "@loggerMenu": {
+    "description": "Logger: overflow menu."
+  },
+  "loggerDiscard": "Discard workout",
+  "@loggerDiscard": {
+    "description": "Logger: throw the workout away."
+  },
+  "loggerDiscardTitle": "Discard this workout?",
+  "@loggerDiscardTitle": {
+    "description": "Discard dialog title."
+  },
+  "loggerDiscardBody": "Its logged sets will be removed.",
+  "@loggerDiscardBody": {
+    "description": "Discard dialog body."
+  },
+  "loggerKeepGoing": "Keep going",
+  "@loggerKeepGoing": {
+    "description": "Discard dialog: cancel."
+  },
+  "loggerNeedSet": "Log at least one set",
+  "@loggerNeedSet": {
+    "description": "Finish with no sets."
+  },
+  "loggerWeight": "Weight",
+  "@loggerWeight": {
+    "description": "Stepper label."
+  },
+  "loggerReps": "Reps",
+  "@loggerReps": {
+    "description": "Stepper label."
+  },
+  "loggerSeconds": "Seconds",
+  "@loggerSeconds": {
+    "description": "Stepper label."
+  },
+  "loggerBodyweight": "Bodyweight",
+  "@loggerBodyweight": {
+    "description": "A bodyweight set with no added load."
+  },
+  "loggerEditSet": "Edit set {n}",
+  "@loggerEditSet": {
+    "description": "Edit sheet title.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerDeleteSet": "Delete set",
+  "@loggerDeleteSet": {
+    "description": "Edit sheet action."
+  },
+  "loggerReps1": "{n} reps",
+  "@loggerReps1": {
+    "description": "A set's reps.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerSeconds1": "{n} s",
+  "@loggerSeconds1": {
+    "description": "A set's seconds.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerKg": "{value} kg",
+  "@loggerKg": {
+    "description": "Weight in kg.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerLb": "{value} lb",
+  "@loggerLb": {
+    "description": "Weight in lb.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitKg": "kg",
+  "@unitKg": {
+    "description": "Unit."
+  },
+  "unitLb": "lb",
+  "@unitLb": {
+    "description": "Unit."
   }
 }

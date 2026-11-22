@@ -101,6 +101,43 @@ class ScheduleDays extends Table with SyncedTable {
   ];
 }
 
+// LOG-01. A workout, with a copy of the rows it started from (JSON). In
+// progress while ended_at is null; it gets its first outbox row on Finish
+// (NFR-10: one cloud write per finished workout).
+@DataClassName('SessionRow')
+class WorkoutSessions extends Table with SyncedTable {
+  TextColumn get templateId => text().nullable()();
+  TextColumn get name => text()();
+  TextColumn get exercises => text()();
+  TextColumn get cycleId => text().nullable()();
+  TextColumn get dayId => text().nullable()();
+  IntColumn get dayIndex => integer().nullable()();
+  // The calendar day it was started for (edge: midnight mid-workout).
+  DateTimeColumn get date => dateTime()();
+  DateTimeColumn get startedAt => dateTime()();
+  DateTimeColumn get endedAt => dateTime().nullable()();
+}
+
+// LOG-01. Local only: synced inside its session, never on its own.
+@DataClassName('SessionSetRow')
+@TableIndex(name: 'session_sets_session', columns: {#sessionId})
+@TableIndex(name: 'session_sets_exercise', columns: {#exerciseId})
+class SessionSets extends Table {
+  TextColumn get id => text()();
+  TextColumn get sessionId => text()();
+  TextColumn get rowId => text()();
+  TextColumn get exerciseId => text()();
+  IntColumn get setNo => integer()();
+  RealColumn get kg => real()();
+  IntColumn get reps => integer().nullable()();
+  IntColumn get seconds => integer().nullable()();
+  DateTimeColumn get loggedAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 const catalogVersionKey = 'catalogVersion';
 
 @DriftDatabase(
@@ -114,13 +151,15 @@ const catalogVersionKey = 'catalogVersion';
     WorkoutTemplates,
     Cycles,
     ScheduleDays,
+    WorkoutSessions,
+    SessionSets,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -151,6 +190,18 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS schedule_days_date '
           'ON schedule_days (date)',
+        );
+      }
+      if (from < 9) {
+        await m.createTable(workoutSessions);
+        await m.createTable(sessionSets);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS session_sets_session '
+          'ON session_sets (session_id)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS session_sets_exercise '
+          'ON session_sets (exercise_id)',
         );
       }
     },

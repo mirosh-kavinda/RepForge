@@ -82,6 +82,9 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 
 Design choices:
 - Sets are embedded in the session document; while a workout runs, sets live only in Drift.
+  Locally (WKT-02, LOG-01): `workout_sessions` holds the workout with a JSON copy of its rows
+  (ended_at null while in progress) and `session_sets` its sets. The first outbox row is the
+  session's create on Finish, in the same transaction that marks the cycle day done.
   One Firestore write per finished workout (NFR-10).
 - Records and stats are derived on device; cached in Firestore only to speed up restore.
 - `scheduleDays`: one per (cycle, date), since a cycle switched to today has its own today;
