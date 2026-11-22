@@ -4449,6 +4449,15 @@ class $WorkoutSessionsTable extends WorkoutSessions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -4465,6 +4474,7 @@ class $WorkoutSessionsTable extends WorkoutSessions
     startedAt,
     endedAt,
     rest,
+    note,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4563,6 +4573,12 @@ class $WorkoutSessionsTable extends WorkoutSessions
         rest.isAcceptableOrUnknown(data['rest']!, _restMeta),
       );
     }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
     return context;
   }
 
@@ -4630,6 +4646,10 @@ class $WorkoutSessionsTable extends WorkoutSessions
         DriftSqlType.string,
         data['${effectivePrefix}rest'],
       ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
     );
   }
 
@@ -4657,6 +4677,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
   final DateTime startedAt;
   final DateTime? endedAt;
   final String? rest;
+  final String? note;
   const SessionRow({
     required this.id,
     required this.updatedAt,
@@ -4672,6 +4693,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     required this.startedAt,
     this.endedAt,
     this.rest,
+    this.note,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4708,6 +4730,9 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     if (!nullToAbsent || rest != null) {
       map['rest'] = Variable<String>(rest);
     }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
     return map;
   }
 
@@ -4739,6 +4764,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
           ? const Value.absent()
           : Value(endedAt),
       rest: rest == null && nullToAbsent ? const Value.absent() : Value(rest),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
     );
   }
 
@@ -4764,6 +4790,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
       rest: serializer.fromJson<String?>(json['rest']),
+      note: serializer.fromJson<String?>(json['note']),
     );
   }
   @override
@@ -4786,6 +4813,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'endedAt': serializer.toJson<DateTime?>(endedAt),
       'rest': serializer.toJson<String?>(rest),
+      'note': serializer.toJson<String?>(note),
     };
   }
 
@@ -4804,6 +4832,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     DateTime? startedAt,
     Value<DateTime?> endedAt = const Value.absent(),
     Value<String?> rest = const Value.absent(),
+    Value<String?> note = const Value.absent(),
   }) => SessionRow(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -4819,6 +4848,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     startedAt: startedAt ?? this.startedAt,
     endedAt: endedAt.present ? endedAt.value : this.endedAt,
     rest: rest.present ? rest.value : this.rest,
+    note: note.present ? note.value : this.note,
   );
   SessionRow copyWithCompanion(WorkoutSessionsCompanion data) {
     return SessionRow(
@@ -4838,6 +4868,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
       startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
       endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
       rest: data.rest.present ? data.rest.value : this.rest,
+      note: data.note.present ? data.note.value : this.note,
     );
   }
 
@@ -4857,7 +4888,8 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
           ..write('date: $date, ')
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt, ')
-          ..write('rest: $rest')
+          ..write('rest: $rest, ')
+          ..write('note: $note')
           ..write(')'))
         .toString();
   }
@@ -4878,6 +4910,7 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
     startedAt,
     endedAt,
     rest,
+    note,
   );
   @override
   bool operator ==(Object other) =>
@@ -4896,7 +4929,8 @@ class SessionRow extends DataClass implements Insertable<SessionRow> {
           other.date == this.date &&
           other.startedAt == this.startedAt &&
           other.endedAt == this.endedAt &&
-          other.rest == this.rest);
+          other.rest == this.rest &&
+          other.note == this.note);
 }
 
 class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
@@ -4914,6 +4948,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
   final Value<DateTime> startedAt;
   final Value<DateTime?> endedAt;
   final Value<String?> rest;
+  final Value<String?> note;
   final Value<int> rowid;
   const WorkoutSessionsCompanion({
     this.id = const Value.absent(),
@@ -4930,6 +4965,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     this.startedAt = const Value.absent(),
     this.endedAt = const Value.absent(),
     this.rest = const Value.absent(),
+    this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WorkoutSessionsCompanion.insert({
@@ -4947,6 +4983,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     required DateTime startedAt,
     this.endedAt = const Value.absent(),
     this.rest = const Value.absent(),
+    this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        name = Value(name),
@@ -4968,6 +5005,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     Expression<DateTime>? startedAt,
     Expression<DateTime>? endedAt,
     Expression<String>? rest,
+    Expression<String>? note,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4985,6 +5023,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
       if (startedAt != null) 'started_at': startedAt,
       if (endedAt != null) 'ended_at': endedAt,
       if (rest != null) 'rest': rest,
+      if (note != null) 'note': note,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -5004,6 +5043,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     Value<DateTime>? startedAt,
     Value<DateTime?>? endedAt,
     Value<String?>? rest,
+    Value<String?>? note,
     Value<int>? rowid,
   }) {
     return WorkoutSessionsCompanion(
@@ -5021,6 +5061,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
       rest: rest ?? this.rest,
+      note: note ?? this.note,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -5072,6 +5113,9 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
     if (rest.present) {
       map['rest'] = Variable<String>(rest.value);
     }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -5095,6 +5139,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt, ')
           ..write('rest: $rest, ')
+          ..write('note: $note, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5777,6 +5822,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'schedule_days_date',
     'CREATE INDEX schedule_days_date ON schedule_days (date)',
   );
+  late final Index workoutSessionsTemplateEnded = Index(
+    'workout_sessions_template_ended',
+    'CREATE INDEX workout_sessions_template_ended ON workout_sessions (template_id, ended_at)',
+  );
   late final Index sessionSetsSession = Index(
     'session_sets_session',
     'CREATE INDEX session_sets_session ON session_sets (session_id)',
@@ -5803,6 +5852,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sessionSets,
     exerciseMusclesMuscle,
     scheduleDaysDate,
+    workoutSessionsTemplateEnded,
     sessionSetsSession,
     sessionSetsExercise,
   ];
@@ -8270,6 +8320,7 @@ typedef $$WorkoutSessionsTableCreateCompanionBuilder =
       required DateTime startedAt,
       Value<DateTime?> endedAt,
       Value<String?> rest,
+      Value<String?> note,
       Value<int> rowid,
     });
 typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
@@ -8288,6 +8339,7 @@ typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
       Value<DateTime> startedAt,
       Value<DateTime?> endedAt,
       Value<String?> rest,
+      Value<String?> note,
       Value<int> rowid,
     });
 
@@ -8370,6 +8422,11 @@ class $$WorkoutSessionsTableFilterComposer
     column: $table.rest,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$WorkoutSessionsTableOrderingComposer
@@ -8450,6 +8507,11 @@ class $$WorkoutSessionsTableOrderingComposer
     column: $table.rest,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WorkoutSessionsTableAnnotationComposer
@@ -8504,6 +8566,9 @@ class $$WorkoutSessionsTableAnnotationComposer
 
   GeneratedColumn<String> get rest =>
       $composableBuilder(column: $table.rest, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
 }
 
 class $$WorkoutSessionsTableTableManager
@@ -8553,6 +8618,7 @@ class $$WorkoutSessionsTableTableManager
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime?> endedAt = const Value.absent(),
                 Value<String?> rest = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutSessionsCompanion(
                 id: id,
@@ -8569,6 +8635,7 @@ class $$WorkoutSessionsTableTableManager
                 startedAt: startedAt,
                 endedAt: endedAt,
                 rest: rest,
+                note: note,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8587,6 +8654,7 @@ class $$WorkoutSessionsTableTableManager
                 required DateTime startedAt,
                 Value<DateTime?> endedAt = const Value.absent(),
                 Value<String?> rest = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WorkoutSessionsCompanion.insert(
                 id: id,
@@ -8603,6 +8671,7 @@ class $$WorkoutSessionsTableTableManager
                 startedAt: startedAt,
                 endedAt: endedAt,
                 rest: rest,
+                note: note,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

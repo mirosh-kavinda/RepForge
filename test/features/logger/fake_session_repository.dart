@@ -16,7 +16,11 @@ class FakeSessionRepository implements SessionRepository {
   final DayRecordRepository? days;
   WorkoutSession? _active;
   final Map<String, Map<int, LoggedSet>> _last;
-  final finished = <WorkoutSession>[];
+  final finishedList = <WorkoutSession>[];
+  // When Finish ends the workout.
+  DateTime endAt = DateTime.utc(2026);
+  Object? noteFails;
+  final notes = <String, String?>{};
   Object? failWith;
   final _changes = StreamController<void>.broadcast();
 
@@ -118,6 +122,64 @@ class FakeSessionRepository implements SessionRepository {
   }
 
   @override
+  Future<WorkoutSession?> finished(String id) async {
+    for (final s in finishedList) {
+      if (s.id == id) {
+        return notes.containsKey(id) ? s.copyWith(note: notes[id]) : s;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<WorkoutSession?> previousOf(WorkoutSession s) async {
+    WorkoutSession? best;
+    for (final w in finishedList) {
+      if (w.id == s.id || w.templateId == null) continue;
+      if (w.templateId != s.templateId) continue;
+      if (!w.endedAt!.isBefore(s.startedAt)) continue;
+      if (best == null || w.endedAt!.isAfter(best.endedAt!)) best = w;
+    }
+    return best;
+  }
+
+  @override
+  Future<Map<String, List<LoggedSet>>> lastBefore(
+    Iterable<String> exerciseIds,
+    DateTime before,
+  ) async {
+    final out = <String, List<LoggedSet>>{};
+    for (final id in exerciseIds) {
+      WorkoutSession? best;
+      for (final w in finishedList) {
+        if (!w.endedAt!.isBefore(before)) continue;
+        if (!w.sets.any((x) => x.exerciseId == id)) continue;
+        if (best == null || w.endedAt!.isAfter(best.endedAt!)) best = w;
+      }
+      if (best != null) {
+        out[id] = [
+          for (final x in best.sets)
+            if (x.exerciseId == id) x,
+        ];
+      }
+    }
+    return out;
+  }
+
+  @override
+  Future<List<({String id, String name})>> finishedOn(DateTime date) async => [
+    for (final w in finishedList)
+      if (w.date == date) (id: w.id, name: w.name),
+  ];
+
+  @override
+  Future<void> setNote(String id, String? note) async {
+    if (noteFails case final e?) throw e;
+    final t = note?.trim();
+    notes[id] = t == null || t.isEmpty ? null : t;
+  }
+
+  @override
   Future<void> finish(String sessionId) async {
     _fail();
     final s = _active!;
@@ -131,7 +193,7 @@ class FakeSessionRepository implements SessionRepository {
         fromWorkout: true,
       );
     }
-    finished.add(s.copyWith(endedAt: DateTime.utc(2026)));
+    finishedList.add(s.copyWith(endedAt: endAt));
     _set(null);
   }
 }

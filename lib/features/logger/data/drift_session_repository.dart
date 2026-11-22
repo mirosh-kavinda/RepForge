@@ -101,7 +101,10 @@ class DriftSessionRepository implements SessionRepository {
 
   Future<WorkoutSession?> _readActive() async {
     final r = await _inProgress().getSingleOrNull();
-    if (r == null) return null;
+    return r == null ? null : _read(r);
+  }
+
+  Future<WorkoutSession> _read(SessionRow r) async {
     final sets =
         await (_db.select(_db.sessionSets)
               ..where((s) => s.sessionId.equals(r.id))
@@ -117,10 +120,138 @@ class DriftSessionRepository implements SessionRepository {
       cycleId: r.cycleId,
       dayId: r.dayId,
       dayIndex: r.dayIndex,
+      endedAt: r.endedAt,
       sets: sets.map(_set).toList(),
       rest: _decodeRest(r.rest),
+      note: r.note,
     );
   }
+
+  @override
+  Future<WorkoutSession?> finished(String id) async {
+    final r =
+        await (_db.select(_db.workoutSessions)..where(
+              (s) =>
+                  s.id.equals(id) &
+                  s.endedAt.isNotNull() &
+                  s.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
+    return r == null ? null : _read(r);
+  }
+
+  @override
+  Future<WorkoutSession?> previousOf(WorkoutSession s) async {
+    final t = s.templateId;
+    if (t == null) return null;
+    final r =
+        await (_db.select(_db.workoutSessions)
+              ..where(
+                (w) =>
+                    w.templateId.equals(t) &
+                    w.id.equals(s.id).not() &
+                    w.endedAt.isSmallerThanValue(s.startedAt) &
+                    w.deletedAt.isNull(),
+              )
+              ..orderBy([(w) => OrderingTerm.desc(w.endedAt)])
+              ..limit(1))
+            .getSingleOrNull();
+    return r == null ? null : _read(r);
+  }
+
+  @override
+  Future<Map<String, List<LoggedSet>>> lastBefore(
+    Iterable<String> exerciseIds,
+    DateTime before,
+  ) async {
+    final out = <String, List<LoggedSet>>{};
+    for (final exerciseId in exerciseIds.toSet()) {
+      // NFR-01: pick the workout in SQL, then read only its sets.
+      final latest =
+          await (_db.selectOnly(_db.sessionSets).join([
+                  innerJoin(
+                    _db.workoutSessions,
+                    _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+                    useColumns: false,
+                  ),
+                ])
+                ..addColumns([_db.sessionSets.sessionId])
+                ..where(
+                  _db.sessionSets.exerciseId.equals(exerciseId) &
+                      _db.workoutSessions.endedAt.isSmallerThanValue(before) &
+                      _db.workoutSessions.deletedAt.isNull(),
+                )
+                ..orderBy([OrderingTerm.desc(_db.workoutSessions.endedAt)])
+                ..limit(1))
+              .map((r) => r.read(_db.sessionSets.sessionId))
+              .getSingleOrNull();
+      if (latest == null) continue;
+      final rows =
+          await (_db.select(_db.sessionSets)
+                ..where(
+                  (x) =>
+                      x.sessionId.equals(latest) &
+                      x.exerciseId.equals(exerciseId),
+                )
+                ..orderBy([(x) => OrderingTerm.asc(x.loggedAt)]))
+              .get();
+      out[exerciseId] = rows.map(_set).toList();
+    }
+    return out;
+  }
+
+  @override
+  Future<List<({String id, String name})>> finishedOn(DateTime date) async {
+    final rows =
+        await (_db.select(_db.workoutSessions)
+              ..where(
+                (w) =>
+                    w.date.equals(date) &
+                    w.endedAt.isNotNull() &
+                    w.deletedAt.isNull(),
+              )
+              ..orderBy([(w) => OrderingTerm.asc(w.startedAt)]))
+            .get();
+    return [for (final r in rows) (id: r.id, name: r.name)];
+  }
+
+  @override
+  Future<void> setNote(String id, String? note) => _db.transaction(() async {
+    final text = note?.trim();
+    final finished =
+        await (_db.select(_db.workoutSessions)..where(
+              (r) =>
+                  r.id.equals(id) &
+                  r.endedAt.isNotNull() &
+                  r.deletedAt.isNull(),
+            ))
+            .getSingleOrNull();
+    if (finished == null) return;
+    Future<void> write(DateTime now) =>
+        (_db.update(_db.workoutSessions)..where((r) => r.id.equals(id))).write(
+          WorkoutSessionsCompanion(
+            note: Value(text == null || text.isEmpty ? null : text),
+            updatedAt: Value(now),
+          ),
+        );
+    // NFR-10: while the Finish create is still queued, the note rides in it.
+    final queued =
+        await (_db.select(_db.outbox)..where(
+              (o) =>
+                  o.entity.equals(_entity) &
+                  o.entityId.equals(id) &
+                  o.op.equalsValue(OutboxOp.create),
+            ))
+            .get();
+    if (queued.isNotEmpty) return write(_now().toUtc());
+    await _writer.run(
+      table: _table,
+      entity: _entity,
+      id: id,
+      op: OutboxOp.update,
+      write: write,
+    );
+  });
 
   @override
   Stream<WorkoutSession?> watchActive() => _db

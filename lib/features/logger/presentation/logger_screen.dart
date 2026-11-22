@@ -66,7 +66,7 @@ class _LoggerScreenState extends ConsumerState<LoggerScreen> {
     setState(() => _finishing = false);
     if (!ok) return;
     await RestActions(ref, AppLocalizations.of(context)).cancelAlarm();
-    if (mounted) context.go(Routes.home);
+    if (mounted) context.go(Routes.summary(s.id, afterFinish: true));
   }
 
   Future<void> _discard(WorkoutSession s) async {

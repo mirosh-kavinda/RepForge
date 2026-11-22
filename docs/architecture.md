@@ -28,6 +28,7 @@ The outbox table exists from FND-03; the sync engine that drains it ships in SYN
 | Models | freezed, json_serializable |
 | Firebase | firebase_auth, cloud_firestore, firebase_storage, firebase_messaging, firebase_crashlytics, firebase_analytics, firebase_app_check |
 | Notifications | flutter_local_notifications, timezone |
+| Share sheet | share_plus (LOG-05 summary image) |
 | Background | workmanager |
 | Charts | fl_chart |
 | Connectivity | connectivity_plus |
@@ -89,7 +90,11 @@ Design choices:
   time left), local only. One local notification (`RestAlarm` port over
   flutter_local_notifications, scheduled in UTC) is replaced on every change and cancelled on
   Finish / Discard.
-  One Firestore write per finished workout (NFR-10).
+- Finish summary (LOG-05): built on device from the finished workout, the previous one of the
+  same template (`workout_sessions_template_ended` index) and each exercise's last sets. The
+  note is `workout_sessions.note`; it rides in the queued Finish create, and once that has
+  synced each changed save is one outbox `update`. Share renders the summary card to a PNG behind a `SummaryShare` port.
+  One Firestore write per finished workout (NFR-10), plus one per note change after it synced.
 - Records and stats are derived on device; cached in Firestore only to speed up restore.
 - `scheduleDays`: one per (cycle, date), since a cycle switched to today has its own today;
   indexed by date so a month is one range query. Passed dates are written as missed / rest.

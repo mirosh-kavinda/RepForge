@@ -5,12 +5,15 @@ import 'package:repforge/app/app.dart';
 import 'package:repforge/app/theme/rf_scales.dart';
 import 'package:repforge/core/clock.dart';
 import 'package:repforge/features/library/data/providers.dart';
+import 'package:repforge/features/logger/domain/workout_session.dart';
+import 'package:repforge/features/logger/presentation/summary_screen.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
 import 'package:repforge/features/schedule/domain/day_record.dart';
 import 'package:repforge/features/schedule/presentation/calendar_view.dart';
 import 'package:repforge/features/workout/data/starter_templates.dart';
 
 import '../../../helpers/app_overrides.dart';
+import '../../logger/fake_session_repository.dart';
 import '../../workout/fakes.dart';
 import '../fake_cycle_repository.dart';
 import '../fake_day_record_repository.dart';
@@ -49,6 +52,7 @@ Future<void> openCalendar(
   WidgetTester tester, {
   List<Cycle>? cycles,
   List<DayRecord> records = const [],
+  FakeSessionRepository? sessions,
   double textScale = 1,
   Size size = const Size(390, 844),
 }) async {
@@ -64,6 +68,7 @@ Future<void> openCalendar(
           templates: FakeTemplateRepository(starters),
           cycles: FakeCycleRepository(cycles ?? [ppl]),
           days: FakeDayRecordRepository(records),
+          sessions: sessions,
         ),
         exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
         clockProvider.overrideWithValue(() => now),
@@ -174,6 +179,64 @@ void main() {
       expect(find.text('Push · Done'), findsOneWidget);
       expect(find.text('Cycle: PPL'), findsOneWidget);
       expect(find.text('Mark done'), findsNothing);
+    });
+
+    testWidgets('LOG-05 AC8 a done date opens its summary; back returns', (
+      tester,
+    ) async {
+      WorkoutSession w(String id, String name) => WorkoutSession(
+        id: id,
+        name: name,
+        templateId: name.toLowerCase(),
+        exercises: const [
+          SessionExercise(id: 'r1', exerciseId: 'bench', name: 'Bench Press'),
+        ],
+        date: DateTime.utc(2026, 11, 20),
+        startedAt: DateTime.utc(2026, 11, 20, 9),
+        endedAt: DateTime.utc(2026, 11, 20, 10),
+        sets: const [
+          LoggedSet(
+            id: 's1',
+            rowId: 'r1',
+            exerciseId: 'bench',
+            setNo: 1,
+            kg: 60,
+            reps: 8,
+          ),
+        ],
+      );
+      final sessions = FakeSessionRepository()
+        ..finishedList.add(w('a', 'Push'));
+      await openCalendar(
+        tester,
+        records: [rec(20, DayStatus.done)],
+        sessions: sessions,
+      );
+      await tester.tap(find.bySemanticsLabel(RegExp('^Friday, November 20')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('View summary'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SummaryScreen), findsOneWidget);
+      expect(find.text('Push · Fri, Nov 20, 2026'), findsOneWidget);
+      await tester.tap(find.byKey(SummaryScreen.doneKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(SummaryScreen), findsNothing);
+      expect(find.text('November 2026'), findsOneWidget);
+
+      sessions.finishedList.add(w('b', 'Legs'));
+      await tester.tap(find.bySemanticsLabel(RegExp('^Friday, November 20')));
+      await tester.pumpAndSettle();
+      expect(find.text('View summary: Push'), findsOneWidget);
+      expect(find.text('View summary: Legs'), findsOneWidget);
+    });
+
+    testWidgets('LOG-05 AC8 a date with no finished workout has no link', (
+      tester,
+    ) async {
+      await openCalendar(tester, records: [rec(20, DayStatus.done)]);
+      await tester.tap(find.bySemanticsLabel(RegExp('^Friday, November 20')));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('View summary'), findsNothing);
     });
 
     testWidgets('edge no active cycle: history shows, says so', (tester) async {

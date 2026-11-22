@@ -35,6 +35,26 @@ abstract interface class SessionRepository {
   // LOG-03: the running rest, or null for none. Kept with the workout.
   Future<void> setRest(String sessionId, Rest? rest);
 
+  // LOG-05: a finished workout with its sets, or null when gone.
+  Future<WorkoutSession?> finished(String id);
+
+  // LOG-05 AC5: the latest finished workout of the same template that ended
+  // before [s] started, with its sets.
+  Future<WorkoutSession?> previousOf(WorkoutSession s);
+
+  // LOG-05 AC5: per exercise, its sets from the last finished workout before
+  // [before] that has any.
+  Future<Map<String, List<LoggedSet>>> lastBefore(
+    Iterable<String> exerciseIds,
+    DateTime before,
+  );
+
+  // LOG-05 AC8: finished workouts for the calendar date [date].
+  Future<List<({String id, String name})>> finishedOn(DateTime date);
+
+  // LOG-05 AC6: null or blank clears it; queued for sync with the workout.
+  Future<void> setNote(String id, String? note);
+
   // AC9: ends it, stores each set's PR flag (LOG-02), queues it once and marks
   // its day done, together. Throws
   // [NoSetsLogged] and writes nothing when no set was logged.

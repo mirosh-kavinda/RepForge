@@ -9,6 +9,7 @@ import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/library/presentation/library_screen.dart';
 import '../features/logger/presentation/logger_screen.dart';
+import '../features/logger/presentation/summary_screen.dart';
 import '../features/onboarding/data/providers.dart';
 import '../features/onboarding/presentation/about_you_screen.dart';
 import '../features/onboarding/presentation/goal_level_screen.dart';
@@ -36,6 +37,11 @@ abstract final class Routes {
   static const home = '/home';
   // LOG-01 screen 02, full screen over the tabs.
   static const workout = '/workout';
+  // LOG-05 screen 16, full screen over the tabs.
+  static String summary(String id, {bool afterFinish = false}) => Uri(
+    path: '/summary/$id',
+    queryParameters: afterFinish ? {'after': 'finish'} : null,
+  ).toString();
   static const schedule = '/schedule';
   static const library = '/library';
   static const progress = '/progress';
@@ -103,6 +109,13 @@ GoRouter router(Ref ref) {
       GoRoute(
         path: Routes.workout,
         builder: (context, state) => const LoggerScreen(),
+      ),
+      GoRoute(
+        path: '/summary/:id',
+        builder: (context, state) => SummaryScreen(
+          sessionId: state.pathParameters['id']!,
+          afterFinish: state.uri.queryParameters['after'] == 'finish',
+        ),
       ),
       GoRoute(
         path: Routes.account,

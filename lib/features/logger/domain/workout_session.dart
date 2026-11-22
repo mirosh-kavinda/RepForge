@@ -62,6 +62,8 @@ abstract class WorkoutSession with _$WorkoutSession {
     DateTime? endedAt,
     // LOG-03: the rest in progress, if any (rules in rest_timer.dart).
     Rest? rest,
+    // LOG-05: added on the summary after Finish.
+    String? note,
   }) = _WorkoutSession;
 
   List<LoggedSet> setsOf(String rowId) => [

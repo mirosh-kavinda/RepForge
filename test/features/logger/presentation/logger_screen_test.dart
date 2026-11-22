@@ -10,6 +10,7 @@ import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/library/presentation/exercise_picker_screen.dart';
 import 'package:repforge/features/logger/domain/workout_session.dart';
 import 'package:repforge/features/logger/presentation/logger_screen.dart';
+import 'package:repforge/features/logger/presentation/summary_screen.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
 import 'package:repforge/features/schedule/domain/day_record.dart';
 import 'package:repforge/features/workout/domain/workout_template.dart';
@@ -332,8 +333,12 @@ void main() {
       await tester.tap(find.byKey(LoggerScreen.finishKey));
       await tester.pumpAndSettle();
       expect(find.byType(LoggerScreen), findsNothing);
-      expect(sessions.finished.single.sets, hasLength(1));
+      expect(sessions.finishedList.single.sets, hasLength(1));
       expect(days.all.single.status, DayStatus.done);
+      // LOG-05 AC1: through the summary.
+      expect(find.byType(SummaryScreen), findsOneWidget);
+      await tester.tap(find.byKey(SummaryScreen.doneKey));
+      await tester.pumpAndSettle();
       expect(find.text('Done'), findsOneWidget);
       expect(find.text('Start workout'), findsNothing);
       handle.dispose();

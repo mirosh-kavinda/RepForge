@@ -105,6 +105,10 @@ class ScheduleDays extends Table with SyncedTable {
 // progress while ended_at is null; it gets its first outbox row on Finish
 // (NFR-10: one cloud write per finished workout).
 @DataClassName('SessionRow')
+@TableIndex(
+  name: 'workout_sessions_template_ended',
+  columns: {#templateId, #endedAt},
+)
 class WorkoutSessions extends Table with SyncedTable {
   TextColumn get templateId => text().nullable()();
   TextColumn get name => text()();
@@ -118,6 +122,8 @@ class WorkoutSessions extends Table with SyncedTable {
   DateTimeColumn get endedAt => dateTime().nullable()();
   // LOG-03: the running or paused rest (JSON), local only; Finish clears it.
   TextColumn get rest => text().nullable()();
+  // LOG-05: the workout's note, written after Finish.
+  TextColumn get note => text().nullable()();
 }
 
 // LOG-01. Local only: synced inside its session, never on its own.
@@ -163,7 +169,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -214,8 +220,22 @@ class AppDatabase extends _$AppDatabase {
       if (from == 9 || from == 10) {
         await m.addColumn(workoutSessions, workoutSessions.rest);
       }
+      if (from >= 9 && from < 12 && !await _has('workout_sessions', 'note')) {
+        await m.addColumn(workoutSessions, workoutSessions.note);
+      }
+      if (from < 12) {
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS workout_sessions_template_ended '
+          'ON workout_sessions (template_id, ended_at)',
+        );
+      }
     },
   );
+
+  Future<bool> _has(String table, String column) async => (await customSelect(
+    'SELECT 1 FROM pragma_table_info(?) WHERE name = ?',
+    variables: [Variable.withString(table), Variable.withString(column)],
+  ).get()).isNotEmpty;
 
   Future<String?> readMeta(String key) async => (await (select(
     appMeta,

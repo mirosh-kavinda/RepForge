@@ -287,3 +287,200 @@ final class LastSetsFamily extends $Family
   @override
   String toString() => r'lastSetsProvider';
 }
+
+@ProviderFor(summaryShare)
+final summaryShareProvider = SummaryShareProvider._();
+
+final class SummaryShareProvider
+    extends $FunctionalProvider<SummaryShare, SummaryShare, SummaryShare>
+    with $Provider<SummaryShare> {
+  SummaryShareProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'summaryShareProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$summaryShareHash();
+
+  @$internal
+  @override
+  $ProviderElement<SummaryShare> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  SummaryShare create(Ref ref) {
+    return summaryShare(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SummaryShare value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SummaryShare>(value),
+    );
+  }
+}
+
+String _$summaryShareHash() => r'd5bd487de0ab5f2621be2a480b71e156f4ebad36';
+
+@ProviderFor(workoutSummary)
+final workoutSummaryProvider = WorkoutSummaryFamily._();
+
+final class WorkoutSummaryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<WorkoutSummary?>,
+          WorkoutSummary?,
+          FutureOr<WorkoutSummary?>
+        >
+    with $FutureModifier<WorkoutSummary?>, $FutureProvider<WorkoutSummary?> {
+  WorkoutSummaryProvider._({
+    required WorkoutSummaryFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'workoutSummaryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$workoutSummaryHash();
+
+  @override
+  String toString() {
+    return r'workoutSummaryProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<WorkoutSummary?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<WorkoutSummary?> create(Ref ref) {
+    final argument = this.argument as String;
+    return workoutSummary(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WorkoutSummaryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$workoutSummaryHash() => r'991c8dff085c5aa4b881ca6508a5ca02a976cc01';
+
+final class WorkoutSummaryFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<WorkoutSummary?>, String> {
+  WorkoutSummaryFamily._()
+    : super(
+        retry: null,
+        name: r'workoutSummaryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WorkoutSummaryProvider call(String sessionId) =>
+      WorkoutSummaryProvider._(argument: sessionId, from: this);
+
+  @override
+  String toString() => r'workoutSummaryProvider';
+}
+
+@ProviderFor(finishedOn)
+final finishedOnProvider = FinishedOnFamily._();
+
+final class FinishedOnProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<({String id, String name})>>,
+          List<({String id, String name})>,
+          FutureOr<List<({String id, String name})>>
+        >
+    with
+        $FutureModifier<List<({String id, String name})>>,
+        $FutureProvider<List<({String id, String name})>> {
+  FinishedOnProvider._({
+    required FinishedOnFamily super.from,
+    required DateTime super.argument,
+  }) : super(
+         retry: null,
+         name: r'finishedOnProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$finishedOnHash();
+
+  @override
+  String toString() {
+    return r'finishedOnProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<({String id, String name})>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<({String id, String name})>> create(Ref ref) {
+    final argument = this.argument as DateTime;
+    return finishedOn(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FinishedOnProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$finishedOnHash() => r'8e88416045b2d272222ecf61d2e6ba80c03b6e36';
+
+final class FinishedOnFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<({String id, String name})>>,
+          DateTime
+        > {
+  FinishedOnFamily._()
+    : super(
+        retry: null,
+        name: r'finishedOnProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  FinishedOnProvider call(DateTime date) =>
+      FinishedOnProvider._(argument: date, from: this);
+
+  @override
+  String toString() => r'finishedOnProvider';
+}

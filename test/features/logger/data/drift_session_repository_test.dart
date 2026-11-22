@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/data/local/app_database.dart';
@@ -281,4 +284,186 @@ void main() {
       expect((row.restSec, row.superset), (75, 'A'));
     });
   });
+
+  group('LOG-05 summary reads', () {
+    late DateTime clock;
+    late DriftSessionRepository r;
+
+    setUp(() {
+      clock = DateTime.utc(2026, 11, 23, 10);
+      r = DriftSessionRepository(db, days, now: () => clock);
+    });
+
+    // Starts at [start], logs [sets], finishes an hour later.
+    Future<void> done(
+      String id,
+      DateTime start,
+      List<LoggedSet> sets, {
+      String? template = 'push',
+    }) async {
+      await r.start(
+        draft(
+          id,
+          date: DateTime.utc(start.year, start.month, start.day),
+        ).copyWith(startedAt: start, templateId: template),
+      );
+      for (final x in sets) {
+        await r.logSet(id, x.copyWith(id: '$id-${x.id}'));
+      }
+      clock = start.add(const Duration(hours: 1));
+      await r.finish(id);
+    }
+
+    test(
+      'AC5 previous is the latest earlier one of the same template',
+      () async {
+        await done('a', DateTime.utc(2026, 11, 16, 9), [set('1', 1, 60)]);
+        await done('b', DateTime.utc(2026, 11, 18, 9), [set('1', 1, 62.5)]);
+        await done('x', DateTime.utc(2026, 11, 19, 9), [
+          set('1', 1, 70),
+        ], template: 'legs');
+        await done('c', DateTime.utc(2026, 11, 20, 9), [set('1', 1, 65)]);
+        final c = (await r.finished('c'))!;
+        expect(c.endedAt, DateTime.utc(2026, 11, 20, 10));
+        expect((await r.previousOf(c))!.id, 'b');
+        expect((await r.previousOf(c))!.sets.single.kg, 62.5);
+        expect(await r.previousOf((await r.finished('a'))!), isNull);
+        expect(await r.previousOf(c.copyWith(templateId: null)), isNull);
+      },
+    );
+
+    test('AC5 each exercise last earlier sets, from any workout', () async {
+      await done('a', DateTime.utc(2026, 11, 16, 9), [
+        set('1', 1, 60),
+        set('2', 1, 0, row: 'r2', reps: 10),
+      ]);
+      await done('x', DateTime.utc(2026, 11, 19, 9), [
+        set('1', 1, 70),
+      ], template: 'legs');
+      await done('c', DateTime.utc(2026, 11, 20, 9), [set('1', 1, 65)]);
+      final c = (await r.finished('c'))!;
+      final last = await r.lastBefore(['bench', 'dips', 'squat'], c.startedAt);
+      expect(last['bench']!.single.kg, 70);
+      expect(last['dips']!.single.reps, 10);
+      expect(last.containsKey('squat'), isFalse);
+    });
+
+    test('AC8 finished workouts by date; in progress ones are not', () async {
+      await done('a', DateTime.utc(2026, 11, 16, 9), [set('1', 1, 60)]);
+      await r.start(draft('live', date: DateTime.utc(2026, 11, 16)));
+      expect(await r.finishedOn(DateTime.utc(2026, 11, 16)), [
+        (id: 'a', name: 'Push'),
+      ]);
+      expect(await r.finishedOn(DateTime.utc(2026, 11, 17)), isEmpty);
+      expect(await r.finished('live'), isNull);
+    });
+
+    test(
+      'AC6 AC9 NFR-10 the note rides in the queued create; later, one update each',
+      () async {
+        await done('a', DateTime.utc(2026, 11, 16, 9), [set('1', 1, 60)]);
+        await r.setNote('a', '  Felt strong  ');
+        expect((await r.finished('a'))!.note, 'Felt strong');
+        Future<List<(String, OutboxOp)>> mine() async => [
+          for (final e in await outbox())
+            if (e.$1 == 'session') e,
+        ];
+        expect(await mine(), [('session', OutboxOp.create)]);
+
+        // After the create has synced, each changed save is one update.
+        await db.delete(db.outbox).go();
+        await r.setNote('a', '   ');
+        expect((await r.finished('a'))!.note, isNull);
+        expect(await mine(), [('session', OutboxOp.update)]);
+      },
+    );
+
+    test(
+      'AC6 a note for an unfinished or unknown workout is ignored',
+      () async {
+        await r.start(draft('live'));
+        await r.setNote('live', 'x');
+        await r.setNote('nope', 'x');
+        expect([
+          for (final e in await outbox())
+            if (e.$1 == 'session') e,
+        ], isEmpty);
+        expect((await db.select(db.workoutSessions).getSingle()).note, isNull);
+      },
+    );
+  });
+
+  test(
+    'LOG-05 NFR-01 a summary loads in < 300 ms with 2 years of data',
+    () async {
+      // 4 workouts a week for 2 years, 6 exercises × 4 sets each.
+      const exercises = ['bench', 'squat', 'row', 'press', 'curl', 'dips'];
+      final rows = jsonEncode([
+        for (final e in exercises)
+          {
+            'id': 'r-$e',
+            'exerciseId': e,
+            'name': e,
+            'plannedSets': 4,
+            'kind': 'reps',
+            'repMin': 8,
+            'repMax': 12,
+            'seconds': 45,
+            'targetKg': null,
+            'bodyweight': false,
+          },
+      ]);
+      await db.batch((b) {
+        for (var i = 0; i < 416; i++) {
+          final start = DateTime.utc(
+            2024,
+            11,
+            25,
+            9,
+          ).add(Duration(days: i * 7 ~/ 4));
+          final id = 'w$i';
+          b.insert(
+            db.workoutSessions,
+            WorkoutSessionsCompanion.insert(
+              id: Value(id),
+              templateId: Value(['push', 'pull', 'legs', 'full'][i % 4]),
+              name: 'W',
+              exercises: rows,
+              date: DateTime.utc(start.year, start.month, start.day),
+              startedAt: start,
+              endedAt: Value(start.add(const Duration(hours: 1))),
+              updatedAt: start,
+            ),
+          );
+          for (final e in exercises) {
+            for (var n = 1; n <= 4; n++) {
+              b.insert(
+                db.sessionSets,
+                SessionSetsCompanion.insert(
+                  id: '$id-$e-$n',
+                  sessionId: id,
+                  rowId: 'r-$e',
+                  exerciseId: e,
+                  setNo: n,
+                  kg: 60,
+                  reps: const Value(8),
+                  loggedAt: start.add(Duration(minutes: n)),
+                  updatedAt: start,
+                ),
+              );
+            }
+          }
+        }
+      });
+      final sw = Stopwatch()..start();
+      final s = (await repo.finished('w415'))!;
+      await repo.previousOf(s);
+      await repo.lastBefore([
+        for (final x in s.sets) x.exerciseId,
+      ], s.startedAt);
+      sw.stop();
+      expect(s.sets, hasLength(24));
+      expect(sw.elapsedMilliseconds, lessThan(300));
+    },
+  );
 }

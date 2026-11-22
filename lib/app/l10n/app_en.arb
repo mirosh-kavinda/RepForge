@@ -872,11 +872,11 @@
   },
   "unitKg": "kg",
   "@unitKg": {
-    "description": "Kilogram unit."
+    "description": "Unit."
   },
   "unitLb": "lb",
   "@unitLb": {
-    "description": "Pound unit."
+    "description": "Unit."
   },
   "pickerTitle": "Add exercises",
   "@pickerTitle": {
@@ -1807,14 +1807,6 @@
       }
     }
   },
-  "unitKg": "kg",
-  "@unitKg": {
-    "description": "Unit."
-  },
-  "unitLb": "lb",
-  "@unitLb": {
-    "description": "Unit."
-  },
   "loggerLast": "Last: {set}",
   "@loggerLast": {
     "description": "Ghost line: last session's set.",
@@ -1918,5 +1910,218 @@
   "restOpenSettings": "Open settings",
   "@restOpenSettings": {
     "description": "Open the phone's notification settings."
+  },
+  "summaryTitle": "Workout done",
+  "@summaryTitle": {
+    "description": "Summary screen title."
+  },
+  "summaryDate": "{name} · {date}",
+  "@summaryDate": {
+    "description": "Workout name and its date.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryTime": "Time",
+  "@summaryTime": {
+    "description": "Duration label."
+  },
+  "summarySets": "Sets",
+  "@summarySets": {
+    "description": "Sets label."
+  },
+  "summaryVolume": "Volume",
+  "@summaryVolume": {
+    "description": "Total volume label."
+  },
+  "summaryNone": "—",
+  "@summaryNone": {
+    "description": "No volume (only bodyweight or timed sets)."
+  },
+  "summaryNoneLabel": "No weighted sets",
+  "@summaryNoneLabel": {
+    "description": "Screen reader text for no volume."
+  },
+  "summaryMinSec": "{v} min",
+  "@summaryMinSec": {
+    "description": "A duration under an hour, m:ss.",
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryHourMin": "{v} h",
+  "@summaryHourMin": {
+    "description": "A duration of an hour or more, h:mm.",
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryMinutes": "{n} min",
+  "@summaryMinutes": {
+    "description": "A change in whole minutes.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "summarySeconds": "{n} s",
+  "@summarySeconds": {
+    "description": "A total or change in seconds.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryReps": "{n} reps",
+  "@summaryReps": {
+    "description": "A total or change in reps.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "summarySame": "same",
+  "@summarySame": {
+    "description": "No change from last time."
+  },
+  "summaryUp": "up {v}",
+  "@summaryUp": {
+    "description": "Screen reader: more than last time.",
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryDown": "down {v}",
+  "@summaryDown": {
+    "description": "Screen reader: less than last time.",
+    "placeholders": {
+      "v": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryVsLast": "{change} vs last time",
+  "@summaryVsLast": {
+    "description": "A change from last time.",
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryFirstTime": "First time — nothing to compare yet",
+  "@summaryFirstTime": {
+    "description": "No previous workout of this template."
+  },
+  "summaryPrCount": "{count, plural, =1{1 PR} other{{count} PRs}}",
+  "@summaryPrCount": {
+    "description": "PR section heading.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryPrLine": "PR · {name} {set}",
+  "@summaryPrLine": {
+    "description": "One PR set.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryExercises": "Exercises",
+  "@summaryExercises": {
+    "description": "Exercise list heading."
+  },
+  "summaryNote": "Note",
+  "@summaryNote": {
+    "description": "Note field label."
+  },
+  "summaryNoteHint": "How did it go?",
+  "@summaryNoteHint": {
+    "description": "Note field hint."
+  },
+  "summaryShare": "Share",
+  "@summaryShare": {
+    "description": "Share the summary as an image."
+  },
+  "summaryDone": "Done",
+  "@summaryDone": {
+    "description": "Leave the summary."
+  },
+  "summaryNoteFailed": "Couldn't save the note",
+  "@summaryNoteFailed": {
+    "description": "Note save failed."
+  },
+  "summaryShareFailed": "Couldn't share",
+  "@summaryShareFailed": {
+    "description": "Share failed."
+  },
+  "summaryLoadFailed": "Couldn't load this workout",
+  "@summaryLoadFailed": {
+    "description": "Summary load failed."
+  },
+  "summaryView": "View summary",
+  "@summaryView": {
+    "description": "Calendar sheet: open a finished workout."
+  },
+  "summaryViewNamed": "View summary: {name}",
+  "@summaryViewNamed": {
+    "description": "Calendar sheet: one of several workouts that day.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryShareText": "{name} · {date} · {duration} · {volume}",
+  "@summaryShareText": {
+    "description": "Text sent with the shared image.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "summarySetsN": "{n, plural, =1{1 set} other{{n} sets}}",
+  "@summarySetsN": {
+    "description": "A change in sets.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryNoCompare": "not comparable",
+  "@summaryNoCompare": {
+    "description": "Volume change when one workout had no weighted sets."
   }
 }

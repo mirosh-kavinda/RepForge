@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
+import '../../logger/data/providers.dart';
 import '../../workout/domain/workout_template.dart';
 import '../domain/calendar.dart';
 import '../domain/cycle.dart';
@@ -94,9 +98,47 @@ Future<void> showCalendarDay(
                 padding: const EdgeInsets.only(top: RfSpace.s8),
                 child: Text(l, style: t.body.copyWith(color: c.textSecondary)),
               ),
+            _Summaries(date: day.date),
           ],
         ),
       ),
     );
   },
 );
+
+// LOG-05 AC8: a link to each finished workout's summary on this date.
+class _Summaries extends ConsumerWidget {
+  const _Summaries({required this.date});
+
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final done = ref.watch(finishedOnProvider(date)).value ?? const [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final w in done)
+          Padding(
+            padding: const EdgeInsets.only(top: RfSpace.s8),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                minimumSize: const Size(RfSize.minTarget, RfSize.minTarget),
+              ),
+              onPressed: () {
+                final router = GoRouter.of(context);
+                Navigator.of(context).pop();
+                router.push(Routes.summary(w.id));
+              },
+              child: Text(
+                done.length > 1
+                    ? l10n.summaryViewNamed(w.name)
+                    : l10n.summaryView,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}

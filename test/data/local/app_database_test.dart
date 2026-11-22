@@ -305,9 +305,36 @@ void main() {
     });
   });
 
+  group('LOG-05 schema v12', () {
+    test('v11 -> v12 adds workout_sessions.note and its index', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v11 = AppDatabase(NativeDatabase(file));
+      await v11.customStatement('DROP INDEX workout_sessions_template_ended');
+      await v11.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN note',
+      );
+      await v11.customStatement('PRAGMA user_version = 11');
+      await v11.close();
+
+      final v12 = AppDatabase(NativeDatabase(file));
+      addTearDown(v12.close);
+      expect(await v12.select(v12.workoutSessions).get(), isEmpty);
+      final idx = await v12
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND name = 'workout_sessions_template_ended'",
+          )
+          .get();
+      expect(idx, hasLength(1));
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 11);
+      expect(db.schemaVersion, 12);
       final names =
           (await db
                   .customSelect(
