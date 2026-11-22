@@ -8,13 +8,18 @@ import 'workout_session.dart';
 
 const _secondsStep = 5;
 
+// In lb every target sits on the stepper's 5 lb grid, also when last time
+// was logged in kg (edge: units).
+double _onGrid(double kg, UnitSystem units) => switch (units) {
+  UnitSystem.metric => kg,
+  UnitSystem.imperial => lbToKg(
+    (kgToLb(kg) / weightStep(units)).round() * weightStep(units),
+  ),
+};
+
 double _plusStep(double kg, UnitSystem units) => switch (units) {
   UnitSystem.metric => kg + weightStep(units),
-  // Rounded to the stepper's 5 lb step (edge).
-  UnitSystem.imperial => lbToKg(
-    ((kgToLb(kg) + weightStep(units)) / weightStep(units)).round() *
-        weightStep(units),
-  ),
+  UnitSystem.imperial => _onGrid(kg + lbToKg(weightStep(units)), units),
 };
 
 // LOG-02 AC2–AC4: the suggested target per set number that [last] (last
@@ -53,7 +58,7 @@ Map<int, SetValues> targets(
           seconds: null,
         ),
         _ => (
-          kg: s.kg,
+          kg: _onGrid(s.kg, units),
           reps: math.min((s.reps ?? 0) + 1, row.repMax),
           seconds: null,
         ),

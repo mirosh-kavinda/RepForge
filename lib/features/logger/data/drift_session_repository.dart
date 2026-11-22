@@ -257,7 +257,10 @@ class DriftSessionRepository implements SessionRepository {
       final prs = prSets(mine, await history(exerciseId));
       if (prs.isEmpty) continue;
       await (_db.update(_db.sessionSets)..where((r) => r.id.isIn(prs))).write(
-        const SessionSetsCompanion(isPr: Value(true)),
+        SessionSetsCompanion(
+          isPr: const Value(true),
+          updatedAt: Value(_now().toUtc()),
+        ),
       );
     }
     await _writer.run(

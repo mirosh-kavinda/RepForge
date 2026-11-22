@@ -541,13 +541,117 @@ void main() {
         textScale: 2,
       );
       expect(tester.takeException(), isNull);
+      expect(find.text('Target: 110 kg × 7'), findsOneWidget);
       await logSet(tester, 1);
       expect(tester.takeException(), isNull);
+      expect(find.text('PR'), findsOneWidget);
       for (var i = 0; i < 6; i++) {
         await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
       }
+    });
+
+    testWidgets('AC1 timed and bodyweight ghosts; no ghost for a new set', (
+      tester,
+    ) async {
+      LoggedSet hold(int n, int secs) => LoggedSet(
+        id: 'h$n',
+        rowId: 'old',
+        exerciseId: 'Plank',
+        setNo: n,
+        kg: 0,
+        seconds: secs,
+      );
+      await openLogger(
+        tester,
+        last: {
+          'Barbell_Squat': {1: squat(1, 110, 6)},
+          'Plank': {1: hold(1, 40)},
+        },
+      );
+      expect(find.textContaining('Last: 110 kg'), findsOneWidget);
+      expect(find.textContaining('Last:'), findsNWidgets(2), reason: 'set 2');
+      await tester.scrollUntilVisible(
+        find.text('Last: 40 s'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Target: 45 s'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+
+      await openLogger(
+        tester,
+        last: {
+          'dips': {
+            1: const LoggedSet(
+              id: 'd1',
+              rowId: 'old',
+              exerciseId: 'dips',
+              setNo: 1,
+              kg: 0,
+              reps: 12,
+            ),
+          },
+        },
+        active: WorkoutSession(
+          id: 's',
+          name: 'Calisthenics',
+          date: DateTime.utc(2026, 11, 23),
+          startedAt: DateTime.utc(2026, 11, 23, 9),
+          exercises: const [
+            SessionExercise(
+              id: 'b1',
+              exerciseId: 'dips',
+              name: 'Dips',
+              plannedSets: 1,
+              bodyweight: true,
+            ),
+          ],
+        ),
+      );
+      expect(find.text('Last: Bodyweight × 12'), findsOneWidget);
+      expect(find.text('Target: Bodyweight × 13'), findsOneWidget);
+    });
+
+    testWidgets('AC7 editing the PR set down removes its badge', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await openLogger(
+        tester,
+        last: {
+          'Barbell_Squat': {1: squat(1, 100, 5)},
+        },
+        history: {
+          'Barbell_Squat': [squat(1, 100, 5)],
+        },
+      );
+      await logSet(tester, 1);
+      expect(find.text('PR'), findsOneWidget);
+      await tester.tap(setLabel('Barbell Squat, Set 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('Decrease Reps').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(sessions.active!.sets.single.reps, 5);
+      expect(find.text('PR'), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets('edge imperial: ghost and target in lb on the 5 lb grid', (
+      tester,
+    ) async {
+      await openLogger(
+        tester,
+        units: UnitSystem.imperial,
+        last: {
+          'Barbell_Squat': {1: squat(1, 100, 6)},
+        },
+      );
+      expect(find.text('Last: 220.5 lb × 6'), findsOneWidget);
+      expect(find.text('Target: 220 lb × 7'), findsOneWidget);
     });
   });
 }

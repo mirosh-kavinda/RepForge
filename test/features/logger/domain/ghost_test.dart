@@ -86,6 +86,13 @@ void main() {
       expect(displayWeight(t[1]!.kg, UnitSystem.imperial), 140);
     });
 
+    test('edge imperial: a same-weight target sits on the 5 lb grid', () {
+      final t = targets(bench, last([s(1, 60, reps: 7)]), UnitSystem.imperial);
+      // 60 kg = 132.3 lb → 130 lb.
+      expect(displayWeight(t[1]!.kg, UnitSystem.imperial), 130);
+      expect(t[1]!.reps, 8);
+    });
+
     test('AC3 timed: + 5 s once the target time is reached', () {
       expect(
         targets(
