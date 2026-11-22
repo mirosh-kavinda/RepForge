@@ -36,7 +36,10 @@ class DriftOnboardingRepository implements OnboardingRepository {
           .distinct();
 
   @override
-  Future<void> complete(OnboardingAnswers a) => _db.transaction(() async {
+  Future<void> complete(
+    OnboardingAnswers a, {
+    Future<void> Function()? alsoWrite,
+  }) => _db.transaction(() async {
     final writer = SyncedWriter(_db, now: _now);
     final profileId = newId();
     await writer.run(
@@ -82,6 +85,7 @@ class DriftOnboardingRepository implements OnboardingRepository {
             ),
       );
     }
+    await alsoWrite?.call();
     // Last, so a failure above leaves onboarding not done (edge case).
     await _db.writeMeta(doneKey, 'true');
   });

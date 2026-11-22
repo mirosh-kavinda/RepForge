@@ -76,9 +76,13 @@ class CycleDayTile extends ConsumerWidget {
     final text = dayText(l10n, day, workouts, muscles);
     final role = day.isRest ? RfRole.rest : RfRole.action;
 
+    // A minimum, not a fixed box, so "14" at 200 % text still fits.
     final badge = Container(
-      width: RfSpace.s32,
-      height: RfSpace.s32,
+      constraints: const BoxConstraints(
+        minWidth: RfSpace.s32,
+        minHeight: RfSpace.s32,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: RfSpace.s4),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: isToday ? c.actionFill : c.tint(role),
@@ -106,7 +110,7 @@ class CycleDayTile extends ConsumerWidget {
         borderRadius: BorderRadius.circular(RfRadius.lg),
         border: Border.all(
           color: isToday ? c.actionInk : c.surface,
-          width: 1.5,
+          width: RfStroke.medium,
         ),
       ),
       child: Row(

@@ -20,6 +20,7 @@ void main() {
     test('AC2 name 1–40, 1–14 days, at least one training day', () {
       expect(saveProblem('', ppl), SaveProblem.name);
       expect(saveProblem('a' * 41, ppl), SaveProblem.name);
+      expect(saveProblem('💪' * 40, ppl), isNull, reason: 'counts characters');
       expect(saveProblem(' PPL ', []), SaveProblem.noDays);
       expect(saveProblem('Rest', [d('1'), d('2')]), SaveProblem.noTraining);
       expect(saveProblem('PPL', ppl), isNull);
@@ -63,6 +64,13 @@ void main() {
       // Europe DST ends 25 Oct 2026; a 25-hour day must still count as one.
       final c = cycle(ppl, start: DateTime(2026, 10, 24));
       expect(dayIndexOn(c, DateTime(2026, 10, 26)), 2);
+    });
+
+    test('edge only the calendar date counts, not the clock or offset', () {
+      final c = cycle(ppl, start: DateTime.utc(2026, 11, 21));
+      // After flying east the same date reads late-night UTC or early local.
+      expect(dayIndexOn(c, DateTime.utc(2026, 11, 23, 23, 30)), 2);
+      expect(dayIndexOn(c, DateTime(2026, 11, 23, 0, 15)), 2);
     });
 
     test('AC4 preview: next 8 dates from today', () {

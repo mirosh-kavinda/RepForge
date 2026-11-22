@@ -17,8 +17,7 @@ import '../../workout/domain/workout_template.dart';
 import 'onboarding_controller.dart';
 import 'step_header.dart';
 
-// Screen 12, step 3 (SCH-01 AC10). The cycle is saved before onboarding is
-// marked done, so a failure leaves the user here to retry.
+// Screen 12, step 3 (SCH-01 AC10).
 class PlanScreen extends ConsumerStatefulWidget {
   const PlanScreen({super.key});
 
@@ -48,16 +47,29 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
     }
   }
 
-  Future<void> _finish() =>
-      ref.read(onboardingControllerProvider.notifier).finish();
+  // The cycle and the onboarding flag commit together, so a failure or a kill
+  // leaves neither and a retry cannot duplicate the cycle (ONB-01 edge).
+  Future<void> _finish({Future<void> Function()? alsoWrite}) async {
+    final invalid = await ref
+        .read(onboardingControllerProvider.notifier)
+        .finish(alsoWrite: alsoWrite);
+    if (invalid.isNotEmpty) throw StateError('Answers became invalid');
+  }
 
   Future<void> _start(List<WorkoutTemplate> workouts, StarterPlan? plan) =>
-      _run(() async {
-        if (plan != null) {
-          final c = buildPlan(plan, workouts, ref.read(clockProvider)());
-          if (c != null) await ref.read(cycleRepositoryProvider).save(c);
+      _run(() {
+        final c = plan == null
+            ? null
+            : buildPlan(plan, workouts, ref.read(clockProvider)());
+        // A starter workout vanished after render: fail, never silently skip.
+        if (plan != null && c == null) {
+          throw StateError('Plan workouts missing');
         }
-        await _finish();
+        return _finish(
+          alsoWrite: c == null
+              ? null
+              : () => ref.read(cycleRepositoryProvider).save(c),
+        );
       });
 
   Future<void> _buildOwn() => _run(() async {

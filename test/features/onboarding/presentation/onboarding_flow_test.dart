@@ -376,6 +376,22 @@ void main() {
       expect(repo.saved, hasLength(1));
     });
 
+    testWidgets('a failed Start training saves nothing; retry saves one', (
+      tester,
+    ) async {
+      final repo = await toStep3(tester);
+      repo.failWith = Exception('disk full');
+      await tester.tap(find.byKey(PlanScreen.startKey));
+      await tester.pumpAndSettle();
+      expect(find.text("Couldn't save. Please try again."), findsOneWidget);
+      expect(cycles.saved, isEmpty);
+      repo.failWith = null;
+      await tester.tap(find.byKey(PlanScreen.startKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(cycles.saved, hasLength(1));
+    });
+
     testWidgets('Skip finishes with no cycle', (tester) async {
       final repo = await toStep3(tester);
       await tapText(tester, 'Skip for now');

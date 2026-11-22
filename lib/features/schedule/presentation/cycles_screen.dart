@@ -25,6 +25,20 @@ class CyclesScreen extends ConsumerWidget {
 
   static const startKey = ValueKey('cycles.start');
 
+  // A failed write keeps the list as it was and says so.
+  Future<void> _guard(
+    BuildContext context,
+    Future<void> Function() write,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    try {
+      await write();
+    } on Object {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.editorSaveFailed)));
+    }
+  }
+
   Future<void> _activate(BuildContext context, WidgetRef ref, Cycle c) async {
     final l10n = AppLocalizations.of(context);
     var day = 1;
@@ -75,17 +89,20 @@ class CyclesScreen extends ConsumerWidget {
         ),
       ),
     );
-    if (start == null) return;
+    if (start == null || !context.mounted) return;
     final today = calendarDay(ref.read(clockProvider)());
-    await ref
-        .read(cycleRepositoryProvider)
-        .save(
-          c.copyWith(
-            isActive: true,
-            startDate: today,
-            startDayIndex: start - 1,
+    await _guard(
+      context,
+      () => ref
+          .read(cycleRepositoryProvider)
+          .save(
+            c.copyWith(
+              isActive: true,
+              startDate: today,
+              startDayIndex: start - 1,
+            ),
           ),
-        );
+    );
   }
 
   Future<void> _delete(BuildContext context, WidgetRef ref, Cycle c) async {
@@ -99,13 +116,22 @@ class CyclesScreen extends ConsumerWidget {
         SnackBar(content: Text(l10n.cyclesActiveNoDelete)),
       );
       return;
+    } on Object {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.editorSaveFailed)));
+      return;
     }
     messenger.showSnackBar(
       SnackBar(
         content: Text(l10n.cyclesDeleted(c.name)),
         action: SnackBarAction(
           label: l10n.undo,
-          onPressed: () => repo.restore(c.id),
+          onPressed: () => repo
+              .restore(c.id)
+              .catchError(
+                (Object _) => messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.editorSaveFailed)),
+                ),
+              ),
         ),
       ),
     );
@@ -123,6 +149,13 @@ class CyclesScreen extends ConsumerWidget {
       body: SafeArea(
         child: cycles == null
             ? const Center(child: CircularProgressIndicator())
+            : cycles.isEmpty
+            ? Center(
+                child: Text(
+                  l10n.cyclesEmpty,
+                  style: t.body.copyWith(color: c.textSecondary),
+                ),
+              )
             : ListView.separated(
                 padding: const EdgeInsets.all(RfSpace.s20),
                 itemCount: cycles.length,

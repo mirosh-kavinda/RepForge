@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -142,6 +144,40 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CycleEditorScreen), findsOneWidget);
     });
+
+    testWidgets('edge a failed plan save says so and saves nothing', (
+      tester,
+    ) async {
+      final repo = await pumpApp(tester)..failSaveWith = StateError('disk');
+      await scrollTap(tester, find.text('PPL + Rest'));
+      expect(find.text("Couldn't save. Try again."), findsOneWidget);
+      expect(repo.active, isEmpty);
+      expect(find.text('No cycle yet'), findsOneWidget);
+    });
+
+    testWidgets('edge a second tap during the save saves one cycle', (
+      tester,
+    ) async {
+      final gate = Completer<void>();
+      final repo = await pumpApp(tester)..saveGate = gate;
+      await scrollTap(tester, find.text('PPL + Rest'));
+      await tester.tap(find.text('PPL + Rest'));
+      await tester.pump();
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(repo.saved, hasLength(1));
+    });
+
+    testWidgets('AC11 a deleted workout is flagged on the cycle card', (
+      tester,
+    ) async {
+      await pumpApp(
+        tester,
+        cycles: [cycle('c1', 'PPL', active: true)],
+        workouts: starters.where((w) => w.name != 'Legs').toList(),
+      );
+      expect(find.text('Workout deleted'), findsOneWidget);
+    });
   });
 
   group('SCH-01 Home', () {
@@ -160,6 +196,28 @@ void main() {
         find.text('No cycle yet. Set one up in Schedule.'),
         findsOneWidget,
       );
+    });
+
+    testWidgets('AC11 Home names a deleted workout as deleted', (tester) async {
+      await pumpApp(
+        tester,
+        cycles: [
+          cycle(
+            'c1',
+            'PPL',
+            active: true,
+            days: const [
+              CycleDay(id: 'd1', workoutId: 'push'),
+              CycleDay(id: 'd2'),
+              CycleDay(id: 'd3', workoutId: 'legs'),
+            ],
+          ),
+        ],
+        workouts: starters.where((w) => w.name != 'Legs').toList(),
+        openSchedule: false,
+      );
+      expect(find.textContaining('Day 3 of 3'), findsOneWidget);
+      expect(find.textContaining('Workout deleted'), findsOneWidget);
     });
   });
 
@@ -236,6 +294,44 @@ void main() {
       await tester.pumpAndSettle();
       await menu(tester, 'PPL', 'Duplicate');
       expect(find.text('PPL (copy)'), findsOneWidget);
+    });
+
+    testWidgets('edge a failed make active says so; PPL stays active', (
+      tester,
+    ) async {
+      final repo = await openCycles(tester)..failSaveWith = StateError('disk');
+      await menu(tester, 'Deload', 'Make active');
+      await tester.tap(find.byKey(CyclesScreen.startKey));
+      await tester.pumpAndSettle();
+      expect(find.text("Couldn't save. Try again."), findsOneWidget);
+      expect(repo.active.firstWhere((x) => x.id == 'c1').isActive, isTrue);
+    });
+
+    testWidgets('edge a failed delete says so and keeps the cycle', (
+      tester,
+    ) async {
+      final repo = await openCycles(tester)
+        ..failDeleteWith = StateError('disk');
+      await menu(tester, 'Deload', 'Delete');
+      expect(find.text("Couldn't save. Try again."), findsOneWidget);
+      expect(find.text('Deload'), findsOneWidget);
+      expect(repo.active, hasLength(2));
+    });
+
+    testWidgets('edge a failed Undo says so', (tester) async {
+      final repo = await openCycles(tester)
+        ..failRestoreWith = StateError('disk');
+      await menu(tester, 'Deload', 'Delete');
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+      expect(find.text("Couldn't save. Try again."), findsOneWidget);
+      expect(repo.active.map((c) => c.id), ['c1']);
+    });
+
+    testWidgets('edge an empty list says so', (tester) async {
+      await pumpApp(tester);
+      await scrollTap(tester, find.byKey(ScheduleScreen.cyclesKey));
+      expect(find.text('No saved cycles yet.'), findsOneWidget);
     });
   });
 }

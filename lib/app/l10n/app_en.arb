@@ -1254,10 +1254,6 @@
   "@cyclesMakeActive": {
     "description": "Cycle action."
   },
-  "cyclesEdit": "Edit",
-  "@cyclesEdit": {
-    "description": "Cycle action."
-  },
   "cyclesDeleted": "{name} deleted",
   "@cyclesDeleted": {
     "description": "Snackbar after deleting a cycle.",
@@ -1364,5 +1360,17 @@
         "type": "String"
       }
     }
+  },
+  "cyclePreview": "Preview",
+  "@cyclePreview": {
+    "description": "Preview card title when editing a cycle."
+  },
+  "cyclesEmpty": "No saved cycles yet.",
+  "@cyclesEmpty": {
+    "description": "My cycles empty state."
+  },
+  "scheduleLoadFailed": "Couldn't load your cycle.",
+  "@scheduleLoadFailed": {
+    "description": "Schedule failed to read the active cycle."
   }
 }

@@ -137,12 +137,14 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
     final c = RfColors.of(context);
     final t = RfTextStyles.of(context);
     final async = ref.watch(_provider);
-    final workouts = ref.watch(templatesProvider).value ?? const [];
+    final templates = ref.watch(templatesProvider);
+    final workouts = templates.value ?? const [];
     final byId = {for (final w in workouts) w.id: w};
     final today = ref.watch(clockProvider)();
 
     final d = async.value;
-    if (d == null) {
+    // Until workouts load, every training day would look deleted (AC11).
+    if (d == null || (templates.isLoading && !templates.hasValue)) {
       return Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -388,7 +390,9 @@ class _Preview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            l10n.cyclePreviewTitle,
+            draft.origin == CycleOrigin.create
+                ? l10n.cyclePreviewTitle
+                : l10n.cyclePreview,
             style: t.label.copyWith(color: c.textMuted),
           ),
           if (draft.origin == CycleOrigin.create && days.length > 1) ...[
@@ -412,14 +416,15 @@ class _Preview extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: RfSpace.s4),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: RfSpace.s32 * 3,
+                    Expanded(
+                      flex: 2,
                       child: Text(
                         DateFormat.MMMEd(locale).format(p.date),
                         style: t.label.copyWith(color: c.textSecondary),
                       ),
                     ),
                     Expanded(
+                      flex: 3,
                       child: Text(
                         name(days[p.dayIndex]),
                         style: t.labelStrong.copyWith(

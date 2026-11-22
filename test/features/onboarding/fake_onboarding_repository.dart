@@ -30,8 +30,13 @@ class FakeOnboardingRepository implements OnboardingRepository {
   Stream<UnitSystem> watchUnits() => Stream.value(units);
 
   @override
-  Future<void> complete(OnboardingAnswers answers) async {
+  Future<void> complete(
+    OnboardingAnswers answers, {
+    Future<void> Function()? alsoWrite,
+  }) async {
+    // Fails before alsoWrite, as a rolled-back transaction would leave it.
     if (failWith case final error?) throw error;
+    await alsoWrite?.call();
     saved.add(answers);
     done = true;
   }

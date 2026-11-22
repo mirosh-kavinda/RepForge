@@ -1,3 +1,5 @@
+import 'package:characters/characters.dart';
+
 import '../../../core/ids.dart';
 import 'cycle.dart';
 
@@ -10,8 +12,9 @@ abstract final class CycleLimits {
 enum SaveProblem { name, noDays, noTraining }
 
 SaveProblem? saveProblem(String name, List<CycleDay> days) {
-  final n = name.trim();
-  if (n.isEmpty || n.length > CycleLimits.nameMax) return SaveProblem.name;
+  // Counted as the text field counts: user-visible characters.
+  final n = name.trim().characters.length;
+  if (n == 0 || n > CycleLimits.nameMax) return SaveProblem.name;
   if (days.isEmpty) return SaveProblem.noDays;
   if (days.every((d) => d.isRest)) return SaveProblem.noTraining;
   return null;

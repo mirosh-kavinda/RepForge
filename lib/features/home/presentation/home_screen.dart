@@ -39,7 +39,10 @@ class TodayInCycle extends ConsumerWidget {
     final c = RfColors.of(context);
     final t = RfTextStyles.of(context);
     final active = ref.watch(activeCycleProvider);
-    if (!active.hasValue) return const SizedBox.shrink();
+    final templates = ref.watch(templatesProvider);
+    if (!active.hasValue || (templates.isLoading && !templates.hasValue)) {
+      return const SizedBox.shrink();
+    }
     final cycle = active.value;
     final String text;
     if (cycle == null) {
@@ -47,7 +50,7 @@ class TodayInCycle extends ConsumerWidget {
     } else {
       final i = dayIndexOn(cycle, ref.watch(clockProvider)());
       final day = cycle.days[i];
-      final workouts = ref.watch(templatesProvider).value ?? const [];
+      final workouts = templates.value ?? const [];
       final name = day.isRest
           ? l10n.cycleRest
           : workouts.where((w) => w.id == day.workoutId).firstOrNull?.name ??

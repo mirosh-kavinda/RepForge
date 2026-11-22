@@ -1,3 +1,5 @@
+import 'package:characters/characters.dart';
+
 import '../../../core/ids.dart';
 import '../../../core/metrics/units.dart';
 import '../../library/domain/exercise.dart';
@@ -23,7 +25,8 @@ const _letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 String? cleanName(String raw) {
   final name = raw.trim();
-  return name.isEmpty || name.length > TemplateLimits.nameMax ? null : name;
+  final n = name.characters.length;
+  return n == 0 || n > TemplateLimits.nameMax ? null : name;
 }
 
 bool canSave(String name, List<TemplateExercise> exercises) =>
@@ -150,7 +153,10 @@ List<Muscle> primaryMuscles(
 String copyName(String name) {
   const suffix = ' (copy)';
   const room = TemplateLimits.nameMax - suffix.length;
-  final base = name.length > room ? name.substring(0, room).trimRight() : name;
+  final chars = name.characters;
+  final base = chars.length > room
+      ? chars.take(room).toString().trimRight()
+      : name;
   return '$base$suffix';
 }
 

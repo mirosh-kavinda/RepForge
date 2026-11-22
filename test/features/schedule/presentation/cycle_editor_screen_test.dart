@@ -53,6 +53,7 @@ Future<FakeCycleRepository> pumpBuilder(
   String? copyOf,
   List<WorkoutTemplate> workouts = const [push, legs],
   FakeCycleRepository? repo,
+  FakeTemplateRepository? templates,
   double textScale = 1,
 }) async {
   tester.view
@@ -65,7 +66,7 @@ Future<FakeCycleRepository> pumpBuilder(
       overrides: [
         cycleRepositoryProvider.overrideWithValue(r),
         templateRepositoryProvider.overrideWithValue(
-          FakeTemplateRepository(workouts),
+          templates ?? FakeTemplateRepository(workouts),
         ),
         exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
         clockProvider.overrideWithValue(() => now),
@@ -234,6 +235,37 @@ void main() {
         find.byKey(CycleEditorScreen.addRestKey),
       );
       expect(rest.onPressed, isNull);
+      final training = tester.widget<RfButton>(
+        find.byKey(CycleEditorScreen.addTrainingKey),
+      );
+      expect(training.onPressed, isNull);
+    });
+
+    testWidgets('edge Today is day n resets to 1 when the length drops', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(tester);
+      await addTraining(tester, 'Push');
+      await addTraining(tester, 'Legs');
+      await addRest(tester);
+      await scrollTo(tester, find.byKey(CycleEditorScreen.startDayKey));
+      await tester.tap(find.bySemanticsLabel('Increase Today is day'));
+      await tester.tap(find.bySemanticsLabel('Increase Today is day'));
+      await tester.pumpAndSettle();
+      String value() => tester
+          .getSemantics(
+            find.descendant(
+              of: find.byKey(CycleEditorScreen.startDayKey),
+              matching: find.bySemanticsLabel('Today is day'),
+            ),
+          )
+          .value;
+      expect(value(), '3');
+      await dayAction(tester, 3, 'Remove');
+      await scrollTo(tester, find.byKey(CycleEditorScreen.startDayKey));
+      expect(value(), '1');
+      handle.dispose();
     });
   });
 
@@ -292,6 +324,62 @@ void main() {
       await tester.tap(find.text('Legs').last);
       await tester.pumpAndSettle();
       expect(dayTitles(tester), ['Legs', 'Legs', 'Rest']);
+    });
+
+    testWidgets('AC3 dragging a day by its handle reorders it', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(tester, id: 'c1');
+      final row = find.byKey(const ValueKey('d1'));
+      final h = tester.getSize(row).height;
+      final grip = find.descendant(
+        of: row,
+        matching: find.byIcon(Icons.drag_indicator),
+      );
+      final gesture = await tester.startGesture(tester.getCenter(grip));
+      await tester.pump(const Duration(milliseconds: 600));
+      for (var i = 0; i < 10; i++) {
+        await gesture.moveBy(Offset(0, h * 0.9 / 10));
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(dayTitles(tester), ['Legs', 'Push', 'Rest']);
+      handle.dispose();
+    });
+
+    testWidgets('AC11 undoing the workout delete shows the day normally', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final templates = FakeTemplateRepository(const [push, legs]);
+      await pumpBuilder(tester, id: 'c1', templates: templates);
+      await templates.delete('push');
+      await tester.pumpAndSettle();
+      expect(dayTitles(tester).first, 'Workout deleted');
+      await templates.restore('push');
+      await tester.pumpAndSettle();
+      expect(dayTitles(tester).first, 'Push');
+      handle.dispose();
+    });
+
+    testWidgets('NFR-06 a 14-day cycle fits at 200 % text', (tester) async {
+      final long = ppl.copyWith(
+        days: [
+          for (var i = 0; i < 14; i++)
+            CycleDay(id: 'x$i', workoutId: i.isEven ? 'push' : null),
+        ],
+      );
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([long]),
+        textScale: 2,
+      );
+      for (var i = 0; i < 12; i++) {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      }
     });
 
     testWidgets('edge a copy saves inactive with "(copy)"', (tester) async {

@@ -77,7 +77,7 @@ class StarterPlanCards extends StatelessWidget {
                     borderRadius: BorderRadius.circular(RfRadius.lg),
                     border: Border.all(
                       color: selected == p ? c.actionFill : c.border,
-                      width: selected == p ? 2 : 1,
+                      width: selected == p ? RfStroke.thick : RfStroke.thin,
                     ),
                   ),
                   child: Column(

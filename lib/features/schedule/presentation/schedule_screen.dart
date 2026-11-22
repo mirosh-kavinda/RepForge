@@ -20,7 +20,7 @@ import 'cycle_day_tile.dart';
 import 'starter_plan_cards.dart';
 
 // Screen 03: the active cycle (AC6). Calendar and weekday mode come later.
-class ScheduleScreen extends ConsumerWidget {
+class ScheduleScreen extends ConsumerStatefulWidget {
   const ScheduleScreen({super.key});
 
   static const workoutsKey = ValueKey('schedule.workouts');
@@ -28,16 +28,34 @@ class ScheduleScreen extends ConsumerWidget {
   static const newCycleKey = ValueKey('schedule.newCycle');
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ScheduleScreen> createState() => _ScheduleScreenState();
+}
+
+class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
+  // A second tap during the save would save a second cycle.
+  bool _saving = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final active = ref.watch(activeCycleProvider);
-    final workouts =
-        ref.watch(templatesProvider).value ?? const <WorkoutTemplate>[];
+    final templates = ref.watch(templatesProvider);
+    final workouts = templates.value ?? const <WorkoutTemplate>[];
     final today = ref.watch(clockProvider)();
 
     Future<void> usePlan(StarterPlan p) async {
+      if (_saving) return;
       final c = buildPlan(p, workouts, today);
-      if (c != null) await ref.read(cycleRepositoryProvider).save(c);
+      if (c == null) return;
+      final messenger = ScaffoldMessenger.of(context);
+      _saving = true;
+      try {
+        await ref.read(cycleRepositoryProvider).save(c);
+      } on Object {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.editorSaveFailed)));
+      } finally {
+        _saving = false;
+      }
     }
 
     return Scaffold(
@@ -50,7 +68,7 @@ class ScheduleScreen extends ConsumerWidget {
             Align(
               alignment: Alignment.centerRight,
               child: RfButton(
-                key: newCycleKey,
+                key: ScheduleScreen.newCycleKey,
                 label: l10n.scheduleNewCycle,
                 size: RfButtonSize.md,
                 onPressed: () => context.push(Routes.cycleNew),
@@ -58,6 +76,8 @@ class ScheduleScreen extends ConsumerWidget {
             ),
             const SizedBox(height: RfSpace.s12),
             switch (active) {
+              _ when templates.isLoading && !templates.hasValue =>
+                const Center(child: CircularProgressIndicator()),
               AsyncValue(:final value?) => _ActiveCycleCard(
                 cycle: value,
                 today: today,
@@ -66,17 +86,18 @@ class ScheduleScreen extends ConsumerWidget {
                 plans: availablePlans(workouts, today),
                 onPlan: usePlan,
               ),
+              AsyncValue(hasError: true) => Text(l10n.scheduleLoadFailed),
               _ => const Center(child: CircularProgressIndicator()),
             },
             const SizedBox(height: RfSpace.s16),
             _LinkCard(
-              key: cyclesKey,
+              key: ScheduleScreen.cyclesKey,
               title: l10n.scheduleMyCycles,
               onTap: () => context.push(Routes.cycles),
             ),
             const SizedBox(height: RfSpace.s8),
             _LinkCard(
-              key: workoutsKey,
+              key: ScheduleScreen.workoutsKey,
               title: l10n.scheduleMyWorkouts,
               hint: l10n.scheduleMyWorkoutsHint,
               onTap: () => context.push(Routes.workouts),

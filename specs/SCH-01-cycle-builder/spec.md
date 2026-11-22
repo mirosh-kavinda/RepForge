@@ -25,7 +25,8 @@ RepForge plans training as an N-day cycle, not a week. Users need to lay out tha
 - **AC3** — Given a day row, then I can change its workout, turn it into Rest or a training day,
   remove it, and reorder it by drag or by Move up / Move down.
 - **AC4** — Given the builder, then a preview shows the next 8 dates from today with each date's
-  day (workout name or Rest); a "Today is day [n]" choice (default 1) shifts it live.
+  day (workout name or Rest). For a new cycle of 2+ days, a "Today is day [n]" choice (default 1)
+  shifts it live; an edited cycle keeps today per AC8, and a copy is saved inactive.
 - **AC5** — Given I save a new cycle, then it becomes the active one, starting today at the chosen
   day; any previously active cycle stays saved but inactive.
 - **AC6** — Given an active cycle, then the Schedule tab shows its name, length, a line that

@@ -15,6 +15,10 @@ class FakeCycleRepository implements CycleRepository {
   final _changes = StreamController<void>.broadcast();
   final saved = <Cycle>[];
   Object? failSaveWith;
+  Object? failDeleteWith;
+  Object? failRestoreWith;
+  // When set, saves wait for it, so a test can tap again mid-save.
+  Completer<void>? saveGate;
 
   List<Cycle> get active => [
     for (final c in _all.values)
@@ -41,6 +45,7 @@ class FakeCycleRepository implements CycleRepository {
 
   @override
   Future<void> save(Cycle c) async {
+    await saveGate?.future;
     if (failSaveWith case final e?) throw e;
     if (c.isActive) {
       for (final o in _all.values.toList()) {
@@ -56,6 +61,7 @@ class FakeCycleRepository implements CycleRepository {
 
   @override
   Future<void> delete(String id) async {
+    if (failDeleteWith case final e?) throw e;
     if (_all[id]?.isActive ?? false) throw ActiveCycleDeleteError();
     _deleted.add(id);
     _changes.add(null);
@@ -63,6 +69,7 @@ class FakeCycleRepository implements CycleRepository {
 
   @override
   Future<void> restore(String id) async {
+    if (failRestoreWith case final e?) throw e;
     _deleted.remove(id);
     _changes.add(null);
   }

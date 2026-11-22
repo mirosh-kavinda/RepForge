@@ -31,6 +31,7 @@ void main() {
       expect(cleanName('   '), isNull);
       expect(cleanName('a' * 40), 'a' * 40);
       expect(cleanName('a' * 41), isNull);
+      expect(cleanName('💪' * 40), '💪' * 40, reason: 'counts characters');
     });
 
     test('AC2 save needs a name and at least one exercise', () {
@@ -162,6 +163,7 @@ void main() {
   group('WKT-01 copies, ranges, weights', () {
     test('AC10 copy name keeps the suffix within 40 characters', () {
       expect(copyName('Leg Day'), 'Leg Day (copy)');
+      expect(copyName('💪' * 40), '${'💪' * 33} (copy)', reason: 'no split');
       final long = copyName('a' * 40);
       expect(long.length, lessThanOrEqualTo(40));
       expect(long, endsWith(' (copy)'));

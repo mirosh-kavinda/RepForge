@@ -65,12 +65,19 @@ void main() {
       () async {
         await repo.save(cycle('a'));
         await repo.save(cycle('b', active: false));
-        expect(() => repo.delete('a'), throwsA(isA<ActiveCycleDeleteError>()));
+        final before = (await outbox()).length;
+        await expectLater(
+          repo.delete('a'),
+          throwsA(isA<ActiveCycleDeleteError>()),
+        );
+        expect(await outbox(), hasLength(before), reason: 'AC13 refused');
         await repo.delete('b');
         expect((await repo.watchAll().first).map((c) => c.id), ['a']);
         expect(await repo.byId('b'), isNull);
+        expect((await outbox()).last, ('b', OutboxOp.delete), reason: 'AC13');
         await repo.restore('b');
         expect(await repo.byId('b'), cycle('b', active: false));
+        expect((await outbox()).last, ('b', OutboxOp.update), reason: 'AC13');
       },
     );
 
