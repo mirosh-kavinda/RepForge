@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 mixin _$CycleDraft implements DiagnosticableTreeMixin {
 
  String get id; CycleOrigin get origin; String get name; List<CycleDay> get days;// The chosen "Today is day n" (0-based) for a new cycle (AC4).
- int get startDay;// The saved cycle being edited.
+ int get startDay; CycleMode get mode;// The saved cycle being edited.
  Cycle? get original;
 /// Create a copy of CycleDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -28,21 +28,21 @@ $CycleDraftCopyWith<CycleDraft> get copyWith => _$CycleDraftCopyWithImpl<CycleDr
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'CycleDraft'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('origin', origin))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('days', days))..add(DiagnosticsProperty('startDay', startDay))..add(DiagnosticsProperty('original', original));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('origin', origin))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('days', days))..add(DiagnosticsProperty('startDay', startDay))..add(DiagnosticsProperty('mode', mode))..add(DiagnosticsProperty('original', original));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CycleDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.days, days)&&(identical(other.startDay, startDay) || other.startDay == startDay)&&(identical(other.original, original) || other.original == original));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CycleDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.days, days)&&(identical(other.startDay, startDay) || other.startDay == startDay)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.original, original) || other.original == original));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,origin,name,const DeepCollectionEquality().hash(days),startDay,original);
+int get hashCode => Object.hash(runtimeType,id,origin,name,const DeepCollectionEquality().hash(days),startDay,mode,original);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'CycleDraft(id: $id, origin: $origin, name: $name, days: $days, startDay: $startDay, original: $original)';
+  return 'CycleDraft(id: $id, origin: $origin, name: $name, days: $days, startDay: $startDay, mode: $mode, original: $original)';
 }
 
 
@@ -53,7 +53,7 @@ abstract mixin class $CycleDraftCopyWith<$Res>  {
   factory $CycleDraftCopyWith(CycleDraft value, $Res Function(CycleDraft) _then) = _$CycleDraftCopyWithImpl;
 @useResult
 $Res call({
- String id, CycleOrigin origin, String name, List<CycleDay> days, int startDay, Cycle? original
+ String id, CycleOrigin origin, String name, List<CycleDay> days, int startDay, CycleMode mode, Cycle? original
 });
 
 
@@ -70,14 +70,15 @@ class _$CycleDraftCopyWithImpl<$Res>
 
 /// Create a copy of CycleDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? origin = null,Object? name = null,Object? days = null,Object? startDay = null,Object? original = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? origin = null,Object? name = null,Object? days = null,Object? startDay = null,Object? mode = null,Object? original = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,origin: null == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
 as CycleOrigin,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,days: null == days ? _self.days : days // ignore: cast_nullable_to_non_nullable
 as List<CycleDay>,startDay: null == startDay ? _self.startDay : startDay // ignore: cast_nullable_to_non_nullable
-as int,original: freezed == original ? _self.original : original // ignore: cast_nullable_to_non_nullable
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as CycleMode,original: freezed == original ? _self.original : original // ignore: cast_nullable_to_non_nullable
 as Cycle?,
   ));
 }
@@ -175,10 +176,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  Cycle? original)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  CycleMode mode,  Cycle? original)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CycleDraft() when $default != null:
-return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.original);case _:
+return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.mode,_that.original);case _:
   return orElse();
 
 }
@@ -196,10 +197,10 @@ return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  Cycle? original)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  CycleMode mode,  Cycle? original)  $default,) {final _that = this;
 switch (_that) {
 case _CycleDraft():
-return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.original);case _:
+return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.mode,_that.original);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +217,10 @@ return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  Cycle? original)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  CycleOrigin origin,  String name,  List<CycleDay> days,  int startDay,  CycleMode mode,  Cycle? original)?  $default,) {final _that = this;
 switch (_that) {
 case _CycleDraft() when $default != null:
-return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.original);case _:
+return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that.mode,_that.original);case _:
   return null;
 
 }
@@ -231,7 +232,7 @@ return $default(_that.id,_that.origin,_that.name,_that.days,_that.startDay,_that
 
 
 class _CycleDraft extends CycleDraft with DiagnosticableTreeMixin {
-  const _CycleDraft({required this.id, required this.origin, required this.name, required final  List<CycleDay> days, this.startDay = 0, this.original}): _days = days,super._();
+  const _CycleDraft({required this.id, required this.origin, required this.name, required final  List<CycleDay> days, this.startDay = 0, this.mode = CycleMode.rolling, this.original}): _days = days,super._();
   
 
 @override final  String id;
@@ -246,6 +247,7 @@ class _CycleDraft extends CycleDraft with DiagnosticableTreeMixin {
 
 // The chosen "Today is day n" (0-based) for a new cycle (AC4).
 @override@JsonKey() final  int startDay;
+@override@JsonKey() final  CycleMode mode;
 // The saved cycle being edited.
 @override final  Cycle? original;
 
@@ -260,21 +262,21 @@ _$CycleDraftCopyWith<_CycleDraft> get copyWith => __$CycleDraftCopyWithImpl<_Cyc
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'CycleDraft'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('origin', origin))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('days', days))..add(DiagnosticsProperty('startDay', startDay))..add(DiagnosticsProperty('original', original));
+    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('origin', origin))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('days', days))..add(DiagnosticsProperty('startDay', startDay))..add(DiagnosticsProperty('mode', mode))..add(DiagnosticsProperty('original', original));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CycleDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._days, _days)&&(identical(other.startDay, startDay) || other.startDay == startDay)&&(identical(other.original, original) || other.original == original));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CycleDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._days, _days)&&(identical(other.startDay, startDay) || other.startDay == startDay)&&(identical(other.mode, mode) || other.mode == mode)&&(identical(other.original, original) || other.original == original));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,origin,name,const DeepCollectionEquality().hash(_days),startDay,original);
+int get hashCode => Object.hash(runtimeType,id,origin,name,const DeepCollectionEquality().hash(_days),startDay,mode,original);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'CycleDraft(id: $id, origin: $origin, name: $name, days: $days, startDay: $startDay, original: $original)';
+  return 'CycleDraft(id: $id, origin: $origin, name: $name, days: $days, startDay: $startDay, mode: $mode, original: $original)';
 }
 
 
@@ -285,7 +287,7 @@ abstract mixin class _$CycleDraftCopyWith<$Res> implements $CycleDraftCopyWith<$
   factory _$CycleDraftCopyWith(_CycleDraft value, $Res Function(_CycleDraft) _then) = __$CycleDraftCopyWithImpl;
 @override @useResult
 $Res call({
- String id, CycleOrigin origin, String name, List<CycleDay> days, int startDay, Cycle? original
+ String id, CycleOrigin origin, String name, List<CycleDay> days, int startDay, CycleMode mode, Cycle? original
 });
 
 
@@ -302,14 +304,15 @@ class __$CycleDraftCopyWithImpl<$Res>
 
 /// Create a copy of CycleDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? origin = null,Object? name = null,Object? days = null,Object? startDay = null,Object? original = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? origin = null,Object? name = null,Object? days = null,Object? startDay = null,Object? mode = null,Object? original = freezed,}) {
   return _then(_CycleDraft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,origin: null == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
 as CycleOrigin,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,days: null == days ? _self._days : days // ignore: cast_nullable_to_non_nullable
 as List<CycleDay>,startDay: null == startDay ? _self.startDay : startDay // ignore: cast_nullable_to_non_nullable
-as int,original: freezed == original ? _self.original : original // ignore: cast_nullable_to_non_nullable
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as CycleMode,original: freezed == original ? _self.original : original // ignore: cast_nullable_to_non_nullable
 as Cycle?,
   ));
 }

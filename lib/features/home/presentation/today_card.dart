@@ -8,11 +8,13 @@ import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
 import '../../schedule/data/providers.dart';
 import '../../schedule/domain/cycle.dart';
+import '../../schedule/presentation/weekday_labels.dart';
 import '../../workout/data/providers.dart';
 import '../../workout/domain/workout_template.dart';
 
 // Home, screen 01 / 15: today in the active cycle with Mark done / Undo, the
 // missed line, what is next, and the rest-day variant (SCH-02 AC1–AC3, AC8, AC9).
+// Weekdays names today by its weekday (SCH-03 AC6, AC7).
 class TodayCard extends ConsumerStatefulWidget {
   const TodayCard({super.key});
 
@@ -73,6 +75,9 @@ class _TodayCardState extends ConsumerState<TodayCard> {
     final i = a.today.index;
     final day = cycle.days[i];
     final total = cycle.days.length;
+    final weekday = cycle.mode == CycleMode.weekdays
+        ? WeekdayLabels.of(context).full(i)
+        : null;
     final next = Text(
       l10n.homeNext(name(cycle.days[a.today.next])),
       style: t.body.copyWith(color: c.textSecondary),
@@ -85,7 +90,7 @@ class _TodayCardState extends ConsumerState<TodayCard> {
         Semantics(header: true, child: Text(l10n.homeRestDay, style: t.title)),
         const SizedBox(height: RfSpace.s4),
         Text(
-          l10n.homeDayOf(i + 1, total),
+          weekday ?? l10n.homeDayOf(i + 1, total),
           style: t.label.copyWith(color: c.restInk),
         ),
         const SizedBox(height: RfSpace.s12),
@@ -97,7 +102,9 @@ class _TodayCardState extends ConsumerState<TodayCard> {
         Semantics(
           header: true,
           child: Text(
-            l10n.homeToday(i + 1, total, name(day)),
+            weekday == null
+                ? l10n.homeToday(i + 1, total, name(day))
+                : l10n.homeWeekdayToday(weekday, name(day)),
             style: t.heading,
           ),
         ),

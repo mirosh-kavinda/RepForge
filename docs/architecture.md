@@ -71,7 +71,7 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 | Exercise (catalog) | catalog/exercises/{exId} (read-only) | name, primaryMuscles[], secondaryMuscles[], equipment, level, category, mechanic, force, instructions[], images[] |
 | CustomExercise | users/{uid}/customExercises/{id} | same as Exercise |
 | WorkoutTemplate | users/{uid}/templates/{id} | name, exercises[{exId, order, sets, repMin, repMax, targetKg, restSec, supersetGroup}] |
-| Schedule | users/{uid}/schedules/{id} | name, mode (rolling/weekday), cycle[{dayIndex, templateId or REST}], startDate, active |
+| Schedule | users/{uid}/schedules/{id} | name, mode (rolling/weekdays), cycle[{dayIndex, templateId or REST}], startDate, active |
 | ScheduleDay | users/{uid}/scheduleDays/{id} (doc id settled in SYN-01) | cycleId, date, dayId (cycle row), dayIndex, status (done/missed/rest; moved with SCH-04), sessionId (LOG-05) |
 | WorkoutSession | users/{uid}/sessions/{id} | templateId, startedAt, endedAt, totalVolumeKg, prCount, notes, sets[{exId, setNo, kg, reps, rpe, isWarmup, isPR}] |
 | BodySnapshot | users/{uid}/bodySnapshots/{id} | date, weightKg, waistCm, neckCm, hipCm, bodyFatPct, bmi, lbmKg, ffmi, bmr, tdee |
@@ -86,6 +86,8 @@ Design choices:
 - Records and stats are derived on device; cached in Firestore only to speed up restore.
 - `scheduleDays`: one per (cycle, date), since a cycle switched to today has its own today;
   indexed by date so a month is one range query. Passed dates are written as missed / rest.
+- Weekday mode (SCH-03): `cycle[]` has exactly 7 rows stored Monday first, so row i is ISO
+  weekday i + 1 whatever the locale; screens only rotate the order to the locale's first day.
 
 ## Sync rules
 

@@ -428,4 +428,108 @@ void main() {
       handle.dispose();
     });
   });
+
+  group('SCH-03 Schedule in weekday mode', () {
+    // Stored Monday first: Mon Push, Tue Legs, Wed Rest, Thu Push, Fri Rest,
+    // Sat Legs, Sun Rest.
+    Cycle week({bool active = true}) => cycle(
+      'w',
+      'Week',
+      active: active,
+      days: [
+        for (final (i, w) in [
+          'push',
+          'legs',
+          null,
+          'push',
+          null,
+          'legs',
+          null,
+        ].indexed)
+          CycleDay(id: 'w$i', workoutId: w),
+      ],
+    ).copyWith(mode: CycleMode.weekdays, startDayIndex: 0);
+
+    List<String> rowLabels(WidgetTester tester) {
+      final f = find.bySemanticsLabel(
+        RegExp('^(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, '),
+      );
+      return [
+        for (var i = 0; i < f.evaluate().length; i++)
+          tester.getSemantics(f.at(i)).label,
+      ];
+    }
+
+    testWidgets('AC8 says Weekdays; weekday rows from Sunday (en_US)', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpApp(tester, cycles: [week()]);
+      expect(find.text('Weekdays · 7-day cycle'), findsOneWidget);
+      expect(find.textContaining('Miss a day?'), findsNothing);
+      expect(find.textContaining('A missed day simply passes'), findsOneWidget);
+      final labels = rowLabels(tester);
+      expect(labels.first, startsWith('Sunday, Rest, '));
+      expect(labels[1], startsWith('Monday, Push, today, '));
+      expect(labels.where((l) => l.contains('today')), hasLength(1));
+      handle.dispose();
+    });
+
+    testWidgets('AC8 a Monday-first locale lists Monday first; Done shown', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      tester.platformDispatcher.localesTestValue = const [Locale('en', 'GB')];
+      addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+      await pumpApp(
+        tester,
+        cycles: [week()],
+        records: [
+          DayRecord(
+            id: 'r',
+            cycleId: 'w',
+            date: DateTime.utc(2026, 11, 23),
+            dayId: 'w0',
+            dayIndex: 0,
+            status: DayStatus.done,
+          ),
+        ],
+      );
+      expect(rowLabels(tester).first, startsWith('Monday, Push, today, Done'));
+      expect(find.text('Mon'), findsOneWidget, reason: 'weekday badge');
+      handle.dispose();
+    });
+
+    testWidgets("edge make active needs no Today is day n; today's weekday", (
+      tester,
+    ) async {
+      final repo = await pumpApp(
+        tester,
+        cycles: [
+          cycle('c1', 'PPL', active: true),
+          week(active: false).copyWith(startDayIndex: 4),
+        ],
+      );
+      await scrollTap(tester, find.byKey(ScheduleScreen.cyclesKey));
+      await menu(tester, 'Week', 'Make active');
+      expect(find.text('Start Week'), findsNothing);
+      final c = repo.saved.single;
+      expect(
+        (c.id, c.isActive, c.startDate, c.startDayIndex),
+        ('w', true, DateTime.utc(2026, 11, 23), 0),
+      );
+      expect(repo.active.firstWhere((x) => x.id == 'c1').isActive, isFalse);
+    });
+
+    testWidgets('NFR-06 the Weekdays card fits at 200 % text', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpApp(tester, cycles: [week()]);
+      for (var i = 0; i < 8; i++) {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      }
+    });
+  });
 }

@@ -279,4 +279,98 @@ void main() {
       handle.dispose();
     });
   });
+
+  group('SCH-03 Home in weekday mode', () {
+    // Stored Monday first: Mon Push, Tue Legs, Wed Rest, Thu Push, Fri Rest,
+    // Sat Legs, Sun Rest. Anchored Mon 23.
+    final week = ppl().copyWith(
+      name: 'Week',
+      mode: CycleMode.weekdays,
+      days: [
+        for (final (i, w) in [
+          'push',
+          'legs',
+          null,
+          'push',
+          null,
+          'legs',
+          null,
+        ].indexed)
+          CycleDay(id: 'w$i', workoutId: w),
+      ],
+    );
+
+    testWidgets("AC6 shows today's weekday and workout; Mark done, Undo", (
+      tester,
+    ) async {
+      final days = await pumpHome(tester, cycle: week);
+      expect(find.text('Monday · Push'), findsOneWidget);
+      expect(find.text('Next: Legs'), findsOneWidget);
+      await tapText(tester, 'Mark done');
+      expect(find.text('Done'), findsOneWidget);
+      expect(find.text('Undo'), findsOneWidget);
+      expect(days.all.map((r) => (r.date.day, r.dayId, r.dayIndex, r.status)), [
+        (23, 'w0', 0, DayStatus.done),
+      ]);
+    });
+
+    testWidgets('AC6 a weekday rest day shows Rest day, the weekday, Next', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpHome(tester, cycle: week);
+      await returnOn(tester, nov(25));
+      expect(find.bySemanticsLabel('Rest day'), findsOneWidget);
+      expect(find.text('Wednesday'), findsOneWidget);
+      expect(find.text('Next: Push'), findsOneWidget);
+      expect(find.text('Mark done'), findsNothing);
+      handle.dispose();
+    });
+
+    testWidgets('AC7 a missed day passes: next weekday, missed once, no line', (
+      tester,
+    ) async {
+      final days = await pumpHome(tester, cycle: week);
+      await returnOn(tester, nov(24));
+      expect(find.text('Tuesday · Legs'), findsOneWidget);
+      expect(find.textContaining('missed'), findsNothing);
+      await returnOn(tester, nov(26));
+      expect(find.text('Thursday · Push'), findsOneWidget);
+      await returnOn(tester, nov(26, 20));
+      expect(days.all.map((r) => (r.date.day, r.status)), [
+        (23, DayStatus.missed),
+        (24, DayStatus.missed),
+        (25, DayStatus.rest),
+      ]);
+    });
+
+    testWidgets('edge a deleted workout still says so and can be marked', (
+      tester,
+    ) async {
+      final days = await pumpHome(
+        tester,
+        cycle: week,
+        workouts: starters.where((w) => w.id != 'push').toList(),
+      );
+      expect(find.text('Monday · Workout deleted'), findsOneWidget);
+      await tapText(tester, 'Mark done');
+      expect(days.all.single.status, DayStatus.done);
+    });
+
+    testWidgets('NFR-06 weekday heading and rest variant fit at 200 % text', (
+      tester,
+    ) async {
+      await pumpHome(
+        tester,
+        cycle: week,
+        workouts: starters.where((w) => w.id != 'push').toList(),
+        textScale: 2,
+      );
+      expect(find.text('Monday · Workout deleted'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await returnOn(tester, nov(25));
+      expect(find.text('Wednesday'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
 }

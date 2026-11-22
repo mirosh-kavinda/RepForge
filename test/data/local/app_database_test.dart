@@ -116,6 +116,7 @@ void main() {
       final v4 = AppDatabase(NativeDatabase(file));
       await v4.writeMeta('workout.startersSeeded', 'true');
       await v4.customStatement('DROP TABLE schedule_days');
+      await v4.customStatement('ALTER TABLE cycles DROP COLUMN mode');
       await v4.customStatement('PRAGMA user_version = 4');
       await v4.close();
 
@@ -152,9 +153,36 @@ void main() {
     });
   });
 
+  group('SCH-03 schema v6', () {
+    test(
+      'v5 -> v6 adds cycles.mode; existing cycles read as Rolling',
+      () async {
+        final dir = await Directory.systemTemp.createTemp('rf_migration');
+        addTearDown(() => dir.delete(recursive: true));
+        final file = File('${dir.path}/app.db');
+
+        final v5 = AppDatabase(NativeDatabase(file));
+        await v5.customStatement('ALTER TABLE cycles DROP COLUMN mode');
+        await v5.customStatement(
+          'INSERT INTO cycles (id, name, days, is_active, start_date, '
+          "start_day_index, updated_at, sync_state) VALUES ('c1', 'PPL', '[]', "
+          "1, '2026-11-23T00:00:00.000Z', 0, '2026-11-23T00:00:00.000Z', "
+          "'pending')",
+        );
+        await v5.customStatement('PRAGMA user_version = 5');
+        await v5.close();
+
+        final v6 = AppDatabase(NativeDatabase(file));
+        addTearDown(v6.close);
+        final row = await v6.select(v6.cycles).getSingle();
+        expect((row.name, row.mode), ('PPL', 'rolling'));
+      },
+    );
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 5);
+      expect(db.schemaVersion, 6);
       final names =
           (await db
                   .customSelect(

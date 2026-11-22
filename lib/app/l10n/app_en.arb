@@ -1417,5 +1417,64 @@
   "homeRestDay": "Rest day",
   "@homeRestDay": {
     "description": "Home rest-day card heading."
+  },
+  "cycleModeLabel": "Cycle mode",
+  "@cycleModeLabel": {
+    "description": "Rolling / Weekdays choice label."
+  },
+  "cycleModeRolling": "Rolling",
+  "@cycleModeRolling": {
+    "description": "Mode: the cycle rolls on from the last done day."
+  },
+  "cycleModeWeekdays": "Weekdays",
+  "@cycleModeWeekdays": {
+    "description": "Mode: each weekday has its own workout."
+  },
+  "cycleWeekdaysNeedSeven": "Weekday mode needs exactly 7 days",
+  "@cycleWeekdaysNeedSeven": {
+    "description": "Why Weekdays, add or remove is unavailable."
+  },
+  "cycleWeekdayActions": "Actions for {weekday}",
+  "@cycleWeekdayActions": {
+    "description": "Weekday row menu button label.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReorderWeekday": "Reorder {weekday}",
+  "@cycleReorderWeekday": {
+    "description": "Weekday row drag handle label.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleWeekdaysLength": "Weekdays · {n}-day cycle",
+  "@scheduleWeekdaysLength": {
+    "description": "Schedule card header for a Weekdays cycle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "scheduleWeekdaysHint": "Each weekday has its own workout. A missed day simply passes.",
+  "@scheduleWeekdaysHint": {
+    "description": "Schedule hint for a Weekdays cycle."
+  },
+  "homeWeekdayToday": "{weekday} · {name}",
+  "@homeWeekdayToday": {
+    "description": "Home card heading in Weekdays mode.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

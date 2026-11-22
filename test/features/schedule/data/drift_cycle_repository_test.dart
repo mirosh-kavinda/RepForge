@@ -81,6 +81,15 @@ void main() {
       },
     );
 
+    test('SCH-03 AC10 mode round-trips; default is Rolling', () async {
+      await repo.save(cycle('a'));
+      expect((await repo.byId('a'))!.mode, CycleMode.rolling);
+      final w = cycle('b').copyWith(mode: CycleMode.weekdays);
+      await repo.save(w);
+      expect(await repo.byId('b'), w);
+      expect((await repo.watchActive().first)!.mode, CycleMode.weekdays);
+    });
+
     test('sign-out wipes cycles', () async {
       await repo.save(cycle('a'));
       await LocalDataWiper(db).wipeUserData();

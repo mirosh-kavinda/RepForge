@@ -275,7 +275,8 @@ as String?,
 mixin _$Cycle {
 
  String get id; String get name; List<CycleDay> get days; bool get isActive;// UTC midnight of the phone's calendar day the anchor applies to.
- DateTime get startDate; int get startDayIndex;
+ DateTime get startDate; int get startDayIndex;// Weekdays: exactly 7 days stored Monday first, so row i is ISO weekday i + 1.
+ CycleMode get mode;
 /// Create a copy of Cycle
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -286,16 +287,16 @@ $CycleCopyWith<Cycle> get copyWith => _$CycleCopyWithImpl<Cycle>(this as Cycle, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Cycle&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.days, days)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.startDayIndex, startDayIndex) || other.startDayIndex == startDayIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Cycle&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.days, days)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.startDayIndex, startDayIndex) || other.startDayIndex == startDayIndex)&&(identical(other.mode, mode) || other.mode == mode));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(days),isActive,startDate,startDayIndex);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(days),isActive,startDate,startDayIndex,mode);
 
 @override
 String toString() {
-  return 'Cycle(id: $id, name: $name, days: $days, isActive: $isActive, startDate: $startDate, startDayIndex: $startDayIndex)';
+  return 'Cycle(id: $id, name: $name, days: $days, isActive: $isActive, startDate: $startDate, startDayIndex: $startDayIndex, mode: $mode)';
 }
 
 
@@ -306,7 +307,7 @@ abstract mixin class $CycleCopyWith<$Res>  {
   factory $CycleCopyWith(Cycle value, $Res Function(Cycle) _then) = _$CycleCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, List<CycleDay> days, bool isActive, DateTime startDate, int startDayIndex
+ String id, String name, List<CycleDay> days, bool isActive, DateTime startDate, int startDayIndex, CycleMode mode
 });
 
 
@@ -323,7 +324,7 @@ class _$CycleCopyWithImpl<$Res>
 
 /// Create a copy of Cycle
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? days = null,Object? isActive = null,Object? startDate = null,Object? startDayIndex = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? days = null,Object? isActive = null,Object? startDate = null,Object? startDayIndex = null,Object? mode = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -331,7 +332,8 @@ as String,days: null == days ? _self.days : days // ignore: cast_nullable_to_non
 as List<CycleDay>,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime,startDayIndex: null == startDayIndex ? _self.startDayIndex : startDayIndex // ignore: cast_nullable_to_non_nullable
-as int,
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as CycleMode,
   ));
 }
 
@@ -416,10 +418,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex,  CycleMode mode)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Cycle() when $default != null:
-return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex);case _:
+return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex,_that.mode);case _:
   return orElse();
 
 }
@@ -437,10 +439,10 @@ return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex,  CycleMode mode)  $default,) {final _that = this;
 switch (_that) {
 case _Cycle():
-return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex);case _:
+return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex,_that.mode);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -457,10 +459,10 @@ return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  List<CycleDay> days,  bool isActive,  DateTime startDate,  int startDayIndex,  CycleMode mode)?  $default,) {final _that = this;
 switch (_that) {
 case _Cycle() when $default != null:
-return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex);case _:
+return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_that.startDayIndex,_that.mode);case _:
   return null;
 
 }
@@ -472,7 +474,7 @@ return $default(_that.id,_that.name,_that.days,_that.isActive,_that.startDate,_t
 
 
 class _Cycle implements Cycle {
-  const _Cycle({required this.id, required this.name, required final  List<CycleDay> days, required this.isActive, required this.startDate, required this.startDayIndex}): _days = days;
+  const _Cycle({required this.id, required this.name, required final  List<CycleDay> days, required this.isActive, required this.startDate, required this.startDayIndex, this.mode = CycleMode.rolling}): _days = days;
   
 
 @override final  String id;
@@ -488,6 +490,8 @@ class _Cycle implements Cycle {
 // UTC midnight of the phone's calendar day the anchor applies to.
 @override final  DateTime startDate;
 @override final  int startDayIndex;
+// Weekdays: exactly 7 days stored Monday first, so row i is ISO weekday i + 1.
+@override@JsonKey() final  CycleMode mode;
 
 /// Create a copy of Cycle
 /// with the given fields replaced by the non-null parameter values.
@@ -499,16 +503,16 @@ _$CycleCopyWith<_Cycle> get copyWith => __$CycleCopyWithImpl<_Cycle>(this, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Cycle&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._days, _days)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.startDayIndex, startDayIndex) || other.startDayIndex == startDayIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Cycle&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._days, _days)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.startDayIndex, startDayIndex) || other.startDayIndex == startDayIndex)&&(identical(other.mode, mode) || other.mode == mode));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_days),isActive,startDate,startDayIndex);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_days),isActive,startDate,startDayIndex,mode);
 
 @override
 String toString() {
-  return 'Cycle(id: $id, name: $name, days: $days, isActive: $isActive, startDate: $startDate, startDayIndex: $startDayIndex)';
+  return 'Cycle(id: $id, name: $name, days: $days, isActive: $isActive, startDate: $startDate, startDayIndex: $startDayIndex, mode: $mode)';
 }
 
 
@@ -519,7 +523,7 @@ abstract mixin class _$CycleCopyWith<$Res> implements $CycleCopyWith<$Res> {
   factory _$CycleCopyWith(_Cycle value, $Res Function(_Cycle) _then) = __$CycleCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, List<CycleDay> days, bool isActive, DateTime startDate, int startDayIndex
+ String id, String name, List<CycleDay> days, bool isActive, DateTime startDate, int startDayIndex, CycleMode mode
 });
 
 
@@ -536,7 +540,7 @@ class __$CycleCopyWithImpl<$Res>
 
 /// Create a copy of Cycle
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? days = null,Object? isActive = null,Object? startDate = null,Object? startDayIndex = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? days = null,Object? isActive = null,Object? startDate = null,Object? startDayIndex = null,Object? mode = null,}) {
   return _then(_Cycle(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -544,7 +548,8 @@ as String,days: null == days ? _self._days : days // ignore: cast_nullable_to_no
 as List<CycleDay>,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
 as DateTime,startDayIndex: null == startDayIndex ? _self.startDayIndex : startDayIndex // ignore: cast_nullable_to_non_nullable
-as int,
+as int,mode: null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+as CycleMode,
   ));
 }
 

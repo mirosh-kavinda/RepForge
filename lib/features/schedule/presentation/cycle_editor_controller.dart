@@ -25,6 +25,7 @@ abstract class CycleDraft with _$CycleDraft {
     required List<CycleDay> days,
     // The chosen "Today is day n" (0-based) for a new cycle (AC4).
     @Default(0) int startDay,
+    @Default(CycleMode.rolling) CycleMode mode,
     // The saved cycle being edited.
     Cycle? original,
   }) = _CycleDraft;
@@ -33,18 +34,28 @@ abstract class CycleDraft with _$CycleDraft {
     CycleOrigin.copy => true,
     CycleOrigin.create => name.isNotEmpty || days.isNotEmpty,
     CycleOrigin.edit =>
-      name != original!.name || !listEquals(days, original!.days),
+      name != original!.name ||
+          !listEquals(days, original!.days) ||
+          mode != original!.mode,
   };
 
-  rules.SaveProblem? get problem => rules.saveProblem(name, days);
+  bool get weekdays => mode == CycleMode.weekdays;
+
+  rules.SaveProblem? get problem => rules.saveProblem(name, days, mode: mode);
+
+  // SCH-03 AC9: a Weekdays cycle, or a mode switch, starts on today's weekday.
+  bool get _onWeekday =>
+      weekdays || (original != null && mode != original!.mode);
 
   // Where today lands, for the preview (SCH-01 AC4, SCH-02 AC12).
   // [rolled] is where the saved active cycle has rolled to today.
   int todayIndex(DateTime today, int? rolled) {
     if (days.isEmpty) return 0;
+    if (weekdays) return rules.weekdayRow(today);
     if (origin == CycleOrigin.create) return startDay;
     final o = original;
     if (o == null || !o.isActive) return 0;
+    if (_onWeekday) return rules.weekdayRow(today);
     return rules.reanchor(o, days, _rolled(rolled), today).startDayIndex;
   }
 
@@ -62,7 +73,8 @@ abstract class CycleDraft with _$CycleDraft {
         days: days,
         isActive: true,
         startDate: day,
-        startDayIndex: startDay,
+        startDayIndex: weekdays ? rules.weekdayRow(today) : startDay,
+        mode: mode,
       ),
       CycleOrigin.copy => Cycle(
         id: id,
@@ -71,17 +83,25 @@ abstract class CycleDraft with _$CycleDraft {
         isActive: false,
         startDate: day,
         startDayIndex: 0,
+        mode: mode,
       ),
       CycleOrigin.edit when original!.isActive => () {
-        final a = rules.reanchor(original!, days, _rolled(rolled), today);
+        final a = _onWeekday
+            ? rules.anchorOnWeekday(today)
+            : rules.reanchor(original!, days, _rolled(rolled), today);
         return original!.copyWith(
           name: clean,
           days: days,
+          mode: mode,
           startDate: a.startDate,
           startDayIndex: a.startDayIndex,
         );
       }(),
-      CycleOrigin.edit => original!.copyWith(name: clean, days: days),
+      CycleOrigin.edit => original!.copyWith(
+        name: clean,
+        days: days,
+        mode: mode,
+      ),
     };
   }
 }
@@ -99,6 +119,7 @@ class CycleEditor extends _$CycleEditor {
         origin: CycleOrigin.edit,
         name: c.name,
         days: c.days,
+        mode: c.mode,
         original: c,
       );
     }
@@ -110,6 +131,7 @@ class CycleEditor extends _$CycleEditor {
         origin: CycleOrigin.copy,
         name: copyName(c.name),
         days: [for (final d in c.days) d.copyWith(id: newId())],
+        mode: c.mode,
       );
     }
     return CycleDraft(
@@ -129,18 +151,39 @@ class CycleEditor extends _$CycleEditor {
 
   void setName(String v) => _set(_d.copyWith(name: v));
 
-  void addTraining(String workoutId) =>
-      _set(_d.copyWith(days: rules.addDay(_d.days, workoutId: workoutId)));
+  // SCH-03 AC2: Weekdays only for exactly 7 days, and then the length is fixed.
+  void setMode(CycleMode m) {
+    if (m == CycleMode.weekdays && !rules.canUseWeekdays(_d.days)) return;
+    _set(_d.copyWith(mode: m));
+  }
 
-  void addRest() => _set(_d.copyWith(days: rules.addDay(_d.days)));
+  void addTraining(String workoutId) {
+    if (_d.weekdays) return;
+    _set(_d.copyWith(days: rules.addDay(_d.days, workoutId: workoutId)));
+  }
+
+  void addRest() {
+    if (_d.weekdays) return;
+    _set(_d.copyWith(days: rules.addDay(_d.days)));
+  }
 
   void setWorkout(int i, String? workoutId) =>
       _set(_d.copyWith(days: rules.setWorkout(_d.days, i, workoutId)));
 
-  void remove(int i) => _set(_d.copyWith(days: rules.removeDay(_d.days, i)));
+  void remove(int i) {
+    if (_d.weekdays) return;
+    _set(_d.copyWith(days: rules.removeDay(_d.days, i)));
+  }
 
-  void move(int from, int to) =>
-      _set(_d.copyWith(days: rules.moveDay(_d.days, from, to)));
+  // Stored indexes, except in Weekdays where [from] and [to] are display rows
+  // starting on [firstDay] (SCH-03 AC4).
+  void move(int from, int to, {int firstDay = 1}) => _set(
+    _d.copyWith(
+      days: _d.weekdays
+          ? rules.moveDisplayed(_d.days, from, to, firstDay)
+          : rules.moveDay(_d.days, from, to),
+    ),
+  );
 
   void setStartDay(int index) => _set(_d.copyWith(startDay: index));
 

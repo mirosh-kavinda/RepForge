@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/l10n/generated/app_localizations.dart';
 import 'package:repforge/app/theme/rf_theme.dart';
 import 'package:repforge/app/widgets/rf_button.dart';
+import 'package:repforge/app/widgets/rf_segmented.dart';
 import 'package:repforge/core/clock.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/schedule/data/providers.dart';
@@ -58,6 +59,7 @@ Future<FakeCycleRepository> pumpBuilder(
   FakeTemplateRepository? templates,
   FakeDayRecordRepository? days,
   double textScale = 1,
+  Locale? locale,
 }) async {
   tester.view
     ..devicePixelRatio = 1
@@ -85,7 +87,8 @@ Future<FakeCycleRepository> pumpBuilder(
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en')],
+        locale: locale,
+        supportedLocales: [locale ?? const Locale('en')],
         builder: (context, app) => MediaQuery(
           data: MediaQuery.of(
             context,
@@ -479,6 +482,388 @@ void main() {
       final c = repo.saved.single;
       expect(c.days[c.startDayIndex].id, 'd2');
       expect(c.startDate, DateTime.utc(2026, 11, 23));
+    });
+  });
+
+  group('SCH-03 builder: weekday mode', () {
+    const gb = Locale('en', 'GB'), us = Locale('en', 'US');
+    // Stored Monday first: Mon Push, Tue Legs, Wed Rest, Thu Push, Fri Rest,
+    // Sat Legs, Sun Rest. Rolling, active, anchored Sat 21 on Thu Push.
+    final week = ppl.copyWith(
+      id: 'c1',
+      name: 'Week',
+      days: [
+        for (final (i, w) in [
+          'push',
+          'legs',
+          null,
+          'push',
+          null,
+          'legs',
+          null,
+        ].indexed)
+          CycleDay(id: 'w$i', workoutId: w),
+      ],
+      startDate: DateTime.utc(2026, 11, 21),
+      startDayIndex: 3,
+    );
+    final weekdays = week.copyWith(mode: CycleMode.weekdays);
+
+    // (weekday, title) per row in list order, from each tile's semantics.
+    List<(String, String)> rows(WidgetTester tester) {
+      final f = find.bySemanticsLabel(
+        RegExp('^(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day, '),
+      );
+      return [
+        for (var i = 0; i < f.evaluate().length; i++)
+          switch (tester.getSemantics(f.at(i)).label.split(', ')) {
+            [final w, final t, ...] => (w, t),
+            _ => throw StateError('bad label'),
+          },
+      ];
+    }
+
+    Future<void> pickMode(WidgetTester tester, String mode) async {
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(CycleEditorScreen.modeKey),
+          matching: find.text(mode),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> weekdayAction(
+      WidgetTester tester,
+      String weekday,
+      String action,
+    ) async {
+      await tester.tap(find.byTooltip('Actions for $weekday'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(action).last);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('AC1 Rolling by default; Weekdays is saved with the cycle', (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([week]),
+      );
+      final seg = tester.widget<RfSegmented<CycleMode>>(
+        find.byKey(CycleEditorScreen.modeKey),
+      );
+      expect(seg.selected, CycleMode.rolling);
+      await pickMode(tester, 'Weekdays');
+      await save(tester);
+      expect(repo.saved.single.mode, CycleMode.weekdays);
+    });
+
+    testWidgets('AC2 not 7 days: Weekdays cannot be chosen and says why', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(tester, id: 'c1');
+      expect(find.text('Weekday mode needs exactly 7 days'), findsOneWidget);
+      await pickMode(tester, 'Weekdays');
+      expect(
+        tester
+            .widget<RfSegmented<CycleMode>>(
+              find.byKey(CycleEditorScreen.modeKey),
+            )
+            .selected,
+        CycleMode.rolling,
+      );
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Weekdays')),
+        matchesSemantics(
+          isButton: true,
+          hasEnabledState: true,
+          isInMutuallyExclusiveGroup: true,
+          hasSelectedState: true,
+          label: 'Weekdays',
+        ),
+      );
+      handle.dispose();
+    });
+
+    testWidgets('AC2 in Weekdays, adding and removing days is disabled', (
+      tester,
+    ) async {
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+      );
+      await scrollTo(tester, find.byKey(CycleEditorScreen.addRestKey));
+      for (final k in [
+        CycleEditorScreen.addRestKey,
+        CycleEditorScreen.addTrainingKey,
+      ]) {
+        expect(tester.widget<RfButton>(find.byKey(k)).onPressed, isNull);
+      }
+      expect(find.text('Weekday mode needs exactly 7 days'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byTooltip('Actions for Monday'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byTooltip('Actions for Monday'));
+      await tester.pumpAndSettle();
+      expect(find.text('Remove'), findsNothing);
+    });
+
+    testWidgets('AC3 Monday-first locale: weekday rows from Monday', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([week]),
+        locale: gb,
+      );
+      await pickMode(tester, 'Weekdays');
+      expect(rows(tester), [
+        ('Monday', 'Push'),
+        ('Tuesday', 'Legs'),
+        ('Wednesday', 'Rest'),
+        ('Thursday', 'Push'),
+        ('Friday', 'Rest'),
+        ('Saturday', 'Legs'),
+      ]);
+      expect(find.text('Mon'), findsOneWidget, reason: 'badge');
+      await scrollTo(tester, find.byTooltip('Actions for Sunday'));
+      expect(rows(tester).last, ('Sunday', 'Rest'));
+      handle.dispose();
+    });
+
+    testWidgets('AC3 Sunday-first locale lists Sunday first; same plan', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+        locale: us,
+      );
+      expect(rows(tester).first, ('Sunday', 'Rest'));
+      expect(rows(tester)[1], ('Monday', 'Push'));
+      handle.dispose();
+    });
+
+    testWidgets('AC3 a new Weekdays cycle has no Today is day n; preview by '
+        'weekday', (tester) async {
+      await pumpBuilder(tester, locale: us);
+      await tester.enterText(find.byKey(CycleEditorScreen.nameKey), 'Week');
+      for (final w in ['Push', 'Legs', 'Push', 'Legs']) {
+        await addTraining(tester, w);
+      }
+      for (var i = 0; i < 3; i++) {
+        await addRest(tester);
+      }
+      await scrollTo(tester, find.byKey(CycleEditorScreen.startDayKey));
+      await tester.scrollUntilVisible(
+        find.byKey(CycleEditorScreen.modeKey),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await pickMode(tester, 'Weekdays');
+      expect(find.byKey(CycleEditorScreen.startDayKey), findsNothing);
+      await scrollTo(tester, find.text('Sun, Nov 29'));
+      // Stored Mon..Sun = Push Legs Push Legs Rest Rest Rest; today is Monday.
+      String on(String date) => tester
+          .widgetList<Text>(
+            find.descendant(
+              of: find.ancestor(
+                of: find.text(date),
+                matching: find.byType(Row),
+              ),
+              matching: find.byType(Text),
+            ),
+          )
+          .last
+          .data!;
+      expect(on('Mon, Nov 23'), 'Push');
+      expect(on('Tue, Nov 24'), 'Legs');
+      expect(on('Sun, Nov 29'), 'Rest');
+      expect(on('Mon, Nov 30'), 'Push');
+    });
+
+    testWidgets('AC4 moving a row moves its workout to that weekday', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+        locale: us,
+      );
+      // Sunday-first: Sun Rest, Mon Push … Move Push down onto Tuesday.
+      await weekdayAction(tester, 'Monday', 'Move down');
+      expect(rows(tester).sublist(0, 3), [
+        ('Sunday', 'Rest'),
+        ('Monday', 'Legs'),
+        ('Tuesday', 'Push'),
+      ]);
+      await save(tester);
+      final c = repo.saved.single;
+      expect(c.days.map((x) => x.id).take(2), ['w1', 'w0']);
+      expect(c.days[6].id, 'w6', reason: 'Sunday unchanged');
+      handle.dispose();
+    });
+
+    testWidgets('AC4 changing a row changes that weekday only', (tester) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+        locale: us,
+      );
+      await weekdayAction(tester, 'Sunday', 'Make training day');
+      await tester.tap(find.text('Legs').last);
+      await tester.pumpAndSettle();
+      await save(tester);
+      final c = repo.saved.single;
+      expect(c.days[6].workoutId, 'legs');
+      expect(c.days[0].workoutId, 'push');
+    });
+
+    testWidgets("AC9 Rolling → Weekdays: today is today's weekday row", (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([week]),
+      );
+      await pickMode(tester, 'Weekdays');
+      await save(tester);
+      final c = repo.saved.single;
+      expect(
+        (c.mode, c.startDate, c.startDayIndex),
+        (CycleMode.weekdays, DateTime.utc(2026, 11, 23), 0),
+      );
+    });
+
+    testWidgets("AC9 Weekdays → Rolling starts today on today's weekday row", (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+      );
+      await scrollTo(tester, find.text('Mon, Nov 23'));
+      await tester.scrollUntilVisible(
+        find.byKey(CycleEditorScreen.modeKey),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await pickMode(tester, 'Rolling');
+      await save(tester);
+      final c = repo.saved.single;
+      expect(
+        (c.mode, c.startDate, c.startDayIndex),
+        (CycleMode.rolling, DateTime.utc(2026, 11, 23), 0),
+      );
+    });
+
+    testWidgets('edge a copy keeps Weekdays and saves inactive', (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        copyOf: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+      );
+      await save(tester);
+      final c = repo.saved.single;
+      expect((c.mode, c.isActive), (CycleMode.weekdays, false));
+    });
+
+    testWidgets('NFR-06 weekdays at 200 % text', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+        textScale: 2,
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.bySemanticsLabel('Cycle mode'), findsOneWidget);
+      for (var i = 0; i < 10; i++) {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      }
+      handle.dispose();
+    });
+
+    testWidgets('AC1 a new cycle starts as Rolling', (tester) async {
+      await pumpBuilder(tester);
+      expect(
+        tester
+            .widget<RfSegmented<CycleMode>>(
+              find.byKey(CycleEditorScreen.modeKey),
+            )
+            .selected,
+        CycleMode.rolling,
+      );
+    });
+
+    testWidgets('AC9 a mode switch keeps earlier day history', (tester) async {
+      final days = FakeDayRecordRepository([
+        DayRecord(
+          id: 'r1',
+          cycleId: 'c1',
+          date: DateTime.utc(2026, 11, 21),
+          dayId: 'w3',
+          dayIndex: 3,
+          status: DayStatus.done,
+        ),
+      ]);
+      await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([week]),
+        days: days,
+      );
+      await pickMode(tester, 'Weekdays');
+      await save(tester);
+      expect(days.all.map((r) => r.id), contains('r1'));
+    });
+
+    testWidgets('AC4 dragging a weekday row moves its workout to that day', (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([weekdays]),
+        locale: us,
+      );
+      // Sunday-first: drag Monday (Push) one row down onto Tuesday.
+      final row = find.byKey(const ValueKey('w0'));
+      final h = tester.getSize(row).height;
+      final grip = find.descendant(
+        of: row,
+        matching: find.byIcon(Icons.drag_indicator),
+      );
+      final gesture = await tester.startGesture(tester.getCenter(grip));
+      await tester.pump(const Duration(milliseconds: 600));
+      for (var i = 0; i < 10; i++) {
+        await gesture.moveBy(Offset(0, h * 0.9 / 10));
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      await save(tester);
+      expect(repo.saved.single.days.map((x) => x.id).take(2), ['w1', 'w0']);
     });
   });
 }

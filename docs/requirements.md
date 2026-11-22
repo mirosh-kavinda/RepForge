@@ -23,7 +23,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | ONB-01 | 60-second onboarding (goal, level, units, sex, birth year, height, weight) | MVP | P2 | 08, 10–12 | Done |
 | SCH-01 | Create rolling cycle of 1–14 days, each a template or Rest | MVP | P2 | 03, 12, 18 | Done |
 | SCH-02 | Cycle rolls forward from last completed day | MVP | P2 | 01, 15 | Done |
-| SCH-03 | Optional weekday-locked mode | MVP | P2 | 03 | — |
+| SCH-03 | Optional weekday-locked mode | MVP | P2 | 03 | Done |
 | SCH-04 | Swap, skip, move a day; unplanned rest; history kept | MVP | P2 | 17 | — |
 | SCH-05 | Calendar + cycle view, month loads < 300 ms with 2 yrs data | MVP | P2 | 03 | — |
 | WKT-01 | Workout template builder (sets, rep range, target, rest, supersets) | MVP | P2 | 13 | Done |

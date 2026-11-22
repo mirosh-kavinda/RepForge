@@ -49,6 +49,7 @@ class CycleDayTile extends ConsumerWidget {
     required this.number,
     required this.day,
     required this.workouts,
+    this.weekday,
     this.isToday = false,
     this.isDone = false,
     this.onTap,
@@ -59,6 +60,8 @@ class CycleDayTile extends ConsumerWidget {
   final int number;
   final CycleDay day;
   final Map<String, WorkoutTemplate> workouts;
+  // SCH-03: in Weekdays the row is named by its weekday instead of a number.
+  final ({String short, String full})? weekday;
   final bool isToday;
   // SCH-02 AC10: today was marked done.
   final bool isDone;
@@ -92,7 +95,7 @@ class CycleDayTile extends ConsumerWidget {
         borderRadius: BorderRadius.circular(RfRadius.sm),
       ),
       child: Text(
-        '$number',
+        weekday?.short ?? '$number',
         style: t.labelStrong.copyWith(
           color: isToday ? c.onSolid : c.onTint(role),
         ),
@@ -100,7 +103,7 @@ class CycleDayTile extends ConsumerWidget {
     );
 
     final label = [
-      l10n.cycleDayLabel(number),
+      weekday?.full ?? l10n.cycleDayLabel(number),
       text.title,
       if (isToday) l10n.cycleToday,
       if (isDone) l10n.homeDone,

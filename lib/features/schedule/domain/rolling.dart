@@ -30,12 +30,28 @@ typedef _Walk = ({
 
 // From the anchor to yesterday: a date moves the cycle on if its row is Rest or
 // was marked done on that row; otherwise the cycle waits (AC4–AC7).
+// SCH-03 Weekdays never waits: every date is its weekday's row.
 _Walk _walk(Cycle c, Iterable<DayRecord> records, DateTime today) {
   final n = c.days.length;
   final byDate = {
     for (final r in records)
       if (r.cycleId == c.id && !r.date.isBefore(c.startDate)) r.date: r,
   };
+  if (c.mode == CycleMode.weekdays) {
+    return (
+      index: weekdayRow(today),
+      missedDays: 0,
+      byDate: byDate,
+      passed: [
+        for (
+          var date = c.startDate;
+          date.isBefore(today);
+          date = date.add(const Duration(days: 1))
+        )
+          (date: date, index: weekdayRow(date)),
+      ],
+    );
+  }
   var index = c.startDayIndex % n;
   var missed = 0;
   final passed = <({DateTime date, int index})>[];

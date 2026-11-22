@@ -40,6 +40,22 @@ class CyclesScreen extends ConsumerWidget {
   }
 
   Future<void> _activate(BuildContext context, WidgetRef ref, Cycle c) async {
+    // SCH-03: a Weekdays cycle needs no "Today is day n"; today is its weekday.
+    if (c.mode == CycleMode.weekdays) {
+      final a = anchorOnWeekday(ref.read(todayProvider));
+      return _guard(
+        context,
+        () => ref
+            .read(cycleRepositoryProvider)
+            .save(
+              c.copyWith(
+                isActive: true,
+                startDate: a.startDate,
+                startDayIndex: a.startDayIndex,
+              ),
+            ),
+      );
+    }
     final l10n = AppLocalizations.of(context);
     var day = 1;
     final start = await showModalBottomSheet<int>(

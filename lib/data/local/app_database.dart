@@ -76,6 +76,7 @@ class Cycles extends Table with SyncedTable {
   BoolColumn get isActive => boolean()();
   DateTimeColumn get startDate => dateTime()();
   IntColumn get startDayIndex => integer()();
+  TextColumn get mode => text().withDefault(const Constant('rolling'))();
 }
 
 // SCH-02. One per (cycle, calendar date): a cycle switched to today has its
@@ -113,7 +114,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -133,6 +134,8 @@ class AppDatabase extends _$AppDatabase {
       if (from < 3) await m.createTable(workoutTemplates);
       if (from < 4) await m.createTable(cycles);
       if (from < 5) await m.createTable(scheduleDays);
+      // v4 created cycles with mode already.
+      if (from >= 4 && from < 6) await m.addColumn(cycles, cycles.mode);
     },
   );
 

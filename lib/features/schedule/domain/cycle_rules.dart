@@ -7,18 +7,28 @@ abstract final class CycleLimits {
   static const maxDays = 14;
   static const nameMax = 40;
   static const previewDays = 8;
+  static const weekDays = 7;
 }
 
-enum SaveProblem { name, noDays, noTraining }
+enum SaveProblem { name, noDays, noTraining, notSevenDays }
 
-SaveProblem? saveProblem(String name, List<CycleDay> days) {
+SaveProblem? saveProblem(
+  String name,
+  List<CycleDay> days, {
+  CycleMode mode = CycleMode.rolling,
+}) {
   // Counted as the text field counts: user-visible characters.
   final n = name.trim().characters.length;
   if (n == 0 || n > CycleLimits.nameMax) return SaveProblem.name;
   if (days.isEmpty) return SaveProblem.noDays;
   if (days.every((d) => d.isRest)) return SaveProblem.noTraining;
+  if (mode == CycleMode.weekdays && !canUseWeekdays(days)) {
+    return SaveProblem.notSevenDays;
+  }
   return null;
 }
+
+bool canUseWeekdays(List<CycleDay> days) => days.length == CycleLimits.weekDays;
 
 bool canAddDay(List<CycleDay> days) => days.length < CycleLimits.maxDays;
 
@@ -81,3 +91,36 @@ List<({DateTime date, int dayIndex})> preview(
       dayIndex: (todayIndex + i) % length,
     ),
 ];
+
+// SCH-03. Weekdays rows are stored Monday first (row i = ISO weekday i + 1) and
+// shown from the locale's first day of the week, [firstDay] as in
+// `MaterialLocalizations.firstDayOfWeekIndex` (0 = Sunday). Storing by weekday
+// means a locale change reorders the list, never the plan (edge locale).
+int weekdayRow(DateTime date) => calendarDay(date).weekday - 1;
+
+int storedIndex(int displayIndex, int firstDay) =>
+    (firstDay + displayIndex + 6) % CycleLimits.weekDays;
+
+int displayIndex(int storedIndex, int firstDay) =>
+    (storedIndex - firstDay + 1) % CycleLimits.weekDays;
+
+List<T> rotate<T>(List<T> stored, int firstDay) => [
+  for (var i = 0; i < stored.length; i++) stored[storedIndex(i, firstDay)],
+];
+
+List<T> unrotate<T>(List<T> displayed, int firstDay) => [
+  for (var i = 0; i < displayed.length; i++)
+    displayed[displayIndex(i, firstDay)],
+];
+
+// AC4: indexes are display rows; the result is stored Monday first.
+List<CycleDay> moveDisplayed(
+  List<CycleDay> days,
+  int from,
+  int to,
+  int firstDay,
+) => unrotate(moveDay(rotate(days, firstDay), from, to), firstDay);
+
+// AC9: Weekdays ignores the index, but Rolling continues from it after a switch.
+({DateTime startDate, int startDayIndex}) anchorOnWeekday(DateTime today) =>
+    (startDate: calendarDay(today), startDayIndex: weekdayRow(today));

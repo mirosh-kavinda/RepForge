@@ -79,4 +79,92 @@ void main() {
       expect(reanchor(old, short, 2, today).startDayIndex, 1);
     });
   });
+
+  group('SCH-03 weekday rules', () {
+    // Monday … Sunday, stored Monday first.
+    final week = [
+      for (final (i, w) in [
+        'push',
+        'pull',
+        null,
+        'legs',
+        null,
+        'full',
+        null,
+      ].indexed)
+        d('$i', w),
+    ];
+    const sundayFirst = 0, mondayFirst = 1;
+
+    test("AC5 a date's row is its ISO weekday, Monday = 0", () {
+      expect(weekdayRow(DateTime(2026, 11, 23)), 0, reason: 'Monday');
+      expect(weekdayRow(DateTime(2026, 11, 22, 23, 59)), 6, reason: 'Sunday');
+      expect(weekdayRow(DateTime(2026, 11, 21)), 5, reason: 'Saturday');
+    });
+
+    test('AC2 Weekdays needs exactly 7 days, also checked on save', () {
+      expect(canUseWeekdays(week), isTrue);
+      expect(canUseWeekdays(ppl), isFalse);
+      expect(canUseWeekdays([...week, d('x')]), isFalse);
+      expect(
+        saveProblem('PPL', ppl, mode: CycleMode.weekdays),
+        SaveProblem.notSevenDays,
+      );
+      expect(saveProblem('PPL', week, mode: CycleMode.weekdays), isNull);
+      expect(saveProblem('PPL', ppl), isNull, reason: 'rolling unchanged');
+    });
+
+    test('edge all seven Rest cannot be saved', () {
+      expect(
+        saveProblem('Off', [
+          for (var i = 0; i < 7; i++) d('$i'),
+        ], mode: CycleMode.weekdays),
+        SaveProblem.noTraining,
+      );
+    });
+
+    test("AC3 display order starts on the locale's first weekday", () {
+      expect(rotate(week, mondayFirst).map((x) => x.id), [
+        '0', '1', '2', '3', '4', '5', '6', //
+      ]);
+      expect(rotate(week, sundayFirst).map((x) => x.id), [
+        '6', '0', '1', '2', '3', '4', '5', //
+      ]);
+      expect(unrotate(rotate(week, sundayFirst), sundayFirst), week);
+    });
+
+    test('AC3 display and stored indexes map both ways', () {
+      expect(storedIndex(0, sundayFirst), 6);
+      expect(storedIndex(1, sundayFirst), 0);
+      expect(storedIndex(0, mondayFirst), 0);
+      for (final f in [sundayFirst, mondayFirst, 6]) {
+        for (var i = 0; i < 7; i++) {
+          expect(displayIndex(storedIndex(i, f), f), i);
+        }
+      }
+    });
+
+    test('AC4 a move in display order moves the workout to that weekday', () {
+      // Sunday-first: drag Sunday (display 0) to the Tuesday row (display 2).
+      final moved = moveDisplayed(week, 0, 2, sundayFirst);
+      expect(moved, hasLength(7));
+      expect(moved[1].id, '6', reason: "Sunday's row now on Tuesday");
+      expect(rotate(moved, sundayFirst)[2].id, '6');
+      expect(moveDisplayed(week, 0, 2, mondayFirst), moveDay(week, 0, 2));
+    });
+
+    test("AC9 switching mode anchors on today's weekday row", () {
+      final a = anchorOnWeekday(DateTime(2026, 11, 25, 20));
+      expect(a, (startDate: DateTime.utc(2026, 11, 25), startDayIndex: 2));
+    });
+
+    test('AC3 the weekday preview follows the calendar', () {
+      final today = DateTime(2026, 11, 22); // Sunday
+      final p = preview(7, weekdayRow(today), today);
+      expect(p.map((x) => x.dayIndex), [6, 0, 1, 2, 3, 4, 5, 6]);
+      for (final x in p) {
+        expect(x.dayIndex, weekdayRow(x.date));
+      }
+    });
+  });
 }

@@ -14,6 +14,7 @@ class RfSegmented<T> extends StatelessWidget {
     required this.selected,
     required this.onChanged,
     this.allowNone = true,
+    this.disabled = const {},
     super.key,
   });
 
@@ -24,6 +25,9 @@ class RfSegmented<T> extends StatelessWidget {
 
   // When true, tapping the selected segment clears the choice.
   final bool allowNone;
+
+  // Options shown but not choosable; the caller says why in text.
+  final Set<T> disabled;
 
   void _tap(T value) =>
       onChanged(value == selected && allowNone ? null : value);
@@ -47,14 +51,15 @@ class RfSegmented<T> extends StatelessWidget {
               Expanded(
                 child: Semantics(
                   button: true,
+                  enabled: !disabled.contains(value),
                   selected: value == selected,
                   inMutuallyExclusiveGroup: true,
                   label: text,
-                  onTap: () => _tap(value),
+                  onTap: disabled.contains(value) ? null : () => _tap(value),
                   excludeSemantics: true,
                   child: RfTappable(
                     radius: RfRadius.sm,
-                    onTap: () => _tap(value),
+                    onTap: disabled.contains(value) ? null : () => _tap(value),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
                       constraints: const BoxConstraints(
@@ -74,7 +79,11 @@ class RfSegmented<T> extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: value == selected
                             ? t.labelStrong.copyWith(color: c.bg)
-                            : t.label.copyWith(color: c.textSecondary),
+                            : t.label.copyWith(
+                                color: disabled.contains(value)
+                                    ? c.textMuted
+                                    : c.textSecondary,
+                              ),
                       ),
                     ),
                   ),

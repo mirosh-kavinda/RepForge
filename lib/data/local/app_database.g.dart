@@ -3127,6 +3127,16 @@ class $CyclesTable extends Cycles with TableInfo<$CyclesTable, CycleRow> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('rolling'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -3138,6 +3148,7 @@ class $CyclesTable extends Cycles with TableInfo<$CyclesTable, CycleRow> {
     isActive,
     startDate,
     startDayIndex,
+    mode,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3211,6 +3222,12 @@ class $CyclesTable extends Cycles with TableInfo<$CyclesTable, CycleRow> {
     } else if (isInserting) {
       context.missing(_startDayIndexMeta);
     }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    }
     return context;
   }
 
@@ -3258,6 +3275,10 @@ class $CyclesTable extends Cycles with TableInfo<$CyclesTable, CycleRow> {
         DriftSqlType.int,
         data['${effectivePrefix}start_day_index'],
       )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
     );
   }
 
@@ -3280,6 +3301,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
   final bool isActive;
   final DateTime startDate;
   final int startDayIndex;
+  final String mode;
   const CycleRow({
     required this.id,
     required this.updatedAt,
@@ -3290,6 +3312,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
     required this.isActive,
     required this.startDate,
     required this.startDayIndex,
+    required this.mode,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3309,6 +3332,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
     map['is_active'] = Variable<bool>(isActive);
     map['start_date'] = Variable<DateTime>(startDate);
     map['start_day_index'] = Variable<int>(startDayIndex);
+    map['mode'] = Variable<String>(mode);
     return map;
   }
 
@@ -3325,6 +3349,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
       isActive: Value(isActive),
       startDate: Value(startDate),
       startDayIndex: Value(startDayIndex),
+      mode: Value(mode),
     );
   }
 
@@ -3345,6 +3370,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
       isActive: serializer.fromJson<bool>(json['isActive']),
       startDate: serializer.fromJson<DateTime>(json['startDate']),
       startDayIndex: serializer.fromJson<int>(json['startDayIndex']),
+      mode: serializer.fromJson<String>(json['mode']),
     );
   }
   @override
@@ -3362,6 +3388,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
       'isActive': serializer.toJson<bool>(isActive),
       'startDate': serializer.toJson<DateTime>(startDate),
       'startDayIndex': serializer.toJson<int>(startDayIndex),
+      'mode': serializer.toJson<String>(mode),
     };
   }
 
@@ -3375,6 +3402,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
     bool? isActive,
     DateTime? startDate,
     int? startDayIndex,
+    String? mode,
   }) => CycleRow(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -3385,6 +3413,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
     isActive: isActive ?? this.isActive,
     startDate: startDate ?? this.startDate,
     startDayIndex: startDayIndex ?? this.startDayIndex,
+    mode: mode ?? this.mode,
   );
   CycleRow copyWithCompanion(CyclesCompanion data) {
     return CycleRow(
@@ -3399,6 +3428,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
       startDayIndex: data.startDayIndex.present
           ? data.startDayIndex.value
           : this.startDayIndex,
+      mode: data.mode.present ? data.mode.value : this.mode,
     );
   }
 
@@ -3413,7 +3443,8 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
           ..write('days: $days, ')
           ..write('isActive: $isActive, ')
           ..write('startDate: $startDate, ')
-          ..write('startDayIndex: $startDayIndex')
+          ..write('startDayIndex: $startDayIndex, ')
+          ..write('mode: $mode')
           ..write(')'))
         .toString();
   }
@@ -3429,6 +3460,7 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
     isActive,
     startDate,
     startDayIndex,
+    mode,
   );
   @override
   bool operator ==(Object other) =>
@@ -3442,7 +3474,8 @@ class CycleRow extends DataClass implements Insertable<CycleRow> {
           other.days == this.days &&
           other.isActive == this.isActive &&
           other.startDate == this.startDate &&
-          other.startDayIndex == this.startDayIndex);
+          other.startDayIndex == this.startDayIndex &&
+          other.mode == this.mode);
 }
 
 class CyclesCompanion extends UpdateCompanion<CycleRow> {
@@ -3455,6 +3488,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
   final Value<bool> isActive;
   final Value<DateTime> startDate;
   final Value<int> startDayIndex;
+  final Value<String> mode;
   final Value<int> rowid;
   const CyclesCompanion({
     this.id = const Value.absent(),
@@ -3466,6 +3500,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
     this.isActive = const Value.absent(),
     this.startDate = const Value.absent(),
     this.startDayIndex = const Value.absent(),
+    this.mode = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CyclesCompanion.insert({
@@ -3478,6 +3513,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
     required bool isActive,
     required DateTime startDate,
     required int startDayIndex,
+    this.mode = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        name = Value(name),
@@ -3495,6 +3531,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
     Expression<bool>? isActive,
     Expression<DateTime>? startDate,
     Expression<int>? startDayIndex,
+    Expression<String>? mode,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3507,6 +3544,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
       if (isActive != null) 'is_active': isActive,
       if (startDate != null) 'start_date': startDate,
       if (startDayIndex != null) 'start_day_index': startDayIndex,
+      if (mode != null) 'mode': mode,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3521,6 +3559,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
     Value<bool>? isActive,
     Value<DateTime>? startDate,
     Value<int>? startDayIndex,
+    Value<String>? mode,
     Value<int>? rowid,
   }) {
     return CyclesCompanion(
@@ -3533,6 +3572,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
       isActive: isActive ?? this.isActive,
       startDate: startDate ?? this.startDate,
       startDayIndex: startDayIndex ?? this.startDayIndex,
+      mode: mode ?? this.mode,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3569,6 +3609,9 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
     if (startDayIndex.present) {
       map['start_day_index'] = Variable<int>(startDayIndex.value);
     }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3587,6 +3630,7 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
           ..write('isActive: $isActive, ')
           ..write('startDate: $startDate, ')
           ..write('startDayIndex: $startDayIndex, ')
+          ..write('mode: $mode, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6043,6 +6087,7 @@ typedef $$CyclesTableCreateCompanionBuilder =
       required bool isActive,
       required DateTime startDate,
       required int startDayIndex,
+      Value<String> mode,
       Value<int> rowid,
     });
 typedef $$CyclesTableUpdateCompanionBuilder =
@@ -6056,6 +6101,7 @@ typedef $$CyclesTableUpdateCompanionBuilder =
       Value<bool> isActive,
       Value<DateTime> startDate,
       Value<int> startDayIndex,
+      Value<String> mode,
       Value<int> rowid,
     });
 
@@ -6113,6 +6159,11 @@ class $$CyclesTableFilterComposer
     column: $table.startDayIndex,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$CyclesTableOrderingComposer
@@ -6168,6 +6219,11 @@ class $$CyclesTableOrderingComposer
     column: $table.startDayIndex,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CyclesTableAnnotationComposer
@@ -6207,6 +6263,9 @@ class $$CyclesTableAnnotationComposer
     column: $table.startDayIndex,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
 }
 
 class $$CyclesTableTableManager
@@ -6246,6 +6305,7 @@ class $$CyclesTableTableManager
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> startDate = const Value.absent(),
                 Value<int> startDayIndex = const Value.absent(),
+                Value<String> mode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CyclesCompanion(
                 id: id,
@@ -6257,6 +6317,7 @@ class $$CyclesTableTableManager
                 isActive: isActive,
                 startDate: startDate,
                 startDayIndex: startDayIndex,
+                mode: mode,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6270,6 +6331,7 @@ class $$CyclesTableTableManager
                 required bool isActive,
                 required DateTime startDate,
                 required int startDayIndex,
+                Value<String> mode = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CyclesCompanion.insert(
                 id: id,
@@ -6281,6 +6343,7 @@ class $$CyclesTableTableManager
                 isActive: isActive,
                 startDate: startDate,
                 startDayIndex: startDayIndex,
+                mode: mode,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

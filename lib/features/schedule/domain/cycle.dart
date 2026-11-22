@@ -12,6 +12,8 @@ abstract class CycleDay with _$CycleDay {
   bool get isRest => workoutId == null;
 }
 
+enum CycleMode { rolling, weekdays }
+
 @freezed
 abstract class Cycle with _$Cycle {
   const factory Cycle({
@@ -22,5 +24,7 @@ abstract class Cycle with _$Cycle {
     // UTC midnight of the phone's calendar day the anchor applies to.
     required DateTime startDate,
     required int startDayIndex,
+    // Weekdays: exactly 7 days stored Monday first, so row i is ISO weekday i + 1.
+    @Default(CycleMode.rolling) CycleMode mode,
   }) = _Cycle;
 }

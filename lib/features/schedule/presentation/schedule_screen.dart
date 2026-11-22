@@ -14,11 +14,13 @@ import '../../workout/data/providers.dart';
 import '../../workout/domain/workout_template.dart';
 import '../data/providers.dart';
 import '../domain/cycle.dart';
+import '../domain/cycle_rules.dart' as rules;
 import '../domain/starter_plans.dart';
 import 'cycle_day_tile.dart';
 import 'starter_plan_cards.dart';
+import 'weekday_labels.dart';
 
-// Screen 03: the active cycle (AC6). Calendar and weekday mode come later.
+// Screen 03: the active cycle (SCH-01 AC6, SCH-03 AC8). Calendar comes later.
 class ScheduleScreen extends ConsumerStatefulWidget {
   const ScheduleScreen({super.key});
 
@@ -123,6 +125,14 @@ class _ActiveCycleCard extends ConsumerWidget {
     };
     final rolled = ref.watch(cycleTodayProvider).value;
     final now = rolled?.cycle.id == cycle.id ? rolled!.today : null;
+    final weekdays = cycle.mode == CycleMode.weekdays;
+    final week = WeekdayLabels.of(context);
+    // Weekdays rows are stored Monday first and listed from the locale's
+    // first day of the week.
+    final order = [
+      for (var i = 0; i < cycle.days.length; i++)
+        weekdays ? rules.storedIndex(i, week.firstDay) : i,
+    ];
     return Container(
       padding: const EdgeInsets.all(RfSpace.s16),
       decoration: BoxDecoration(
@@ -142,24 +152,29 @@ class _ActiveCycleCard extends ConsumerWidget {
                 child: Text(cycle.name, style: t.heading),
               ),
               Text(
-                l10n.scheduleCycleLength(cycle.days.length),
+                weekdays
+                    ? l10n.scheduleWeekdaysLength(cycle.days.length)
+                    : l10n.scheduleCycleLength(cycle.days.length),
                 style: t.label.copyWith(color: c.textMuted),
               ),
             ],
           ),
           const SizedBox(height: RfSpace.s4),
           Text(
-            l10n.scheduleShiftHint,
+            weekdays ? l10n.scheduleWeekdaysHint : l10n.scheduleShiftHint,
             style: t.label.copyWith(color: c.textMuted),
           ),
           const SizedBox(height: RfSpace.s12),
-          for (final (i, day) in cycle.days.indexed)
+          for (final i in order)
             Padding(
               padding: const EdgeInsets.only(bottom: RfSpace.s8),
               child: CycleDayTile(
                 number: i + 1,
-                day: day,
+                day: cycle.days[i],
                 workouts: workouts,
+                weekday: weekdays
+                    ? (short: week.short(i), full: week.full(i))
+                    : null,
                 isToday: i == now?.index,
                 isDone: i == now?.index && now!.doneToday,
               ),

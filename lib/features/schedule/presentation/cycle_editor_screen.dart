@@ -7,6 +7,7 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../../app/widgets/rf_segmented.dart';
 import '../../../app/widgets/rf_stepper.dart';
 import '../../../core/clock.dart';
 import '../../workout/data/providers.dart';
@@ -16,6 +17,7 @@ import '../domain/cycle.dart';
 import '../domain/cycle_rules.dart' as rules;
 import 'cycle_day_tile.dart';
 import 'cycle_editor_controller.dart';
+import 'weekday_labels.dart';
 import 'workout_pick_sheet.dart';
 
 enum _DayAction { change, toRest, toTraining, moveUp, moveDown, remove }
@@ -29,6 +31,7 @@ class CycleEditorScreen extends ConsumerStatefulWidget {
   static const addTrainingKey = ValueKey('cycle.addTraining');
   static const addRestKey = ValueKey('cycle.addRest');
   static const startDayKey = ValueKey('cycle.startDay');
+  static const modeKey = ValueKey('cycle.mode');
 
   final String? id;
   final String? copyOf;
@@ -110,24 +113,28 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
     if (id != null) _editor.addTraining(id);
   }
 
+  // [i] is the row as listed; [stored] is its index in the cycle. They differ
+  // only in Weekdays, which lists from the locale's first day (SCH-03 AC4).
   Future<void> _onAction(
     _DayAction a,
     int i,
+    int stored,
+    int firstDay,
     CycleDay day,
     List<WorkoutTemplate> workouts,
   ) async {
     switch (a) {
       case _DayAction.change || _DayAction.toTraining:
         final id = await pickWorkout(context, workouts, current: day.workoutId);
-        if (id != null) _editor.setWorkout(i, id);
+        if (id != null) _editor.setWorkout(stored, id);
       case _DayAction.toRest:
-        _editor.setWorkout(i, null);
+        _editor.setWorkout(stored, null);
       case _DayAction.moveUp:
-        _editor.move(i, i - 1);
+        _editor.move(i, i - 1, firstDay: firstDay);
       case _DayAction.moveDown:
-        _editor.move(i, i + 1);
+        _editor.move(i, i + 1, firstDay: firstDay);
       case _DayAction.remove:
-        _editor.remove(i);
+        _editor.remove(stored);
     }
   }
 
@@ -137,6 +144,7 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
         rules.SaveProblem.name => l10n.cycleNeedName,
         rules.SaveProblem.noDays => l10n.cycleNeedDays,
         rules.SaveProblem.noTraining => l10n.cycleNeedTraining,
+        rules.SaveProblem.notSevenDays => l10n.cycleWeekdaysNeedSeven,
       };
 
   @override
@@ -166,9 +174,15 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
     }
     _name ??= TextEditingController(text: d.name);
     final counts = rules.dayCounts(d.days);
-    final canAdd = rules.canAddDay(d.days);
+    final canAdd = rules.canAddDay(d.days) && !d.weekdays;
     final problem = _problemText(l10n, d.problem);
     final last = d.days.length - 1;
+    final week = WeekdayLabels.of(context);
+    final firstDay = week.firstDay;
+    final shown = d.weekdays ? rules.rotate(d.days, firstDay) : d.days;
+    int stored(int i) => d.weekdays ? rules.storedIndex(i, firstDay) : i;
+    final canWeekdays = rules.canUseWeekdays(d.days);
+    final needSeven = l10n.cycleWeekdaysNeedSeven;
 
     final header = Column(
       key: const ValueKey('cycle.header'),
@@ -182,6 +196,27 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
           onChanged: _editor.setName,
           decoration: InputDecoration(labelText: l10n.cycleNameLabel),
         ),
+        RfSegmented<CycleMode>(
+          key: CycleEditorScreen.modeKey,
+          label: l10n.cycleModeLabel,
+          options: {
+            CycleMode.rolling: l10n.cycleModeRolling,
+            CycleMode.weekdays: l10n.cycleModeWeekdays,
+          },
+          selected: d.mode,
+          allowNone: false,
+          disabled: {if (!canWeekdays && !d.weekdays) CycleMode.weekdays},
+          onChanged: (m) => _editor.setMode(m ?? d.mode),
+        ),
+        if (!canWeekdays && !d.weekdays)
+          Padding(
+            padding: const EdgeInsets.only(top: RfSpace.s8),
+            child: Text(
+              needSeven,
+              style: t.label.copyWith(color: c.textSecondary),
+            ),
+          ),
+        const SizedBox(height: RfSpace.s8),
         Padding(
           padding: const EdgeInsets.only(bottom: RfSpace.s8),
           child: Wrap(
@@ -233,7 +268,10 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
             ),
           ],
         ),
-        for (final note in [if (!canAdd) l10n.cycleMaxDays, ?problem])
+        for (final note in [
+          if (d.weekdays) needSeven else if (!canAdd) l10n.cycleMaxDays,
+          if (problem != needSeven) ?problem,
+        ])
           Padding(
             padding: const EdgeInsets.only(top: RfSpace.s8),
             child: Text(
@@ -293,10 +331,15 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
             footer: footer,
             itemCount: d.days.length,
             onReorder: (from, to) =>
-                _editor.move(from, to > from ? to - 1 : to),
+                _editor.move(from, to > from ? to - 1 : to, firstDay: firstDay),
             itemBuilder: (context, i) {
-              final day = d.days[i];
+              final day = shown[i];
               final missing = !day.isRest && !byId.containsKey(day.workoutId);
+              final weekday = d.weekdays
+                  ? (short: week.short(stored(i)), full: week.full(stored(i)))
+                  : null;
+              void act(_DayAction a) =>
+                  _onAction(a, i, stored(i), firstDay, day, workouts);
               return Padding(
                 key: ValueKey(day.id),
                 padding: const EdgeInsets.only(bottom: RfSpace.s8),
@@ -304,14 +347,15 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
                   number: i + 1,
                   day: day,
                   workouts: byId,
-                  onTap: missing
-                      ? () => _onAction(_DayAction.change, i, day, workouts)
-                      : null,
+                  weekday: weekday,
+                  onTap: missing ? () => act(_DayAction.change) : null,
                   trailing: [
                     PopupMenuButton<_DayAction>(
-                      tooltip: l10n.cycleDayActions(i + 1),
+                      tooltip: weekday == null
+                          ? l10n.cycleDayActions(i + 1)
+                          : l10n.cycleWeekdayActions(weekday.full),
                       icon: const Icon(Icons.more_vert),
-                      onSelected: (a) => _onAction(a, i, day, workouts),
+                      onSelected: act,
                       itemBuilder: (_) => [
                         if (!day.isRest) ...[
                           PopupMenuItem(
@@ -341,17 +385,20 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
                             value: _DayAction.moveDown,
                             child: Text(l10n.editorMoveDown),
                           ),
-                        PopupMenuItem(
-                          value: _DayAction.remove,
-                          child: Text(l10n.editorRemove),
-                        ),
+                        if (!d.weekdays)
+                          PopupMenuItem(
+                            value: _DayAction.remove,
+                            child: Text(l10n.editorRemove),
+                          ),
                       ],
                     ),
                     ReorderableDragStartListener(
                       index: i,
                       child: Semantics(
                         container: true,
-                        label: l10n.cycleReorderDay(i + 1),
+                        label: weekday == null
+                            ? l10n.cycleReorderDay(i + 1)
+                            : l10n.cycleReorderWeekday(weekday.full),
                         child: const SizedBox.square(
                           dimension: RfSize.minTarget,
                           child: Icon(Icons.drag_indicator),
@@ -413,7 +460,9 @@ class _Preview extends StatelessWidget {
                 : l10n.cyclePreview,
             style: t.label.copyWith(color: c.textMuted),
           ),
-          if (draft.origin == CycleOrigin.create && days.length > 1) ...[
+          if (draft.origin == CycleOrigin.create &&
+              !draft.weekdays &&
+              days.length > 1) ...[
             const SizedBox(height: RfSpace.s8),
             Text(l10n.cycleTodayIs, style: t.labelStrong),
             RfStepper(

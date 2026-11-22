@@ -44,7 +44,7 @@ void main() {
       );
     });
 
-    test('AC2 a done record for today on today\'s row marks it done', () {
+    test("AC2 a done record for today on today's row marks it done", () {
       final t = rollForward(cycle(), [rec(21, '1')], nov(21, 23));
       expect((t.index, t.doneToday, t.next), (0, true, 1));
     });
@@ -128,7 +128,7 @@ void main() {
       expect(rollForward(c, const [], DateTime(2026, 10, 26)).missedDays, 2);
     });
 
-    test('AC11 other cycles\' history does not move this one', () {
+    test("AC11 other cycles' history does not move this one", () {
       final t = rollForward(cycle(), [rec(21, '1', cycleId: 'other')], nov(22));
       expect((t.index, t.missedDays), (0, 1));
     });
@@ -247,6 +247,77 @@ void main() {
         isFalse,
       );
       expect(rollForward(cycle(), [rec(21, '1')], nov(21)).readOnly, isFalse);
+    });
+  });
+
+  group('SCH-03 weekdays', () {
+    // Mon Push, Tue Pull, Wed Rest, Thu Legs, Fri Rest, Sat Full, Sun Rest.
+    final week = [
+      d('mo', 'push'),
+      d('tu', 'pull'),
+      d('we'),
+      d('th', 'legs'),
+      d('fr'),
+      d('sa', 'full'),
+      d('su'),
+    ];
+    // Anchored Sat 21 Nov; the index is ignored in Weekdays.
+    final c = cycle(rows: week, index: 3).copyWith(mode: CycleMode.weekdays);
+    DayRecord wrec(int day, String dayId, [DayStatus s = DayStatus.done]) =>
+        DayRecord(
+          id: 'w$day',
+          cycleId: 'c',
+          date: DateTime.utc(2026, 11, day),
+          dayId: dayId,
+          dayIndex: week.indexWhere((x) => x.id == dayId),
+          status: s,
+        );
+
+    test("AC5 today is the date's weekday row, whatever came before", () {
+      expect(rollForward(c, const [], nov(21)).index, 5, reason: 'Sat');
+      expect(rollForward(c, const [], nov(23)).index, 0, reason: 'Mon');
+      expect(rollForward(c, [wrec(23, 'mo')], nov(26)).index, 3, reason: 'Thu');
+    });
+
+    test('AC7 a missed day does not shift the week or carry over', () {
+      final t = rollForward(c, const [], nov(24));
+      expect((t.index, t.missedDays, t.next), (1, 0, 2));
+    });
+
+    test("AC6 done follows today's row; next is tomorrow's weekday", () {
+      final t = rollForward(c, [wrec(23, 'mo')], nov(23, 20));
+      expect((t.index, t.doneToday, t.next, t.readOnly), (0, true, 1, false));
+      expect(rollForward(c, const [], nov(22)).next, 0, reason: 'Sun → Mon');
+    });
+
+    test('edge a done record on another row is not today done', () {
+      expect(rollForward(c, [wrec(23, 'tu')], nov(23)).doneToday, isFalse);
+    });
+
+    test('AC7 settle: missed once per passed training date, rest never', () {
+      final out = toSettle(c, [wrec(23, 'mo')], nov(26));
+      expect(
+        [for (final x in out) (x.date.day, x.dayId, x.status)],
+        [
+          (21, 'sa', DayStatus.missed),
+          (22, 'su', DayStatus.rest),
+          (24, 'tu', DayStatus.missed),
+          (25, 'we', DayStatus.rest),
+        ],
+      );
+      expect(out.map((x) => x.dayIndex), [5, 6, 1, 2]);
+      expect(toSettle(c, [wrec(23, 'mo'), ...out], nov(26)), isEmpty);
+    });
+
+    test('edge the clock moving back is read-only and settles nothing', () {
+      final t = rollForward(c, [wrec(23, 'mo')], nov(23), latestSeen: nov(24));
+      expect((t.doneToday, t.readOnly), (true, true));
+      expect(toSettle(c, const [], nov(19)), isEmpty);
+    });
+
+    test('edge today already recorded missed is read-only', () {
+      final t = rollForward(c, [wrec(23, 'mo', DayStatus.missed)], nov(23));
+      expect((t.doneToday, t.readOnly), (false, true));
     });
   });
 }

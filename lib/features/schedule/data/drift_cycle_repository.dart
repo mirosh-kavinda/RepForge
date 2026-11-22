@@ -32,6 +32,7 @@ class DriftCycleRepository implements CycleRepository {
     isActive: r.isActive,
     startDate: r.startDate,
     startDayIndex: r.startDayIndex,
+    mode: CycleMode.values.asNameMap()[r.mode] ?? CycleMode.rolling,
   );
 
   @override
@@ -76,6 +77,7 @@ class DriftCycleRepository implements CycleRepository {
             isActive: c.isActive,
             startDate: c.startDate,
             startDayIndex: c.startDayIndex,
+            mode: Value(c.mode.name),
             updatedAt: now,
             deletedAt: const Value(null),
           ),
