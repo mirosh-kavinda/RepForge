@@ -7,6 +7,7 @@ import 'package:repforge/app/app.dart';
 import 'package:repforge/core/clock.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
+import 'package:repforge/features/schedule/domain/day_record.dart';
 import 'package:repforge/features/schedule/presentation/cycle_editor_screen.dart';
 import 'package:repforge/features/schedule/presentation/cycles_screen.dart';
 import 'package:repforge/features/schedule/presentation/schedule_screen.dart';
@@ -16,6 +17,7 @@ import 'package:repforge/features/workout/domain/workout_template.dart';
 import '../../../helpers/app_overrides.dart';
 import '../../workout/fakes.dart';
 import '../fake_cycle_repository.dart';
+import '../fake_day_record_repository.dart';
 
 final now = DateTime(2026, 11, 23, 10); // Monday
 
@@ -37,13 +39,15 @@ Cycle cycle(
   name: name,
   days: days,
   isActive: active,
-  startDate: DateTime.utc(2026, 11, 21),
-  startDayIndex: 0,
+  // SCH-02: anchored today on day 3 (Rest).
+  startDate: DateTime.utc(2026, 11, 23),
+  startDayIndex: 2,
 );
 
 Future<FakeCycleRepository> pumpApp(
   WidgetTester tester, {
   List<Cycle> cycles = const [],
+  List<DayRecord> records = const [],
   List<WorkoutTemplate>? workouts,
   bool openSchedule = true,
 }) async {
@@ -58,6 +62,7 @@ Future<FakeCycleRepository> pumpApp(
         ...signedInOverrides(
           templates: FakeTemplateRepository(workouts ?? starters),
           cycles: repo,
+          days: FakeDayRecordRepository(records),
         ),
         exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
         clockProvider.overrideWithValue(() => now),
@@ -102,7 +107,6 @@ void main() {
       expect(find.text('PPL'), findsOneWidget);
       expect(find.text('3-day cycle'), findsOneWidget);
       expect(find.textContaining('Miss a day?'), findsOneWidget);
-      // Started Sat at day 1; Monday is day 3 (Rest).
       expect(
         find.bySemanticsLabel(RegExp(r'^Day 3, Rest, today')),
         findsOneWidget,
@@ -148,7 +152,8 @@ void main() {
     testWidgets('edge a failed plan save says so and saves nothing', (
       tester,
     ) async {
-      final repo = await pumpApp(tester)..failSaveWith = StateError('disk');
+      final repo = await pumpApp(tester)
+        ..failSaveWith = StateError('disk');
       await scrollTap(tester, find.text('PPL + Rest'));
       expect(find.text("Couldn't save. Try again."), findsOneWidget);
       expect(repo.active, isEmpty);
@@ -159,7 +164,8 @@ void main() {
       tester,
     ) async {
       final gate = Completer<void>();
-      final repo = await pumpApp(tester)..saveGate = gate;
+      final repo = await pumpApp(tester)
+        ..saveGate = gate;
       await scrollTap(tester, find.text('PPL + Rest'));
       await tester.tap(find.text('PPL + Rest'));
       await tester.pump();
@@ -187,7 +193,9 @@ void main() {
         cycles: [cycle('c1', 'PPL', active: true)],
         openSchedule: false,
       );
-      expect(find.text('Day 3 of 3 · Rest'), findsOneWidget);
+      // SCH-02 AC9: a rest day shows the rest-day variant.
+      expect(find.text('Rest day'), findsOneWidget);
+      expect(find.text('Day 3 of 3'), findsOneWidget);
     });
 
     testWidgets('AC7 Home with no cycle points to Schedule', (tester) async {
@@ -299,7 +307,8 @@ void main() {
     testWidgets('edge a failed make active says so; PPL stays active', (
       tester,
     ) async {
-      final repo = await openCycles(tester)..failSaveWith = StateError('disk');
+      final repo = await openCycles(tester)
+        ..failSaveWith = StateError('disk');
       await menu(tester, 'Deload', 'Make active');
       await tester.tap(find.byKey(CyclesScreen.startKey));
       await tester.pumpAndSettle();
@@ -332,6 +341,91 @@ void main() {
       await pumpApp(tester);
       await scrollTap(tester, find.byKey(ScheduleScreen.cyclesKey));
       expect(find.text('No saved cycles yet.'), findsOneWidget);
+    });
+  });
+
+  group('SCH-02 Schedule follows the rolled day', () {
+    DayRecord done(String cycleId, int day, String dayId) => DayRecord(
+      id: '$cycleId$day',
+      cycleId: cycleId,
+      date: DateTime.utc(2026, 11, day),
+      dayId: dayId,
+      dayIndex: 0,
+      status: DayStatus.done,
+    );
+
+    // Anchored Sat 21 on Push; Push done Sat, Legs not done Sun.
+    final rolled = cycle(
+      'c1',
+      'PPL',
+      active: true,
+    ).copyWith(startDate: DateTime.utc(2026, 11, 21), startDayIndex: 0);
+
+    testWidgets('AC10 the today marker follows the rolled position', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpApp(tester, cycles: [rolled], records: [done('c1', 21, 'd1')]);
+      // The calendar would say day 3; Legs is still waiting.
+      expect(
+        find.bySemanticsLabel(RegExp(r'^Day 2, Legs, today, ')),
+        findsOneWidget,
+      );
+      expect(
+        find.bySemanticsLabel(RegExp(r'^Day 3, Rest, today')),
+        findsNothing,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('AC10 a done today is labelled Done in text', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpApp(
+        tester,
+        cycles: [rolled],
+        records: [done('c1', 21, 'd1'), done('c1', 23, 'd2')],
+      );
+      expect(
+        find.bySemanticsLabel(RegExp(r'^Day 2, Legs, today, Done, ')),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Legs · today · Done', findRichText: true),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('AC11 make active starts fresh from the chosen day', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final other = cycle(
+        'c2',
+        'Deload',
+      ).copyWith(startDate: DateTime.utc(2026, 11, 1));
+      await pumpApp(
+        tester,
+        cycles: [rolled, other],
+        records: [
+          done('c1', 21, 'd1'),
+          done('c1', 23, 'd2'),
+          done('c2', 2, 'd1'),
+          done('c2', 22, 'd2'),
+        ],
+      );
+      await scrollTap(tester, find.byKey(ScheduleScreen.cyclesKey));
+      await menu(tester, 'Deload', 'Make active');
+      await tester.tap(find.byKey(CyclesScreen.startKey));
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.text('Deload'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp(r'^Day 1, Push, today, (?!Done)')),
+        findsOneWidget,
+      );
+      handle.dispose();
     });
   });
 }

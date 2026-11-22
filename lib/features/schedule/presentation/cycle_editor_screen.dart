@@ -11,6 +11,7 @@ import '../../../app/widgets/rf_stepper.dart';
 import '../../../core/clock.dart';
 import '../../workout/data/providers.dart';
 import '../../workout/domain/workout_template.dart';
+import '../data/providers.dart';
 import '../domain/cycle.dart';
 import '../domain/cycle_rules.dart' as rules;
 import 'cycle_day_tile.dart';
@@ -81,10 +82,17 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
     if (discard ?? false) _leave();
   }
 
+  // Where the active cycle has rolled to today, if this is it (AC12).
+  int? _rolled() {
+    final t = ref.read(cycleTodayProvider).value;
+    final d = ref.read(_provider).value;
+    return t != null && t.cycle.id == d?.id ? t.today.index : null;
+  }
+
   Future<void> _save(AppLocalizations l10n) async {
     setState(() => _saving = true);
     try {
-      await _editor.save();
+      await _editor.save(rolled: _rolled());
       if (mounted) _leave();
     } on Object {
       if (mounted) {
@@ -140,7 +148,9 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
     final templates = ref.watch(templatesProvider);
     final workouts = templates.value ?? const [];
     final byId = {for (final w in workouts) w.id: w};
-    final today = ref.watch(clockProvider)();
+    final today = ref.watch(todayProvider);
+    // Kept alive while editing so Save and the preview see the rolled day.
+    ref.watch(cycleTodayProvider);
 
     final d = async.value;
     // Until workouts load, every training day would look deleted (AC11).
@@ -234,7 +244,13 @@ class _CycleEditorScreenState extends ConsumerState<CycleEditorScreen> {
           ),
         if (d.days.isNotEmpty) ...[
           const SizedBox(height: RfSpace.s16),
-          _Preview(draft: d, workouts: byId, today: today, editor: _editor),
+          _Preview(
+            draft: d,
+            workouts: byId,
+            today: today,
+            rolled: _rolled(),
+            editor: _editor,
+          ),
         ],
       ],
     );
@@ -358,12 +374,14 @@ class _Preview extends StatelessWidget {
     required this.draft,
     required this.workouts,
     required this.today,
+    required this.rolled,
     required this.editor,
   });
 
   final CycleDraft draft;
   final Map<String, WorkoutTemplate> workouts;
   final DateTime today;
+  final int? rolled;
   final CycleEditor editor;
 
   @override
@@ -373,7 +391,7 @@ class _Preview extends StatelessWidget {
     final t = RfTextStyles.of(context);
     final locale = Localizations.localeOf(context).toString();
     final days = draft.days;
-    final todayIndex = draft.todayIndex(today);
+    final todayIndex = draft.todayIndex(today, rolled);
     final items = rules.preview(days.length, todayIndex, today);
 
     String name(CycleDay d) => d.isRest

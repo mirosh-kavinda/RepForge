@@ -38,16 +38,21 @@ abstract class CycleDraft with _$CycleDraft {
 
   rules.SaveProblem? get problem => rules.saveProblem(name, days);
 
-  // Where today lands, for the preview (AC4, AC8).
-  int todayIndex(DateTime today) {
+  // Where today lands, for the preview (SCH-01 AC4, SCH-02 AC12).
+  // [rolled] is where the saved active cycle has rolled to today.
+  int todayIndex(DateTime today, int? rolled) {
     if (days.isEmpty) return 0;
-    final o = original;
     if (origin == CycleOrigin.create) return startDay;
+    final o = original;
     if (o == null || !o.isActive) return 0;
-    return rules.reanchor(o, days, today).startDayIndex;
+    return rules.reanchor(o, days, _rolled(rolled), today).startDayIndex;
   }
 
-  Cycle toCycle(DateTime today) {
+  int _rolled(int? rolled) => rolled != null && rolled < original!.days.length
+      ? rolled
+      : original!.startDayIndex;
+
+  Cycle toCycle(DateTime today, {int? rolled}) {
     final day = rules.calendarDay(today);
     final clean = name.trim();
     return switch (origin) {
@@ -68,7 +73,7 @@ abstract class CycleDraft with _$CycleDraft {
         startDayIndex: 0,
       ),
       CycleOrigin.edit when original!.isActive => () {
-        final a = rules.reanchor(original!, days, today);
+        final a = rules.reanchor(original!, days, _rolled(rolled), today);
         return original!.copyWith(
           name: clean,
           days: days,
@@ -140,8 +145,8 @@ class CycleEditor extends _$CycleEditor {
   void setStartDay(int index) => _set(_d.copyWith(startDay: index));
 
   // Throws when the write fails; the draft stays.
-  Future<void> save() async {
-    final c = _d.toCycle(ref.read(clockProvider)());
+  Future<void> save({int? rolled}) async {
+    final c = _d.toCycle(ref.read(todayProvider), rolled: rolled);
     await ref.read(cycleRepositoryProvider).save(c);
     _set(_d.copyWith(origin: CycleOrigin.edit, name: c.name, original: c));
   }

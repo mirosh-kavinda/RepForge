@@ -3593,6 +3593,568 @@ class CyclesCompanion extends UpdateCompanion<CycleRow> {
   }
 }
 
+class $ScheduleDaysTable extends ScheduleDays
+    with TableInfo<$ScheduleDaysTable, ScheduleDayRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScheduleDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($ScheduleDaysTable.$convertersyncState);
+  static const VerificationMeta _cycleIdMeta = const VerificationMeta(
+    'cycleId',
+  );
+  @override
+  late final GeneratedColumn<String> cycleId = GeneratedColumn<String>(
+    'cycle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayIdMeta = const VerificationMeta('dayId');
+  @override
+  late final GeneratedColumn<String> dayId = GeneratedColumn<String>(
+    'day_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayIndexMeta = const VerificationMeta(
+    'dayIndex',
+  );
+  @override
+  late final GeneratedColumn<int> dayIndex = GeneratedColumn<int>(
+    'day_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    cycleId,
+    date,
+    dayId,
+    dayIndex,
+    status,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'schedule_days';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScheduleDayRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('cycle_id')) {
+      context.handle(
+        _cycleIdMeta,
+        cycleId.isAcceptableOrUnknown(data['cycle_id']!, _cycleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cycleIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('day_id')) {
+      context.handle(
+        _dayIdMeta,
+        dayId.isAcceptableOrUnknown(data['day_id']!, _dayIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayIdMeta);
+    }
+    if (data.containsKey('day_index')) {
+      context.handle(
+        _dayIndexMeta,
+        dayIndex.isAcceptableOrUnknown(data['day_index']!, _dayIndexMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayIndexMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {cycleId, date},
+  ];
+  @override
+  ScheduleDayRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScheduleDayRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $ScheduleDaysTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      cycleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cycle_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      dayId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day_id'],
+      )!,
+      dayIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day_index'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+    );
+  }
+
+  @override
+  $ScheduleDaysTable createAlias(String alias) {
+    return $ScheduleDaysTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String cycleId;
+  final DateTime date;
+  final String dayId;
+  final int dayIndex;
+  final String status;
+  const ScheduleDayRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    required this.cycleId,
+    required this.date,
+    required this.dayId,
+    required this.dayIndex,
+    required this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $ScheduleDaysTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    map['cycle_id'] = Variable<String>(cycleId);
+    map['date'] = Variable<DateTime>(date);
+    map['day_id'] = Variable<String>(dayId);
+    map['day_index'] = Variable<int>(dayIndex);
+    map['status'] = Variable<String>(status);
+    return map;
+  }
+
+  ScheduleDaysCompanion toCompanion(bool nullToAbsent) {
+    return ScheduleDaysCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      cycleId: Value(cycleId),
+      date: Value(date),
+      dayId: Value(dayId),
+      dayIndex: Value(dayIndex),
+      status: Value(status),
+    );
+  }
+
+  factory ScheduleDayRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScheduleDayRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $ScheduleDaysTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      cycleId: serializer.fromJson<String>(json['cycleId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      dayId: serializer.fromJson<String>(json['dayId']),
+      dayIndex: serializer.fromJson<int>(json['dayIndex']),
+      status: serializer.fromJson<String>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $ScheduleDaysTable.$convertersyncState.toJson(syncState),
+      ),
+      'cycleId': serializer.toJson<String>(cycleId),
+      'date': serializer.toJson<DateTime>(date),
+      'dayId': serializer.toJson<String>(dayId),
+      'dayIndex': serializer.toJson<int>(dayIndex),
+      'status': serializer.toJson<String>(status),
+    };
+  }
+
+  ScheduleDayRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    String? cycleId,
+    DateTime? date,
+    String? dayId,
+    int? dayIndex,
+    String? status,
+  }) => ScheduleDayRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    cycleId: cycleId ?? this.cycleId,
+    date: date ?? this.date,
+    dayId: dayId ?? this.dayId,
+    dayIndex: dayIndex ?? this.dayIndex,
+    status: status ?? this.status,
+  );
+  ScheduleDayRow copyWithCompanion(ScheduleDaysCompanion data) {
+    return ScheduleDayRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      cycleId: data.cycleId.present ? data.cycleId.value : this.cycleId,
+      date: data.date.present ? data.date.value : this.date,
+      dayId: data.dayId.present ? data.dayId.value : this.dayId,
+      dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleDayRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('date: $date, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    cycleId,
+    date,
+    dayId,
+    dayIndex,
+    status,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScheduleDayRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.cycleId == this.cycleId &&
+          other.date == this.date &&
+          other.dayId == this.dayId &&
+          other.dayIndex == this.dayIndex &&
+          other.status == this.status);
+}
+
+class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String> cycleId;
+  final Value<DateTime> date;
+  final Value<String> dayId;
+  final Value<int> dayIndex;
+  final Value<String> status;
+  final Value<int> rowid;
+  const ScheduleDaysCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.cycleId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.dayId = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ScheduleDaysCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+    required String status,
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       cycleId = Value(cycleId),
+       date = Value(date),
+       dayId = Value(dayId),
+       dayIndex = Value(dayIndex),
+       status = Value(status);
+  static Insertable<ScheduleDayRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? cycleId,
+    Expression<DateTime>? date,
+    Expression<String>? dayId,
+    Expression<int>? dayIndex,
+    Expression<String>? status,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (cycleId != null) 'cycle_id': cycleId,
+      if (date != null) 'date': date,
+      if (dayId != null) 'day_id': dayId,
+      if (dayIndex != null) 'day_index': dayIndex,
+      if (status != null) 'status': status,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ScheduleDaysCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String>? cycleId,
+    Value<DateTime>? date,
+    Value<String>? dayId,
+    Value<int>? dayIndex,
+    Value<String>? status,
+    Value<int>? rowid,
+  }) {
+    return ScheduleDaysCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      cycleId: cycleId ?? this.cycleId,
+      date: date ?? this.date,
+      dayId: dayId ?? this.dayId,
+      dayIndex: dayIndex ?? this.dayIndex,
+      status: status ?? this.status,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $ScheduleDaysTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (cycleId.present) {
+      map['cycle_id'] = Variable<String>(cycleId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (dayId.present) {
+      map['day_id'] = Variable<String>(dayId.value);
+    }
+    if (dayIndex.present) {
+      map['day_index'] = Variable<int>(dayIndex.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleDaysCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('date: $date, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('status: $status, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3610,6 +4172,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $CyclesTable cycles = $CyclesTable(this);
+  late final $ScheduleDaysTable scheduleDays = $ScheduleDaysTable(this);
   late final Index exerciseMusclesMuscle = Index(
     'exercise_muscles_muscle',
     'CREATE INDEX exercise_muscles_muscle ON exercise_muscles (muscle)',
@@ -3627,6 +4190,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     bodySnapshots,
     workoutTemplates,
     cycles,
+    scheduleDays,
     exerciseMusclesMuscle,
   ];
   @override
@@ -5741,6 +6305,283 @@ typedef $$CyclesTableProcessedTableManager =
       CycleRow,
       PrefetchHooks Function()
     >;
+typedef $$ScheduleDaysTableCreateCompanionBuilder =
+    ScheduleDaysCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      required String cycleId,
+      required DateTime date,
+      required String dayId,
+      required int dayIndex,
+      required String status,
+      Value<int> rowid,
+    });
+typedef $$ScheduleDaysTableUpdateCompanionBuilder =
+    ScheduleDaysCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String> cycleId,
+      Value<DateTime> date,
+      Value<String> dayId,
+      Value<int> dayIndex,
+      Value<String> status,
+      Value<int> rowid,
+    });
+
+class $$ScheduleDaysTableFilterComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScheduleDaysTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScheduleDaysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get cycleId =>
+      $composableBuilder(column: $table.cycleId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get dayId =>
+      $composableBuilder(column: $table.dayId, builder: (column) => column);
+
+  GeneratedColumn<int> get dayIndex =>
+      $composableBuilder(column: $table.dayIndex, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$ScheduleDaysTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScheduleDaysTable,
+          ScheduleDayRow,
+          $$ScheduleDaysTableFilterComposer,
+          $$ScheduleDaysTableOrderingComposer,
+          $$ScheduleDaysTableAnnotationComposer,
+          $$ScheduleDaysTableCreateCompanionBuilder,
+          $$ScheduleDaysTableUpdateCompanionBuilder,
+          (
+            ScheduleDayRow,
+            BaseReferences<_$AppDatabase, $ScheduleDaysTable, ScheduleDayRow>,
+          ),
+          ScheduleDayRow,
+          PrefetchHooks Function()
+        > {
+  $$ScheduleDaysTableTableManager(_$AppDatabase db, $ScheduleDaysTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScheduleDaysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScheduleDaysTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScheduleDaysTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String> cycleId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> dayId = const Value.absent(),
+                Value<int> dayIndex = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleDaysCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                cycleId: cycleId,
+                date: date,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                status: status,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                required String cycleId,
+                required DateTime date,
+                required String dayId,
+                required int dayIndex,
+                required String status,
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleDaysCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                cycleId: cycleId,
+                date: date,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                status: status,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScheduleDaysTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScheduleDaysTable,
+      ScheduleDayRow,
+      $$ScheduleDaysTableFilterComposer,
+      $$ScheduleDaysTableOrderingComposer,
+      $$ScheduleDaysTableAnnotationComposer,
+      $$ScheduleDaysTableCreateCompanionBuilder,
+      $$ScheduleDaysTableUpdateCompanionBuilder,
+      (
+        ScheduleDayRow,
+        BaseReferences<_$AppDatabase, $ScheduleDaysTable, ScheduleDayRow>,
+      ),
+      ScheduleDayRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5761,4 +6602,6 @@ class $AppDatabaseManager {
       $$WorkoutTemplatesTableTableManager(_db, _db.workoutTemplates);
   $$CyclesTableTableManager get cycles =>
       $$CyclesTableTableManager(_db, _db.cycles);
+  $$ScheduleDaysTableTableManager get scheduleDays =>
+      $$ScheduleDaysTableTableManager(_db, _db.scheduleDays);
 }

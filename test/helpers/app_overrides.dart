@@ -8,6 +8,7 @@ import 'package:repforge/features/workout/data/providers.dart';
 import '../features/auth/fake_auth_repository.dart';
 import '../features/onboarding/fake_onboarding_repository.dart';
 import '../features/schedule/fake_cycle_repository.dart';
+import '../features/schedule/fake_day_record_repository.dart';
 import '../features/workout/fakes.dart';
 
 // App-level tests start past the AUTH-01 and ONB-01 gates, as a signed-in,
@@ -16,6 +17,7 @@ List<Override> signedInOverrides({
   FakeAuthRepository? auth,
   FakeTemplateRepository? templates,
   FakeCycleRepository? cycles,
+  FakeDayRecordRepository? days,
 }) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
   onboardingRepositoryProvider.overrideWithValue(
@@ -35,4 +37,7 @@ List<Override> signedInOverrides({
     templates ?? FakeTemplateRepository(),
   ),
   cycleRepositoryProvider.overrideWithValue(cycles ?? FakeCycleRepository()),
+  dayRecordRepositoryProvider.overrideWithValue(
+    days ?? FakeDayRecordRepository(),
+  ),
 ];

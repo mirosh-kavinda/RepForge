@@ -1372,5 +1372,50 @@
   "scheduleLoadFailed": "Couldn't load your cycle.",
   "@scheduleLoadFailed": {
     "description": "Schedule failed to read the active cycle."
+  },
+  "homeDayOf": "Day {n} of {total}",
+  "@homeDayOf": {
+    "description": "Home rest-day card: where today is in the cycle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeMarkDone": "Mark done",
+  "@homeMarkDone": {
+    "description": "Home: mark today's training day done so the cycle moves on."
+  },
+  "homeDone": "Done",
+  "@homeDone": {
+    "description": "Status: today's training day is marked done."
+  },
+  "homeNext": "Next: {name}",
+  "@homeNext": {
+    "description": "Home: the cycle day after today.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMissed": "{count, plural, =1{{name} · missed yesterday} other{{name} · missed {count} days}}",
+  "@homeMissed": {
+    "description": "Home: today's training day carried over from missed days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeRestDay": "Rest day",
+  "@homeRestDay": {
+    "description": "Home rest-day card heading."
   }
 }

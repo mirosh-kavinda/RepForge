@@ -90,7 +90,7 @@ class CyclesScreen extends ConsumerWidget {
       ),
     );
     if (start == null || !context.mounted) return;
-    final today = calendarDay(ref.read(clockProvider)());
+    final today = ref.read(todayProvider);
     await _guard(
       context,
       () => ref

@@ -55,3 +55,54 @@ final class ClockProvider
 }
 
 String _$clockHash() => r'3f65ad34ac6fcd532de9004042bdf2ed2bd85b13';
+
+@ProviderFor(Today)
+final todayProvider = TodayProvider._();
+
+final class TodayProvider extends $NotifierProvider<Today, DateTime> {
+  TodayProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'todayProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$todayHash();
+
+  @$internal
+  @override
+  Today create() => Today();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime>(value),
+    );
+  }
+}
+
+String _$todayHash() => r'bb601042164d69ff5fb619c4b72d9ea38895e07f';
+
+abstract class _$Today extends $Notifier<DateTime> {
+  DateTime build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<DateTime, DateTime>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<DateTime, DateTime>,
+              DateTime,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

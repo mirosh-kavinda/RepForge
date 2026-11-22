@@ -78,6 +78,22 @@ class Cycles extends Table with SyncedTable {
   IntColumn get startDayIndex => integer()();
 }
 
+// SCH-02. One per (cycle, calendar date): a cycle switched to today has its
+// own today. `dayId` is the cycle row; status is done / missed / rest.
+@DataClassName('ScheduleDayRow')
+class ScheduleDays extends Table with SyncedTable {
+  TextColumn get cycleId => text()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get dayId => text()();
+  IntColumn get dayIndex => integer()();
+  TextColumn get status => text()();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {cycleId, date},
+  ];
+}
+
 const catalogVersionKey = 'catalogVersion';
 
 @DriftDatabase(
@@ -90,13 +106,14 @@ const catalogVersionKey = 'catalogVersion';
     BodySnapshots,
     WorkoutTemplates,
     Cycles,
+    ScheduleDays,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -115,6 +132,7 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 3) await m.createTable(workoutTemplates);
       if (from < 4) await m.createTable(cycles);
+      if (from < 5) await m.createTable(scheduleDays);
     },
   );
 

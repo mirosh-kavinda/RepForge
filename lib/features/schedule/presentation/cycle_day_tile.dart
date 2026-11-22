@@ -50,6 +50,7 @@ class CycleDayTile extends ConsumerWidget {
     required this.day,
     required this.workouts,
     this.isToday = false,
+    this.isDone = false,
     this.onTap,
     this.trailing = const [],
     super.key,
@@ -59,6 +60,8 @@ class CycleDayTile extends ConsumerWidget {
   final CycleDay day;
   final Map<String, WorkoutTemplate> workouts;
   final bool isToday;
+  // SCH-02 AC10: today was marked done.
+  final bool isDone;
   final VoidCallback? onTap;
   final List<Widget> trailing;
 
@@ -100,6 +103,7 @@ class CycleDayTile extends ConsumerWidget {
       l10n.cycleDayLabel(number),
       text.title,
       if (isToday) l10n.cycleToday,
+      if (isDone) l10n.homeDone,
       text.subtitle,
     ].join(', ');
 
@@ -151,6 +155,13 @@ class CycleDayTile extends ConsumerWidget {
                                       text: ' · ${l10n.cycleToday}',
                                       style: t.label.copyWith(
                                         color: c.actionInk,
+                                      ),
+                                    ),
+                                  if (isDone)
+                                    TextSpan(
+                                      text: ' · ${l10n.homeDone}',
+                                      style: t.label.copyWith(
+                                        color: c.successInk,
                                       ),
                                     ),
                                 ],

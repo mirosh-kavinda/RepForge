@@ -9,12 +9,14 @@ import 'package:repforge/core/clock.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/schedule/data/providers.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
+import 'package:repforge/features/schedule/domain/day_record.dart';
 import 'package:repforge/features/schedule/presentation/cycle_editor_screen.dart';
 import 'package:repforge/features/workout/data/providers.dart';
 import 'package:repforge/features/workout/domain/workout_template.dart';
 
 import '../../workout/fakes.dart';
 import '../fake_cycle_repository.dart';
+import '../fake_day_record_repository.dart';
 
 // Monday 23 Nov 2026, 10:00.
 final now = DateTime(2026, 11, 23, 10);
@@ -33,7 +35,7 @@ const legs = WorkoutTemplate(
   ],
 );
 
-// Started Sat 21 Nov at day 1 → Mon 23 is index 2 (Rest).
+// Anchored today (Mon 23) on index 2 (Rest).
 final ppl = Cycle(
   id: 'c1',
   name: 'PPL',
@@ -43,8 +45,8 @@ final ppl = Cycle(
     CycleDay(id: 'd3'),
   ],
   isActive: true,
-  startDate: DateTime.utc(2026, 11, 21),
-  startDayIndex: 0,
+  startDate: DateTime.utc(2026, 11, 23),
+  startDayIndex: 2,
 );
 
 Future<FakeCycleRepository> pumpBuilder(
@@ -54,6 +56,7 @@ Future<FakeCycleRepository> pumpBuilder(
   List<WorkoutTemplate> workouts = const [push, legs],
   FakeCycleRepository? repo,
   FakeTemplateRepository? templates,
+  FakeDayRecordRepository? days,
   double textScale = 1,
 }) async {
   tester.view
@@ -65,6 +68,9 @@ Future<FakeCycleRepository> pumpBuilder(
     ProviderScope(
       overrides: [
         cycleRepositoryProvider.overrideWithValue(r),
+        dayRecordRepositoryProvider.overrideWithValue(
+          days ?? FakeDayRecordRepository(),
+        ),
         templateRepositoryProvider.overrideWithValue(
           templates ?? FakeTemplateRepository(workouts),
         ),
@@ -419,6 +425,60 @@ void main() {
       expect(find.bySemanticsLabel('Reorder day 1'), findsOneWidget);
       expect(find.byTooltip('Actions for day 1'), findsOneWidget);
       handle.dispose();
+    });
+  });
+
+  group('SCH-02 builder follows the rolled day', () {
+    // Anchored Sat 21 on Push, done Sat; Legs waited Sun → today is Legs.
+    final rolled = ppl.copyWith(
+      startDate: DateTime.utc(2026, 11, 21),
+      startDayIndex: 0,
+    );
+    final records = [
+      DayRecord(
+        id: 'r1',
+        cycleId: 'c1',
+        date: DateTime.utc(2026, 11, 21),
+        dayId: 'd1',
+        dayIndex: 0,
+        status: DayStatus.done,
+      ),
+    ];
+
+    String previewOn(WidgetTester tester, String date) => tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.ancestor(of: find.text(date), matching: find.byType(Row)),
+            matching: find.byType(Text),
+          ),
+        )
+        .last
+        .data!;
+
+    testWidgets('AC12 preview and save keep today on the rolled row', (
+      tester,
+    ) async {
+      final repo = await pumpBuilder(
+        tester,
+        id: 'c1',
+        repo: FakeCycleRepository([rolled]),
+        days: FakeDayRecordRepository(records),
+      );
+      await scrollTo(tester, find.text('Mon, Nov 23'));
+      expect(previewOn(tester, 'Mon, Nov 23'), 'Legs');
+      expect(previewOn(tester, 'Tue, Nov 24'), 'Rest');
+
+      await tester.scrollUntilVisible(
+        find.byTooltip('Actions for day 2'),
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await dayAction(tester, 2, 'Move up');
+      expect(dayTitles(tester), ['Legs', 'Push', 'Rest']);
+      await save(tester);
+      final c = repo.saved.single;
+      expect(c.days[c.startDayIndex].id, 'd2');
+      expect(c.startDate, DateTime.utc(2026, 11, 23));
     });
   });
 }

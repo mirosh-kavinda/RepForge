@@ -14,7 +14,6 @@ import '../../workout/data/providers.dart';
 import '../../workout/domain/workout_template.dart';
 import '../data/providers.dart';
 import '../domain/cycle.dart';
-import '../domain/cycle_rules.dart';
 import '../domain/starter_plans.dart';
 import 'cycle_day_tile.dart';
 import 'starter_plan_cards.dart';
@@ -41,7 +40,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     final active = ref.watch(activeCycleProvider);
     final templates = ref.watch(templatesProvider);
     final workouts = templates.value ?? const <WorkoutTemplate>[];
-    final today = ref.watch(clockProvider)();
+    final today = ref.watch(todayProvider);
 
     Future<void> usePlan(StarterPlan p) async {
       if (_saving) return;
@@ -76,12 +75,10 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             ),
             const SizedBox(height: RfSpace.s12),
             switch (active) {
-              _ when templates.isLoading && !templates.hasValue =>
-                const Center(child: CircularProgressIndicator()),
-              AsyncValue(:final value?) => _ActiveCycleCard(
-                cycle: value,
-                today: today,
+              _ when templates.isLoading && !templates.hasValue => const Center(
+                child: CircularProgressIndicator(),
               ),
+              AsyncValue(:final value?) => _ActiveCycleCard(cycle: value),
               AsyncValue(hasValue: true) => _EmptyCycle(
                 plans: availablePlans(workouts, today),
                 onPlan: usePlan,
@@ -110,10 +107,9 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 }
 
 class _ActiveCycleCard extends ConsumerWidget {
-  const _ActiveCycleCard({required this.cycle, required this.today});
+  const _ActiveCycleCard({required this.cycle});
 
   final Cycle cycle;
-  final DateTime today;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -125,7 +121,8 @@ class _ActiveCycleCard extends ConsumerWidget {
           in ref.watch(templatesProvider).value ?? const <WorkoutTemplate>[])
         w.id: w,
     };
-    final todayIndex = dayIndexOn(cycle, today);
+    final rolled = ref.watch(cycleTodayProvider).value;
+    final now = rolled?.cycle.id == cycle.id ? rolled!.today : null;
     return Container(
       padding: const EdgeInsets.all(RfSpace.s16),
       decoration: BoxDecoration(
@@ -163,7 +160,8 @@ class _ActiveCycleCard extends ConsumerWidget {
                 number: i + 1,
                 day: day,
                 workouts: workouts,
-                isToday: i == todayIndex,
+                isToday: i == now?.index,
+                isDone: i == now?.index && now!.doneToday,
               ),
             ),
         ],

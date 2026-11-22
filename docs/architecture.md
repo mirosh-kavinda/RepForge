@@ -72,7 +72,7 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 | CustomExercise | users/{uid}/customExercises/{id} | same as Exercise |
 | WorkoutTemplate | users/{uid}/templates/{id} | name, exercises[{exId, order, sets, repMin, repMax, targetKg, restSec, supersetGroup}] |
 | Schedule | users/{uid}/schedules/{id} | name, mode (rolling/weekday), cycle[{dayIndex, templateId or REST}], startDate, active |
-| ScheduleDay | users/{uid}/scheduleDays/{yyyy-MM-dd} | date, plannedDayIndex, status (planned/done/missed/rest/moved), sessionId |
+| ScheduleDay | users/{uid}/scheduleDays/{id} (doc id settled in SYN-01) | cycleId, date, dayId (cycle row), dayIndex, status (done/missed/rest; moved with SCH-04), sessionId (LOG-05) |
 | WorkoutSession | users/{uid}/sessions/{id} | templateId, startedAt, endedAt, totalVolumeKg, prCount, notes, sets[{exId, setNo, kg, reps, rpe, isWarmup, isPR}] |
 | BodySnapshot | users/{uid}/bodySnapshots/{id} | date, weightKg, waistCm, neckCm, hipCm, bodyFatPct, bmi, lbmKg, ffmi, bmr, tdee |
 | PersonalRecord | users/{uid}/records/{exId} | bestE1rm, bestSet{kg, reps}, bestVolume, achievedAt |
@@ -84,7 +84,8 @@ Design choices:
 - Sets are embedded in the session document; while a workout runs, sets live only in Drift.
   One Firestore write per finished workout (NFR-10).
 - Records and stats are derived on device; cached in Firestore only to speed up restore.
-- `scheduleDays` keyed by date so a month is one range query.
+- `scheduleDays`: one per (cycle, date), since a cycle switched to today has its own today;
+  indexed by date so a month is one range query. Passed dates are written as missed / rest.
 
 ## Sync rules
 

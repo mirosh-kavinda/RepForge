@@ -60,7 +60,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
       _run(() {
         final c = plan == null
             ? null
-            : buildPlan(plan, workouts, ref.read(clockProvider)());
+            : buildPlan(plan, workouts, ref.read(todayProvider));
         // A starter workout vanished after render: fail, never silently skip.
         if (plan != null && c == null) {
           throw StateError('Plan workouts missing');
@@ -83,7 +83,7 @@ class _PlanScreenState extends ConsumerState<PlanScreen> {
     final t = RfTextStyles.of(context);
     final workouts =
         ref.watch(templatesProvider).value ?? const <WorkoutTemplate>[];
-    final plans = availablePlans(workouts, ref.watch(clockProvider)());
+    final plans = availablePlans(workouts, ref.watch(todayProvider));
     // PPL + Rest is preselected until the user picks (AC10).
     final picked = _touched
         ? _picked

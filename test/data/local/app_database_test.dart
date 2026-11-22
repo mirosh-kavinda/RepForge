@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/data/local/app_database.dart';
@@ -37,6 +38,7 @@ void main() {
       await v1.customStatement('DROP TABLE body_snapshots');
       await v1.customStatement('DROP TABLE workout_templates');
       await v1.customStatement('DROP TABLE cycles');
+      await v1.customStatement('DROP TABLE schedule_days');
       await v1.customStatement('PRAGMA user_version = 1');
       await v1.close();
 
@@ -60,6 +62,7 @@ void main() {
       await v2.writeMeta('onboarding.done', 'true');
       await v2.customStatement('DROP TABLE workout_templates');
       await v2.customStatement('DROP TABLE cycles');
+      await v2.customStatement('DROP TABLE schedule_days');
       await v2.customStatement('PRAGMA user_version = 2');
       await v2.close();
 
@@ -86,6 +89,7 @@ void main() {
       final v3 = AppDatabase(NativeDatabase(file));
       await v3.writeMeta('workout.startersSeeded', 'true');
       await v3.customStatement('DROP TABLE cycles');
+      await v3.customStatement('DROP TABLE schedule_days');
       await v3.customStatement('PRAGMA user_version = 3');
       await v3.close();
 
@@ -103,9 +107,54 @@ void main() {
     });
   });
 
+  group('SCH-02 schema v5', () {
+    test('v4 -> v5 upgrade adds schedule_days and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v4 = AppDatabase(NativeDatabase(file));
+      await v4.writeMeta('workout.startersSeeded', 'true');
+      await v4.customStatement('DROP TABLE schedule_days');
+      await v4.customStatement('PRAGMA user_version = 4');
+      await v4.close();
+
+      final v5 = AppDatabase(NativeDatabase(file));
+      addTearDown(v5.close);
+      final names =
+          (await v5
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('schedule_days'));
+      expect(await v5.readMeta('workout.startersSeeded'), 'true');
+    });
+
+    test('AC13 one record per cycle and calendar date', () async {
+      ScheduleDaysCompanion row(String id, String cycle) =>
+          ScheduleDaysCompanion.insert(
+            id: Value(id),
+            cycleId: cycle,
+            date: DateTime.utc(2026, 11, 22),
+            dayId: 'd1',
+            dayIndex: 0,
+            status: 'done',
+            updatedAt: DateTime.utc(2026, 11, 22),
+          );
+      await db.into(db.scheduleDays).insert(row('a', 'c1'));
+      await db.into(db.scheduleDays).insert(row('b', 'c2'));
+      await expectLater(
+        db.into(db.scheduleDays).insert(row('c', 'c1')),
+        throwsA(isA<SqliteException>()),
+      );
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 4);
+      expect(db.schemaVersion, 5);
       final names =
           (await db
                   .customSelect(

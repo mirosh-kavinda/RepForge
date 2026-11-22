@@ -47,32 +47,7 @@ void main() {
     });
   });
 
-  group('SCH-01 where today is', () {
-    test('AC7 start day plus calendar days, wrapped by length', () {
-      final c = cycle(ppl, index: 1);
-      expect(dayIndexOn(c, DateTime(2026, 11, 21, 23, 59)), 1);
-      expect(dayIndexOn(c, DateTime(2026, 11, 22, 0, 1)), 2);
-      expect(dayIndexOn(c, DateTime(2026, 11, 24)), 0);
-      expect(dayIndexOn(c, DateTime(2026, 12, 25)), (1 + 34) % 4);
-    });
-
-    test('edge before the start date still wraps forward', () {
-      expect(dayIndexOn(cycle(ppl), DateTime(2026, 11, 20)), 3);
-    });
-
-    test('edge DST change does not move the day', () {
-      // Europe DST ends 25 Oct 2026; a 25-hour day must still count as one.
-      final c = cycle(ppl, start: DateTime(2026, 10, 24));
-      expect(dayIndexOn(c, DateTime(2026, 10, 26)), 2);
-    });
-
-    test('edge only the calendar date counts, not the clock or offset', () {
-      final c = cycle(ppl, start: DateTime.utc(2026, 11, 21));
-      // After flying east the same date reads late-night UTC or early local.
-      expect(dayIndexOn(c, DateTime.utc(2026, 11, 23, 23, 30)), 2);
-      expect(dayIndexOn(c, DateTime(2026, 11, 23, 0, 15)), 2);
-    });
-
+  group('SCH-01 preview', () {
     test('AC4 preview: next 8 dates from today', () {
       final p = preview(4, 2, DateTime(2026, 11, 21, 15));
       expect(p, hasLength(8));
@@ -81,21 +56,27 @@ void main() {
     });
   });
 
-  group('SCH-01 re-anchor after editing the active cycle', () {
-    final today = DateTime(2026, 11, 23); // index 2 = legs
+  group('SCH-02 re-anchor after editing the active cycle', () {
+    final today = DateTime(2026, 11, 23);
+    // Today rolled to index 2 = legs, wherever the calendar would say.
     final old = cycle(ppl);
 
-    test('AC8 today follows its row through a reorder', () {
+    test('AC12 today follows its row through a reorder', () {
       final moved = moveDay(ppl, 2, 0); // legs first
-      final a = reanchor(old, moved, today);
+      final a = reanchor(old, moved, 2, today);
       expect(a.startDate, DateTime.utc(2026, 11, 23));
       expect(moved[a.startDayIndex].id, '3');
     });
 
-    test('AC8 a removed row leaves today at that position, clamped', () {
-      expect(reanchor(old, removeDay(ppl, 2), today).startDayIndex, 2);
+    test('AC12 uses the rolled index, not calendar days', () {
+      final a = reanchor(old, moveDay(ppl, 0, 3), 0, today);
+      expect(moveDay(ppl, 0, 3)[a.startDayIndex].id, '1');
+    });
+
+    test('AC12 a removed row leaves today at that position, clamped', () {
+      expect(reanchor(old, removeDay(ppl, 2), 2, today).startDayIndex, 2);
       final short = [d('1', 'push'), d('9', 'x')];
-      expect(reanchor(old, short, today).startDayIndex, 1);
+      expect(reanchor(old, short, 2, today).startDayIndex, 1);
     });
   });
 }

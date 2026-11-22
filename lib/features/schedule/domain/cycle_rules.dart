@@ -51,28 +51,20 @@ List<CycleDay> moveDay(List<CycleDay> days, int from, int to) {
 DateTime calendarDay(DateTime local) =>
     DateTime.utc(local.year, local.month, local.day);
 
-int _daysBetween(DateTime from, DateTime to) =>
-    (calendarDay(to).difference(calendarDay(from)).inHours / 24).round();
-
-// AC7 until SCH-02: the anchor day plus calendar days elapsed, wrapped.
-int dayIndexOn(Cycle c, DateTime today) {
-  final n = c.days.length;
-  return ((c.startDayIndex + _daysBetween(c.startDate, today)) % n + n) % n;
-}
-
-// AC8: after editing the active cycle, today stays on the same row if it
-// survived, else on whatever row now holds that position.
+// SCH-01 AC8, SCH-02 AC12: after editing the active cycle, today stays on the
+// same row if it survived, else on whatever row now holds that position.
+// [todayIndex] is where the cycle has rolled to today.
 ({DateTime startDate, int startDayIndex}) reanchor(
   Cycle old,
   List<CycleDay> newDays,
+  int todayIndex,
   DateTime today,
 ) {
-  final oldIndex = dayIndexOn(old, today);
-  final rowId = old.days[oldIndex].id;
+  final rowId = old.days[todayIndex].id;
   final kept = newDays.indexWhere((d) => d.id == rowId);
   final index = kept >= 0
       ? kept
-      : oldIndex.clamp(0, newDays.length - 1).toInt();
+      : todayIndex.clamp(0, newDays.length - 1).toInt();
   return (startDate: calendarDay(today), startDayIndex: index);
 }
 

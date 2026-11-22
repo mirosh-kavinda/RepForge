@@ -23,6 +23,7 @@ import 'package:repforge/features/workout/domain/workout_template.dart';
 
 import '../../auth/fake_auth_repository.dart';
 import '../../schedule/fake_cycle_repository.dart';
+import '../../schedule/fake_day_record_repository.dart';
 import '../../workout/fakes.dart';
 import '../fake_onboarding_repository.dart';
 
@@ -56,6 +57,9 @@ Future<FakeOnboardingRepository> pumpOnboarding(
           FakeTemplateRepository(workouts ?? starters),
         ),
         cycleRepositoryProvider.overrideWithValue(cycles),
+        dayRecordRepositoryProvider.overrideWithValue(
+          FakeDayRecordRepository(),
+        ),
         exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
         clockProvider.overrideWithValue(() => DateTime(2026, 11, 23, 10)),
       ],
