@@ -274,11 +274,11 @@
   },
   "levelBeginner": "Beginner",
   "@levelBeginner": {
-    "description": "Level option."
+    "description": "Exercise level."
   },
   "levelIntermediate": "Intermediate",
   "@levelIntermediate": {
-    "description": "Level option."
+    "description": "Exercise level."
   },
   "levelAdvanced": "Advanced",
   "@levelAdvanced": {
@@ -2123,5 +2123,204 @@
   "summaryNoCompare": "not comparable",
   "@summaryNoCompare": {
     "description": "Volume change when one workout had no weighted sets."
+  },
+  "libraryRecent": "Recent",
+  "@libraryRecent": {
+    "description": "Library: exercises logged lately."
+  },
+  "libraryAll": "All exercises",
+  "@libraryAll": {
+    "description": "Library: the full A–Z list."
+  },
+  "libraryNoMatch": "No exercises match",
+  "@libraryNoMatch": {
+    "description": "Library: nothing matches the search."
+  },
+  "libraryClear": "Clear filters",
+  "@libraryClear": {
+    "description": "Library: reset search and filters."
+  },
+  "libraryOpen": "Open {name}",
+  "@libraryOpen": {
+    "description": "Screen reader: a library row.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseNotFound": "Exercise not found",
+  "@exerciseNotFound": {
+    "description": "Detail: id not in the catalog."
+  },
+  "exerciseMain": "Main muscles",
+  "@exerciseMain": {
+    "description": "Detail label."
+  },
+  "exerciseOther": "Other muscles",
+  "@exerciseOther": {
+    "description": "Detail label."
+  },
+  "exerciseEquipment": "Equipment",
+  "@exerciseEquipment": {
+    "description": "Detail label."
+  },
+  "exerciseLevel": "Level",
+  "@exerciseLevel": {
+    "description": "Detail label."
+  },
+  "exerciseType": "Type",
+  "@exerciseType": {
+    "description": "Detail label."
+  },
+  "exerciseSteps": "How to do it",
+  "@exerciseSteps": {
+    "description": "Detail: instructions heading."
+  },
+  "exerciseStep": "Step {n}: {text}",
+  "@exerciseStep": {
+    "description": "Screen reader: one instruction step.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "exercisePicturesOffline": "Pictures need a connection the first time",
+  "@exercisePicturesOffline": {
+    "description": "Detail: picture not loaded yet."
+  },
+  "exercisePicture": "{name}, picture {n} of {count}",
+  "@exercisePicture": {
+    "description": "Screen reader: an exercise picture.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseHistory": "Your history",
+  "@exerciseHistory": {
+    "description": "Detail: history heading."
+  },
+  "exerciseBestE1rm": "Best estimated 1RM: {weight}",
+  "@exerciseBestE1rm": {
+    "description": "Detail: best e1RM.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseNotDone": "Not done yet",
+  "@exerciseNotDone": {
+    "description": "Detail: no history."
+  },
+  "exerciseLogLine": "{date} · {set}",
+  "@exerciseLogLine": {
+    "description": "Detail: one past workout and its best set.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseHistoryFailed": "Couldn't load your history",
+  "@exerciseHistoryFailed": {
+    "description": "Detail: history read failed."
+  },
+  "exerciseAdd": "Add to workout",
+  "@exerciseAdd": {
+    "description": "Detail: add this exercise to a template."
+  },
+  "exerciseAddTitle": "Add to which workout?",
+  "@exerciseAddTitle": {
+    "description": "Add sheet title."
+  },
+  "exerciseAdded": "Added to {name}",
+  "@exerciseAdded": {
+    "description": "Added to a workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseAlready": "Already in {name}",
+  "@exerciseAlready": {
+    "description": "Exercise already in the workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "exerciseFull": "{name} already has {max} exercises",
+  "@exerciseFull": {
+    "description": "Workout at its exercise limit.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "exerciseNoWorkouts": "You have no workouts yet",
+  "@exerciseNoWorkouts": {
+    "description": "Add sheet: no templates."
+  },
+  "exerciseNewWorkout": "New workout",
+  "@exerciseNewWorkout": {
+    "description": "Add sheet: create a template."
+  },
+  "exerciseAddFailed": "Couldn't add to workout",
+  "@exerciseAddFailed": {
+    "description": "Template save failed."
+  },
+  "levelExpert": "Expert",
+  "@levelExpert": {
+    "description": "Exercise level."
+  },
+  "categoryStrength": "Strength",
+  "@categoryStrength": {
+    "description": "Exercise type."
+  },
+  "categoryPowerlifting": "Powerlifting",
+  "@categoryPowerlifting": {
+    "description": "Exercise type."
+  },
+  "categoryOlympic": "Olympic weightlifting",
+  "@categoryOlympic": {
+    "description": "Exercise type."
+  },
+  "categoryStrongman": "Strongman",
+  "@categoryStrongman": {
+    "description": "Exercise type."
+  },
+  "categoryPlyometrics": "Plyometrics",
+  "@categoryPlyometrics": {
+    "description": "Exercise type."
+  },
+  "categoryStretching": "Stretching",
+  "@categoryStretching": {
+    "description": "Exercise type."
+  },
+  "categoryCardio": "Cardio",
+  "@categoryCardio": {
+    "description": "Exercise type."
   }
 }

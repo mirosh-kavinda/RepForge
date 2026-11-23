@@ -188,4 +188,39 @@ void main() {
       expect(parseWeight('1200', MassUnit.lb).error, WeightError.outOfRange);
     });
   });
+
+  group('EXL-02 AC8 add to a workout', () {
+    const t = WorkoutTemplate(
+      id: 'push',
+      name: 'Push',
+      exercises: [TemplateExercise(id: 'a', exerciseId: 'bench')],
+    );
+
+    test('adds at the end with the usual defaults', () {
+      final r = addToTemplate(t, 'dips');
+      expect(r.result, AddResult.added);
+      final added = r.template.exercises.last;
+      expect(added.exerciseId, 'dips');
+      expect(
+        added.copyWith(id: 'x'),
+        const TemplateExercise(id: 'x', exerciseId: 'dips'),
+      );
+    });
+
+    test('already in it: nothing added', () {
+      final r = addToTemplate(t, 'bench');
+      expect(r.result, AddResult.already);
+      expect(r.template, t);
+    });
+
+    test('at the exercise limit: nothing added', () {
+      final full = t.copyWith(
+        exercises: [
+          for (var i = 0; i < TemplateLimits.maxExercises; i++)
+            TemplateExercise(id: '$i', exerciseId: 'e$i'),
+        ],
+      );
+      expect(addToTemplate(full, 'dips').result, AddResult.full);
+    });
+  });
 }

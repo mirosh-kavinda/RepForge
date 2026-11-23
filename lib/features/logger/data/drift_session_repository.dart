@@ -387,6 +387,80 @@ class DriftSessionRepository implements SessionRepository {
   }
 
   @override
+  Stream<List<String>> watchRecentExerciseIds({int limit = 10}) => _db
+      .customSelect(
+        'SELECT 1',
+        readsFrom: {_db.workoutSessions, _db.sessionSets},
+      )
+      .watch()
+      .asyncMap((_) => recentExerciseIds(limit: limit));
+
+  @override
+  Future<List<String>> recentExerciseIds({int limit = 10}) async {
+    final last = _db.workoutSessions.endedAt.max();
+    final q =
+        _db.selectOnly(_db.sessionSets).join([
+            innerJoin(
+              _db.workoutSessions,
+              _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+              useColumns: false,
+            ),
+          ])
+          ..addColumns([_db.sessionSets.exerciseId, last])
+          ..where(
+            _db.workoutSessions.endedAt.isNotNull() &
+                _db.workoutSessions.deletedAt.isNull(),
+          )
+          ..groupBy([_db.sessionSets.exerciseId])
+          ..orderBy([OrderingTerm.desc(last)])
+          ..limit(limit);
+    return [for (final r in await q.get()) r.read(_db.sessionSets.exerciseId)!];
+  }
+
+  @override
+  Future<List<ExerciseLogEntry>> exerciseLog(
+    String exerciseId, {
+    int limit = 5,
+  }) async {
+    final ended = _db.workoutSessions.endedAt.max();
+    final ids =
+        await (_db.selectOnly(_db.sessionSets).join([
+                innerJoin(
+                  _db.workoutSessions,
+                  _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+                  useColumns: false,
+                ),
+              ])
+              ..addColumns([_db.sessionSets.sessionId, ended])
+              ..where(
+                _db.sessionSets.exerciseId.equals(exerciseId) &
+                    _db.workoutSessions.endedAt.isNotNull() &
+                    _db.workoutSessions.deletedAt.isNull(),
+              )
+              ..groupBy([_db.sessionSets.sessionId])
+              ..orderBy([OrderingTerm.desc(ended)])
+              ..limit(limit))
+            .map((r) => r.read(_db.sessionSets.sessionId)!)
+            .get();
+    final out = <ExerciseLogEntry>[];
+    for (final id in ids) {
+      final w = await (_db.select(
+        _db.workoutSessions,
+      )..where((s) => s.id.equals(id))).getSingle();
+      final sets =
+          await (_db.select(_db.sessionSets)
+                ..where(
+                  (x) =>
+                      x.sessionId.equals(id) & x.exerciseId.equals(exerciseId),
+                )
+                ..orderBy([(x) => OrderingTerm.asc(x.loggedAt)]))
+              .get();
+      out.add((date: w.date, sets: sets.map(_set).toList()));
+    }
+    return out;
+  }
+
+  @override
   Future<void> discard(String sessionId) => _db.transaction(() async {
     await (_db.delete(
       _db.sessionSets,

@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/metrics/strength.dart' as metrics;
+
 import '../../../data/local/database_provider.dart';
 import '../../schedule/data/providers.dart';
 import '../domain/rest_alarm.dart';
@@ -59,3 +61,23 @@ Future<WorkoutSummary?> workoutSummary(Ref ref, String sessionId) async {
 @riverpod
 Future<List<({String id, String name})>> finishedOn(Ref ref, DateTime date) =>
     ref.watch(sessionRepositoryProvider).finishedOn(date);
+
+// EXL-01 AC1.
+@riverpod
+Stream<List<String>> recentExercises(Ref ref) =>
+    ref.watch(sessionRepositoryProvider).watchRecentExerciseIds();
+
+// EXL-02 AC7.
+@riverpod
+Future<List<ExerciseLogEntry>> exerciseLog(Ref ref, String exerciseId) =>
+    ref.watch(sessionRepositoryProvider).exerciseLog(exerciseId);
+
+// EXL-02 AC7: best estimated 1RM ever; null when none.
+@riverpod
+Future<double?> exerciseBestE1rm(Ref ref, String exerciseId) async {
+  final sets = await ref.watch(exerciseHistoryProvider(exerciseId).future);
+  return metrics.bestE1rm([
+    for (final s in sets)
+      if (s.reps case final r?) metrics.LoggedSet(kg: s.kg, reps: r),
+  ]);
+}

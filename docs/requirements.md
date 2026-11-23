@@ -33,8 +33,8 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | LOG-03 | Auto rest timer, notification + vibration, survives lock | MVP | P2 | 02 | Building |
 | LOG-04 | Warm-up / drop sets, failure flag, notes | v1.1 | P4 | 02 | — |
 | LOG-05 | Finish summary: duration, volume, PRs, vs last session | MVP | P2 | 16 | Done |
-| EXL-01 | 800+ exercise library, search < 100 ms offline | MVP | P1 (data) / P2 (UI) | 04 | — |
-| EXL-02 | Exercise detail: instructions, muscles, equipment, images, offline | MVP | P2 | 14 | — |
+| EXL-01 | 800+ exercise library, search < 100 ms offline | MVP | P1 (data) / P2 (UI) | 04 | Done |
+| EXL-02 | Exercise detail: instructions, muscles, equipment, images, offline | MVP | P2 | 14 | Done |
 | EXL-03 | Custom exercises, synced | MVP | P2 | 04, 14 | — |
 | BOD-01 | Body Snapshot form, all derived metrics saved at once | MVP | P2 | 05 | — |
 | BOD-02 | Progress photos with camera, ghost outline, compare | v1.1 | P4 | 20, 25 | — |

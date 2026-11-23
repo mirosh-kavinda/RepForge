@@ -45,6 +45,25 @@ List<TemplateExercise> append(
   List<String> exerciseIds,
 ) => [...list, ...exerciseIds.take(remainingSlots(list)).map(newEntry)];
 
+// EXL-02 AC8: adding one exercise from its detail screen.
+enum AddResult { added, already, full }
+
+({AddResult result, WorkoutTemplate template}) addToTemplate(
+  WorkoutTemplate t,
+  String exerciseId,
+) {
+  if (t.exercises.any((e) => e.exerciseId == exerciseId)) {
+    return (result: AddResult.already, template: t);
+  }
+  if (remainingSlots(t.exercises) <= 0) {
+    return (result: AddResult.full, template: t);
+  }
+  return (
+    result: AddResult.added,
+    template: t.copyWith(exercises: append(t.exercises, [exerciseId])),
+  );
+}
+
 // Any group that is no longer one contiguous run of 2+ rows is dissolved.
 List<TemplateExercise> normalizeSupersets(List<TemplateExercise> list) {
   final runs = <String, int>{};

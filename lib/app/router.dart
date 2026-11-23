@@ -7,6 +7,7 @@ import '../features/auth/presentation/account_screen.dart';
 import '../features/auth/presentation/email_sign_in_screen.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/library/presentation/exercise_detail_screen.dart';
 import '../features/library/presentation/library_screen.dart';
 import '../features/logger/presentation/logger_screen.dart';
 import '../features/logger/presentation/summary_screen.dart';
@@ -44,6 +45,8 @@ abstract final class Routes {
   ).toString();
   static const schedule = '/schedule';
   static const library = '/library';
+  static String exercise(String id) =>
+      '/library/exercise/${Uri.encodeComponent(id)}';
   static const progress = '/progress';
   static const profile = '/profile';
   static const workouts = '/schedule/workouts';
@@ -211,6 +214,13 @@ GoRouter router(Ref ref) {
               GoRoute(
                 path: Routes.library,
                 builder: (context, state) => const LibraryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'exercise/:id',
+                    builder: (context, state) =>
+                        ExerciseDetailScreen(id: state.pathParameters['id']!),
+                  ),
+                ],
               ),
             ],
           ),

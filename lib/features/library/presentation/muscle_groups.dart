@@ -61,3 +61,25 @@ String equipmentLabel(AppLocalizations l10n, Equipment e) => switch (e) {
   Equipment.smithMachine => l10n.equipmentSmithMachine,
   Equipment.other => l10n.equipmentOther,
 };
+
+String levelLabel(AppLocalizations l10n, ExerciseLevel v) => switch (v) {
+  ExerciseLevel.beginner => l10n.levelBeginner,
+  ExerciseLevel.intermediate => l10n.levelIntermediate,
+  ExerciseLevel.expert => l10n.levelExpert,
+};
+
+String categoryLabel(AppLocalizations l10n, ExerciseCategory v) => switch (v) {
+  ExerciseCategory.strength => l10n.categoryStrength,
+  ExerciseCategory.powerlifting => l10n.categoryPowerlifting,
+  ExerciseCategory.olympicWeightlifting => l10n.categoryOlympic,
+  ExerciseCategory.strongman => l10n.categoryStrongman,
+  ExerciseCategory.plyometrics => l10n.categoryPlyometrics,
+  ExerciseCategory.stretching => l10n.categoryStretching,
+  ExerciseCategory.cardio => l10n.categoryCardio,
+};
+
+// "Barbell · Chest, Triceps" (EXL-01 AC4, WKT-01 picker).
+String exerciseMeta(AppLocalizations l10n, Exercise e) => [
+  equipmentLabel(l10n, e.equipment),
+  e.primaryMuscles.map((m) => muscleLabel(l10n, m)).join(', '),
+].where((s) => s.isNotEmpty).join(' · ');

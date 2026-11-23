@@ -10,9 +10,9 @@ import '../../../app/widgets/rf_chip.dart';
 import '../../../app/widgets/rf_tappable.dart';
 import '../data/providers.dart';
 import '../domain/exercise.dart';
-import '../domain/exercise_query.dart';
+import 'exercise_filters.dart';
+import 'exercise_search.dart';
 import 'muscle_groups.dart';
-import 'search_terms.dart';
 
 // Screen 04 in pick mode (WKT-01 AC3). Pops with the picked ids, in pick order.
 class ExercisePickerScreen extends ConsumerStatefulWidget {
@@ -51,18 +51,13 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
     final generation = ++_generation;
     final repo = await ref.read(exerciseCatalogProvider.future);
     if (!mounted) return;
-    final terms = parseSearchTerms(_text, AppLocalizations.of(context));
-    final muscles = narrow(_group?.muscles ?? const <Muscle>{}, terms.muscles);
-    final equipment = narrow(<Equipment>{?_equipment}, terms.equipment);
-    final results = muscles == null || equipment == null
-        ? const <Exercise>[]
-        : await repo.search(
-            ExerciseQuery(
-              text: terms.text,
-              muscles: muscles,
-              equipment: equipment,
-            ),
-          );
+    final results = await runSearch(
+      repo,
+      AppLocalizations.of(context),
+      text: _text,
+      group: _group,
+      equipment: _equipment,
+    );
     // A slower earlier search must not overwrite a newer one.
     if (mounted && generation == _generation) {
       setState(() => _results = results);
@@ -74,34 +69,6 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
   void _toggle(String id) => setState(() {
     if (!_picked.remove(id) && !_full) _picked.add(id);
   });
-
-  Future<void> _pickEquipment(AppLocalizations l10n) async {
-    const none = 'none';
-    final picked = await showModalBottomSheet<Object>(
-      context: context,
-      showDragHandle: true,
-      builder: (context) => SafeArea(
-        child: RadioGroup<Object>(
-          groupValue: _equipment ?? none,
-          onChanged: (v) => Navigator.of(context).pop(v),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              RadioListTile<Object>(value: none, title: Text(l10n.pickerAll)),
-              for (final e in Equipment.values)
-                RadioListTile<Object>(
-                  value: e,
-                  title: Text(equipmentLabel(l10n, e)),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (picked == null) return;
-    setState(() => _equipment = picked is Equipment ? picked : null);
-    await _search();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,42 +102,17 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: RfSpace.s16),
-              child: Semantics(
-                container: true,
-                label: l10n.pickerMuscleGroup,
-                child: Wrap(
-                  spacing: RfSpace.s8,
-                  children: [
-                    for (final g in MuscleGroup.values)
-                      RfChip.filter(
-                        label: muscleGroupLabel(l10n, g),
-                        selected: _group == g,
-                        onSelected: (on) {
-                          setState(() => _group = on ? g : null);
-                          _search();
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: RfSpace.s20),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: RfButton(
-                  label: l10n.pickerEquipment(
-                    _equipment == null
-                        ? l10n.pickerAll
-                        : equipmentLabel(l10n, _equipment!),
-                  ),
-                  variant: RfButtonVariant.secondary,
-                  size: RfButtonSize.md,
-                  onPressed: () => _pickEquipment(l10n),
-                ),
-              ),
+            ExerciseFilters(
+              group: _group,
+              equipment: _equipment,
+              onGroup: (g) {
+                setState(() => _group = g);
+                _search();
+              },
+              onEquipment: (e) {
+                setState(() => _equipment = e);
+                _search();
+              },
             ),
             if (results != null)
               Padding(

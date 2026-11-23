@@ -135,3 +135,77 @@ final class ExerciseCatalogProvider
 }
 
 String _$exerciseCatalogHash() => r'f8c32e14449a203b113ebd2c42f8574fe75517af';
+
+@ProviderFor(exerciseById)
+final exerciseByIdProvider = ExerciseByIdFamily._();
+
+final class ExerciseByIdProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Exercise?>,
+          Exercise?,
+          FutureOr<Exercise?>
+        >
+    with $FutureModifier<Exercise?>, $FutureProvider<Exercise?> {
+  ExerciseByIdProvider._({
+    required ExerciseByIdFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseByIdProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseByIdHash();
+
+  @override
+  String toString() {
+    return r'exerciseByIdProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<Exercise?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Exercise?> create(Ref ref) {
+    final argument = this.argument as String;
+    return exerciseById(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseByIdProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseByIdHash() => r'fc188be33ec142102884da55dc4520b47795d065';
+
+final class ExerciseByIdFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<Exercise?>, String> {
+  ExerciseByIdFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseByIdProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ExerciseByIdProvider call(String id) =>
+      ExerciseByIdProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'exerciseByIdProvider';
+}

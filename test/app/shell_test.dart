@@ -7,16 +7,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
 import 'package:repforge/app/l10n/generated/app_localizations.dart';
 import 'package:repforge/features/home/presentation/home_screen.dart';
+import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/library/presentation/library_screen.dart';
 import 'package:repforge/features/progress/presentation/progress_screen.dart';
 import 'package:repforge/features/schedule/presentation/schedule_screen.dart';
 import 'package:repforge/features/settings/presentation/profile_screen.dart';
 
+import '../features/workout/fakes.dart';
 import '../helpers/app_overrides.dart';
 
 Future<void> pumpApp(WidgetTester tester) async {
   await tester.pumpWidget(
-    ProviderScope(overrides: signedInOverrides(), child: const RepForgeApp()),
+    ProviderScope(
+      overrides: [
+        ...signedInOverrides(),
+        // EXL-01: the Library tab searches the catalog.
+        exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
+      ],
+      child: const RepForgeApp(),
+    ),
   );
   await tester.pumpAndSettle();
 }

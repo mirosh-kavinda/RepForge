@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../data/local/database_provider.dart';
+import '../domain/exercise.dart';
 import '../domain/exercise_catalog_repository.dart';
 import 'catalog_importer.dart';
 import 'drift_exercise_catalog_repository.dart';
@@ -33,3 +34,8 @@ Future<ExerciseCatalogRepository> exerciseCatalog(Ref ref) async {
 
 void startCatalogImport(ProviderContainer container) =>
     container.read(catalogImportProvider);
+
+// EXL-02 AC5: one catalog exercise; null when not in the catalog.
+@riverpod
+Future<Exercise?> exerciseById(Ref ref, String id) async =>
+    (await ref.watch(exerciseCatalogProvider.future)).byId(id);

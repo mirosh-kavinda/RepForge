@@ -2,6 +2,8 @@ import 'workout_session.dart';
 
 class NoSetsLogged implements Exception {}
 
+typedef ExerciseLogEntry = ({DateTime date, List<LoggedSet> sets});
+
 abstract interface class SessionRepository {
   // The workout in progress, with its sets; null when none (AC8).
   Stream<WorkoutSession?> watchActive();
@@ -29,6 +31,19 @@ abstract interface class SessionRepository {
 
   // LOG-02 AC6: every finished set of [exerciseId], oldest first.
   Future<List<LoggedSet>> history(String exerciseId);
+
+  // EXL-01 AC1: exercises in finished workouts, most recently done first.
+  Future<List<String>> recentExerciseIds({int limit = 10});
+
+  // Re-emits when workouts change, so an open Library stays current.
+  Stream<List<String>> watchRecentExerciseIds({int limit = 10});
+
+  // EXL-02 AC7: the last [limit] finished workouts with [exerciseId], newest
+  // first, each with its date and that exercise's sets.
+  Future<List<ExerciseLogEntry>> exerciseLog(
+    String exerciseId, {
+    int limit = 5,
+  });
 
   Future<void> discard(String sessionId);
 

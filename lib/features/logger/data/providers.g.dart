@@ -484,3 +484,188 @@ final class FinishedOnFamily extends $Family
   @override
   String toString() => r'finishedOnProvider';
 }
+
+@ProviderFor(recentExercises)
+final recentExercisesProvider = RecentExercisesProvider._();
+
+final class RecentExercisesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<String>>,
+          List<String>,
+          Stream<List<String>>
+        >
+    with $FutureModifier<List<String>>, $StreamProvider<List<String>> {
+  RecentExercisesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentExercisesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentExercisesHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<String>> create(Ref ref) {
+    return recentExercises(ref);
+  }
+}
+
+String _$recentExercisesHash() => r'87e3d3d59e5877acec250743938406091c898e14';
+
+@ProviderFor(exerciseLog)
+final exerciseLogProvider = ExerciseLogFamily._();
+
+final class ExerciseLogProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ExerciseLogEntry>>,
+          List<ExerciseLogEntry>,
+          FutureOr<List<ExerciseLogEntry>>
+        >
+    with
+        $FutureModifier<List<ExerciseLogEntry>>,
+        $FutureProvider<List<ExerciseLogEntry>> {
+  ExerciseLogProvider._({
+    required ExerciseLogFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseLogProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseLogHash();
+
+  @override
+  String toString() {
+    return r'exerciseLogProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ExerciseLogEntry>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ExerciseLogEntry>> create(Ref ref) {
+    final argument = this.argument as String;
+    return exerciseLog(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseLogProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseLogHash() => r'cab80a75bd49c42cdfe0177ce63076b941e30668';
+
+final class ExerciseLogFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<ExerciseLogEntry>>, String> {
+  ExerciseLogFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseLogProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ExerciseLogProvider call(String exerciseId) =>
+      ExerciseLogProvider._(argument: exerciseId, from: this);
+
+  @override
+  String toString() => r'exerciseLogProvider';
+}
+
+@ProviderFor(exerciseBestE1rm)
+final exerciseBestE1rmProvider = ExerciseBestE1rmFamily._();
+
+final class ExerciseBestE1rmProvider
+    extends $FunctionalProvider<AsyncValue<double?>, double?, FutureOr<double?>>
+    with $FutureModifier<double?>, $FutureProvider<double?> {
+  ExerciseBestE1rmProvider._({
+    required ExerciseBestE1rmFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'exerciseBestE1rmProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$exerciseBestE1rmHash();
+
+  @override
+  String toString() {
+    return r'exerciseBestE1rmProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<double?> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<double?> create(Ref ref) {
+    final argument = this.argument as String;
+    return exerciseBestE1rm(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ExerciseBestE1rmProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$exerciseBestE1rmHash() => r'00f3962554be128547562fe23f5fb532b0cd8107';
+
+final class ExerciseBestE1rmFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<double?>, String> {
+  ExerciseBestE1rmFamily._()
+    : super(
+        retry: null,
+        name: r'exerciseBestE1rmProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ExerciseBestE1rmProvider call(String exerciseId) =>
+      ExerciseBestE1rmProvider._(argument: exerciseId, from: this);
+
+  @override
+  String toString() => r'exerciseBestE1rmProvider';
+}

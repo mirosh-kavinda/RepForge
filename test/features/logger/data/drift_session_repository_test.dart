@@ -466,4 +466,84 @@ void main() {
       expect(sw.elapsedMilliseconds, lessThan(300));
     },
   );
+
+  group('EXL-01, EXL-02 exercise reads', () {
+    late DateTime clock;
+    late DriftSessionRepository r;
+
+    setUp(() {
+      clock = DateTime.utc(2026, 11, 23, 10);
+      r = DriftSessionRepository(db, days, now: () => clock);
+    });
+
+    Future<void> done(String id, DateTime start, List<LoggedSet> sets) async {
+      await r.start(
+        draft(
+          id,
+          date: DateTime.utc(start.year, start.month, start.day),
+        ).copyWith(startedAt: start),
+      );
+      for (final x in sets) {
+        await r.logSet(id, x.copyWith(id: '$id-${x.id}'));
+      }
+      clock = start.add(const Duration(hours: 1));
+      await r.finish(id);
+    }
+
+    test('EXL-01 AC1 recent exercises, most recently done first', () async {
+      await done('a', DateTime.utc(2026, 11, 16, 9), [
+        set('1', 1, 60),
+        set('2', 1, 0, row: 'r2'),
+      ]);
+      await done('b', DateTime.utc(2026, 11, 18, 9), [set('1', 1, 62.5)]);
+      await r.start(draft('live', date: DateTime.utc(2026, 11, 23)));
+      await r.logSet('live', set('x', 1, 70, row: 'r2'));
+      expect(await r.recentExerciseIds(), ['bench', 'dips']);
+      expect(await r.recentExerciseIds(limit: 1), ['bench']);
+    });
+
+    test('EXL-02 edge a swapped row counts as what it was logged as', () async {
+      await r.start(draft('a', date: DateTime.utc(2026, 11, 16)));
+      await r.logSet('a', set('1', 1, 0, row: 'r2'));
+      await r.setExercises('a', const [
+        SessionExercise(id: 'r1', exerciseId: 'bench', name: 'Bench Press'),
+        SessionExercise(id: 'r2', exerciseId: 'pullup', name: 'Pull-up'),
+      ]);
+      await r.finish('a');
+      expect(await r.recentExerciseIds(), ['dips']);
+      expect(await r.exerciseLog('dips'), hasLength(1));
+      expect(await r.exerciseLog('pullup'), isEmpty);
+    });
+
+    test('EXL-01 AC1 the recent list re-emits after a finish', () async {
+      final seen = <List<String>>[];
+      final sub = r.watchRecentExerciseIds().listen(seen.add);
+      addTearDown(sub.cancel);
+      await pumpEventQueue();
+      await done('a', DateTime.utc(2026, 11, 16, 9), [set('1', 1, 60)]);
+      await pumpEventQueue();
+      expect(seen.first, isEmpty);
+      expect(seen.last, ['bench']);
+    });
+
+    test(
+      'EXL-02 AC7 the last workouts with an exercise, newest first',
+      () async {
+        for (var i = 0; i < 7; i++) {
+          await done('w$i', DateTime.utc(2026, 11, 2 + i, 9), [
+            set('1', 1, 60.0 + i),
+            set('2', 2, 50, reps: 10),
+          ]);
+        }
+        await done('d', DateTime.utc(2026, 11, 20, 9), [
+          set('1', 1, 0, row: 'r2'),
+        ]);
+        final log = await r.exerciseLog('bench');
+        expect(log, hasLength(5));
+        expect(log.first.date, DateTime.utc(2026, 11, 8));
+        expect([for (final x in log.first.sets) x.kg], [66, 50]);
+        expect(await r.exerciseLog('squat'), isEmpty);
+      },
+    );
+  });
 }

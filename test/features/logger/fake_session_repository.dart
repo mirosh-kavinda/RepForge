@@ -26,6 +26,9 @@ class FakeSessionRepository implements SessionRepository {
 
   WorkoutSession? get active => _active;
 
+  // Tells watchers that finished workouts changed (tests add to finishedList).
+  void notify() => _changes.add(null);
+
   void _set(WorkoutSession? s) {
     _active = s;
     _changes.add(null);
@@ -171,6 +174,49 @@ class FakeSessionRepository implements SessionRepository {
     for (final w in finishedList)
       if (w.date == date) (id: w.id, name: w.name),
   ];
+
+  List<WorkoutSession> get _byEnd =>
+      [...finishedList]..sort((a, b) => b.endedAt!.compareTo(a.endedAt!));
+
+  @override
+  Future<List<String>> recentExerciseIds({int limit = 10}) async {
+    final out = <String>[];
+    for (final w in _byEnd) {
+      for (final x in w.sets) {
+        if (!out.contains(x.exerciseId)) out.add(x.exerciseId);
+      }
+    }
+    return out.take(limit).toList();
+  }
+
+  @override
+  Stream<List<String>> watchRecentExerciseIds({int limit = 10}) async* {
+    yield await recentExerciseIds(limit: limit);
+    await for (final _ in _changes.stream) {
+      yield await recentExerciseIds(limit: limit);
+    }
+  }
+
+  Object? logFails;
+
+  @override
+  Future<List<ExerciseLogEntry>> exerciseLog(
+    String exerciseId, {
+    int limit = 5,
+  }) async {
+    if (logFails case final e?) throw e;
+    return [
+      for (final w in _byEnd)
+        if (w.sets.any((x) => x.exerciseId == exerciseId))
+          (
+            date: w.date,
+            sets: [
+              for (final x in w.sets)
+                if (x.exerciseId == exerciseId) x,
+            ],
+          ),
+    ].take(limit).toList();
+  }
 
   @override
   Future<void> setNote(String id, String? note) async {
