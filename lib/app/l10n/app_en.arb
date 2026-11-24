@@ -3515,5 +3515,81 @@
   "reminderNoCycle": "No cycle yet",
   "@reminderNoCycle": {
     "description": "No active cycle: nothing will fire."
+  },
+  "backupTitle": "Backup and sync",
+  "@backupTitle": {
+    "description": "SYN-01 screen 24 title; Profile row."
+  },
+  "backupNever": "Not backed up yet",
+  "@backupNever": {
+    "description": "Nothing backed up so far."
+  },
+  "backupJustNow": "Backed up just now",
+  "@backupJustNow": {
+    "description": "Backed up under a minute ago."
+  },
+  "backupMinutes": "Backed up {n, plural, =1{1 min} other{{n} min}} ago",
+  "@backupMinutes": {
+    "description": "Backed up minutes ago.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "backupHours": "Backed up {n, plural, =1{1 hour} other{{n} hours}} ago",
+  "@backupHours": {
+    "description": "Backed up hours ago.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "backupOn": "Backed up {date}",
+  "@backupOn": {
+    "description": "Backed up on a date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupWaiting": "{n, plural, =1{1 change waiting} other{{n} changes waiting}}",
+  "@backupWaiting": {
+    "description": "Changes not yet backed up.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "backupAllDone": "Everything is backed up",
+  "@backupAllDone": {
+    "description": "Nothing waiting."
+  },
+  "backupNow": "Back up now",
+  "@backupNow": {
+    "description": "Starts a backup."
+  },
+  "backupFailed": "Can't back up right now: will try again",
+  "@backupFailed": {
+    "description": "A backup failed."
+  },
+  "backupOffline": "No connection",
+  "@backupOffline": {
+    "description": "Failure reason."
+  },
+  "backupSignedOut": "Signed out",
+  "@backupSignedOut": {
+    "description": "Failure reason."
+  },
+  "backupServer": "The server is busy",
+  "@backupServer": {
+    "description": "Failure reason."
+  },
+  "backupGuest": "Sign in to back up your training",
+  "@backupGuest": {
+    "description": "Guests never back up."
   }
 }

@@ -4,9 +4,31 @@ rules_version = '2';
 // Never widen beyond this (CLAUDE.md).
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
+
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // SYN-01 AC5: a finished workout is append-only; after it is written,
+    // only its note and deletion may change.
+    match /users/{uid}/{collection}/{id} {
+      allow read, create, delete: if isOwner(uid);
+      allow update: if isOwner(uid) && (
+        collection != 'sessions' ||
+        resource.data.get('endedAt', null) == null ||
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['note', 'updatedAt', 'deletedAt', 'syncedAt'])
+      );
+    }
+
+    // At least one segment deeper: {rest=**} alone also matches {id} itself.
+    match /users/{uid}/{collection}/{id}/{sub}/{rest=**} {
+      allow read, write: if isOwner(uid);
+    }
+
     match /catalog/{document=**} {
       allow read: if request.auth != null;
       allow write: if false;

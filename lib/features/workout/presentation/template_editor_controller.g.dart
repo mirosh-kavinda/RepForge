@@ -50,7 +50,7 @@ final class TemplateEditorProvider
   }
 }
 
-String _$templateEditorHash() => r'2382eb55bb234ed5f6ffd3401aacd7e683b74a14';
+String _$templateEditorHash() => r'a5a7217bd1df42805e9b298b768fbdd746bd3a72';
 
 final class TemplateEditorFamily extends $Family
     with

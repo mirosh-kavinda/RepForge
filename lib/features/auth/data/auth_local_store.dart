@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import '../../../data/local/app_database.dart';
 import '../domain/account_preferences.dart';
 
@@ -57,6 +59,25 @@ class AuthLocalStore implements AccountPreferencesStore {
 
   @override
   Future<void> save(AccountPreferences p) => _db.transaction(() async {
+    // SYN-01 AC7: body backup turned on: queue the profile again, so it goes
+    // up with its body fields (snapshots were left queued meanwhile). The
+    // queue changing is what starts the backup.
+    final wasOn = await _db.readMeta(_prefKeys.body) != 'false';
+    if (!wasOn && p.backUpBodyMetrics) {
+      for (final profile in await _db.select(_db.userProfiles).get()) {
+        await _db.customInsert(
+          'INSERT INTO outbox (entity, entity_id, op, created_at) '
+          'VALUES (?, ?, ?, ?)',
+          variables: [
+            Variable.withString('userProfile'),
+            Variable.withString(profile.id),
+            Variable.withString('update'),
+            Variable.withDateTime(DateTime.now().toUtc()),
+          ],
+          updates: {_db.outbox},
+        );
+      }
+    }
     await _db.writeMeta(_prefKeys.body, '${p.backUpBodyMetrics}');
     await _db.writeMeta(_prefKeys.photos, '${p.backUpPhotos}');
     await _db.writeMeta(_prefKeys.profile, '${p.useProviderProfile}');

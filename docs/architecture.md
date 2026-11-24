@@ -132,14 +132,40 @@ Design choices:
 
 1. Write locally + outbox row `(entity, id, op)`.
 2. Online: worker pushes outbox in batches ≤ 500, clears on success, exponential backoff on failure.
-3. Pull on sign-in, resume, every 6 h: `updatedAt > lastPulledAt` per collection.
+3. Pull on sign-in, resume, every 6 h: per collection, documents whose server-set
+   `syncedAt` is at or after the last pull (per account). Never device time: a phone back
+   after 30 days offline writes old `updatedAt` values that a device-time cursor would skip.
 4. Conflicts: last-write-wins by `updatedAt`, except sessions (append-only, never overwritten).
 5. Restore on a new phone = full pull, then rebuild stats locally.
+6. (SYN-01) Codecs in `lib/data/sync/sync_codecs.dart` turn each synced row into a document
+   with Drift's JSON (dates as epoch ms, read back as UTC); `syncState` and LOG-03's running
+   rest stay home. A session document embeds its sets (ordered by loggedAt, then id). Collections: `profile`, `bodySnapshots`,
+   `workoutTemplates`, `cycles`, `scheduleDays`, `sessions`, `customExercises`, `goals`.
+7. Push coalesces the outbox per (entity, id), sends in seq order in all-or-nothing batches,
+   and deletes the outbox rows only after the commit; a row is marked synced only if its
+   stored `updated_at` is unchanged. A batch the rules refuse is retried one document at a
+   time and the refused one is set aside (`sync.setAside.<entity>.<id>`), so it can't block
+   the queue. Pull applies a document only when it is newer than the local row (an unsent
+   local change is never overwritten), skips one it can't read, and a failed pull never stops
+   the push. A finished session on the phone takes only its note and deletion from the cloud.
+   Two phones' records for the same (cycle, date): the newer one keeps the key.
+8. Runs only for `AuthUser.canBackUp`; guests queue from the first launch, so signing in
+   uploads everything. With body backup off, snapshots stay queued and the profile goes up
+   without sex, birth year, height and activity; turning it on re-queues the profile.
+9. Status lives in `app_meta`: `sync.backedUpAt`, `sync.error`,
+   `sync.pulledAt.<uid>.<collection>`. Firestore's own offline cache is off (Drift is the
+   store); a commit times out after 30 s as offline. A run stops writing once the signed-in
+   account changes. Rules make a finished session append-only (note, deletion and
+   `syncedAt` may change).
 
 ```
-match /users/{uid}/{document=**} {
-  allow read, write: if request.auth != null && request.auth.uid == uid;
+match /users/{uid} { allow read, write: if isOwner(uid); }
+match /users/{uid}/{collection}/{id} {
+  allow read, create, delete: if isOwner(uid);
+  allow update: if isOwner(uid) && (collection != 'sessions' || not finished ||
+    only note / updatedAt / deletedAt / syncedAt change);
 }
+match /users/{uid}/{collection}/{id}/{sub}/{rest=**} { allow read, write: if isOwner(uid); }
 match /catalog/{document=**} {
   allow read: if request.auth != null;
   allow write: if false;

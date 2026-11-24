@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
 import 'package:repforge/core/clock.dart';
+import 'package:repforge/data/sync/sync_engine.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
 
 import '../../helpers/app_overrides.dart';
+import '../auth/fake_auth_repository.dart';
 import '../library/library_fakes.dart';
 import '../schedule/fake_cycle_repository.dart';
 import 'fake_settings_repository.dart';
@@ -21,6 +24,9 @@ Future<void> pumpProfile(
   FakeWorkoutReminder? alarm,
   List<Cycle> cycles = const [],
   double textScale = 1,
+  SyncStatus? sync,
+  FakeAuthRepository? auth,
+  List<Override> extra = const [],
 }) async {
   tester.view
     ..devicePixelRatio = 1
@@ -35,7 +41,10 @@ Future<void> pumpProfile(
           settings: settings,
           reminder: reminder,
           cycles: FakeCycleRepository(cycles),
+          sync: sync,
+          auth: auth,
         ),
+        ...extra,
         exerciseCatalogProvider.overrideWith((ref) async => LibraryCatalog()),
         clockProvider.overrideWithValue(() => DateTime(2026, 11, 24, 8)),
       ],

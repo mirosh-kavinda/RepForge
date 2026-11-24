@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart';
 import 'app/router.dart';
 import 'data/notifications/local_notifications.dart';
+import 'data/sync/providers.dart';
 import 'features/auth/data/providers.dart';
 import 'features/library/data/providers.dart';
 import 'features/settings/data/providers.dart';
@@ -33,4 +34,6 @@ void main() {
       openFromNotification(payload, container.read(routerProvider).go);
   LocalNotifications.instance.ready().ignore();
   container.listen(reminderSchedulerProvider, (_, _) {});
+  // SYN-01: backs up and pulls in the background; the UI never waits on it.
+  startSync(container);
 }

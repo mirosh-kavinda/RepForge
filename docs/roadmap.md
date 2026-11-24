@@ -48,7 +48,7 @@ sets · SYN-03 CSV/JSON export · tablet layout.
 
 | Question | Blocks |
 |---|---|
-| Free app or paid tier (photos, advanced analytics)? Changes the Firestore cost plan | SYN-01, BOD-02 |
+| ~~Free app or paid tier?~~ Decided 2026-11-24: free for now; revisit with BOD-02 (photos) | BOD-02 |
 | Ghost Set step: fixed 2.5 kg or smallest plate the user owns (1.25)? | LOG-02 |
 | Health Connect / Apple Health sync: v1.1 or later? | BOD-01 (data shape) |
 | Sinhala and Tamil translations at launch or after? | FND-01 (l10n setup is ready either way) |

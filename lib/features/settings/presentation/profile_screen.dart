@@ -11,11 +11,14 @@ import '../../../app/theme/theme_mode.dart';
 import '../../../app/widgets/rf_button.dart';
 import '../../../app/widgets/rf_segmented.dart';
 import '../../../app/widgets/rf_stepper.dart';
+import '../../../core/clock.dart';
 import '../../../core/metrics/units.dart';
+import '../../../data/sync/providers.dart';
 import '../../auth/presentation/account_section.dart';
 import '../../workout/presentation/template_format.dart';
 import '../data/providers.dart';
 import '../domain/settings.dart';
+import 'backup_screen.dart';
 import 'plates_text.dart';
 
 // Screen 23: the AUTH-01 account section, then Settings (SET-01 AC1).
@@ -25,6 +28,7 @@ class ProfileScreen extends ConsumerWidget {
   static const restKey = ValueKey('settings.rest');
   static const platesKey = ValueKey('settings.plates');
   static const reminderKey = ValueKey('settings.reminder');
+  static const backupKey = ValueKey('settings.backup');
 
   Future<void> _write(
     BuildContext context,
@@ -199,6 +203,18 @@ class ProfileScreen extends ConsumerWidget {
                           reminderTime(context, reminder.minutes),
                         ),
                   () => context.push(Routes.reminder),
+                ),
+                // SYN-01 AC9.
+                row(
+                  backupKey,
+                  l10n.backupTitle,
+                  backedUpText(
+                    l10n,
+                    Localizations.localeOf(context).toString(),
+                    ref.watch(syncStatusProvider).value?.backedUpAt,
+                    ref.read(clockProvider)(),
+                  ),
+                  () => context.push(Routes.backup),
                 ),
               ],
             ),

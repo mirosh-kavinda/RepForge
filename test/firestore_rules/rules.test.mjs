@@ -7,7 +7,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 let env;
 
@@ -64,5 +64,59 @@ describe('AUTH-01 AC11 Firestore rules', () => {
     const db = as('alice');
     await assertFails(getDoc(doc(db, 'admin/config')));
     await assertFails(setDoc(doc(db, 'admin/config'), { x: 1 }));
+  });
+});
+
+describe('SYN-01 AC5 finished workouts are append-only', () => {
+  const finished = {
+    name: 'Push',
+    endedAt: 1000,
+    sets: [{ kg: 60, reps: 8 }],
+    note: null,
+    updatedAt: 1000,
+    deletedAt: null,
+  };
+
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      await setDoc(doc(ctx.firestore(), 'users/alice/sessions/w1'), finished);
+    });
+  });
+
+  test('its sets and details cannot be overwritten', async () => {
+    const db = as('alice');
+    await assertFails(
+      setDoc(doc(db, 'users/alice/sessions/w1'), {
+        ...finished,
+        sets: [],
+        updatedAt: 2000,
+      }),
+    );
+  });
+
+  test('its note can change, and it can be deleted', async () => {
+    const db = as('alice');
+    await assertSucceeds(
+      setDoc(doc(db, 'users/alice/sessions/w1'), {
+        ...finished,
+        note: 'good',
+        updatedAt: 2000,
+        syncedAt: serverTimestamp(),
+      }),
+    );
+    await assertSucceeds(
+      setDoc(doc(db, 'users/alice/sessions/w1'), {
+        ...finished,
+        note: 'good',
+        updatedAt: 3000,
+        deletedAt: 3000,
+      }),
+    );
+  });
+
+  test('other synced records can be updated as usual', async () => {
+    const db = as('alice');
+    await assertSucceeds(setDoc(doc(db, 'users/alice/goals/g1'), { t: 1 }));
+    await assertSucceeds(setDoc(doc(db, 'users/alice/goals/g1'), { t: 2 }));
   });
 });
