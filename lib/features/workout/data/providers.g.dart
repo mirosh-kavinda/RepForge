@@ -153,7 +153,7 @@ final class WorkoutMusclesProvider
   }
 }
 
-String _$workoutMusclesHash() => r'1ffd651529bcaf4b09637e41ce15b608ae52abf3';
+String _$workoutMusclesHash() => r'fa01dcd05ef6b5b997c07daf44a6fe9e79abf2fb';
 
 final class WorkoutMusclesFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<Muscle>>, String> {

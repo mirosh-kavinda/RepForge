@@ -36,7 +36,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | EXL-01 | 800+ exercise library, search < 100 ms offline | MVP | P1 (data) / P2 (UI) | 04 | Done |
 | EXL-02 | Exercise detail: instructions, muscles, equipment, images, offline | MVP | P2 | 14 | Done |
 | EXL-03 | Custom exercises, synced | MVP | P2 | 04, 14 | Done |
-| BOD-01 | Body Snapshot form, all derived metrics saved at once | MVP | P2 | 05 | — |
+| BOD-01 | Body Snapshot form, all derived metrics saved at once | MVP | P2 | 05 | Done |
 | BOD-02 | Progress photos with camera, ghost outline, compare | v1.1 | P4 | 20, 25 | — |
 | PRG-01 | Progress dashboard: e1RM, best set, volume, body trends | MVP | P2 | 06 | — |
 | PRG-02 | Adherence stats + cycle streak (rest never breaks it) | MVP | P2 | 01, 06 | — |

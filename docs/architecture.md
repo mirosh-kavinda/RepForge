@@ -90,6 +90,9 @@ Design choices:
   time left), local only. One local notification (`RestAlarm` port over
   flutter_local_notifications, scheduled in UTC) is replaced on every change and cancelled on
   Finish / Discard.
+- Body Snapshot (BOD-01): `body_snapshots` stores the inputs and every result (JSON, from
+  `lib/core/metrics` via `computeBodyResults`) together; one row per calendar day, replaced on
+  re-save. Onboarding rows have no results and are worked out on view, never stored back.
 - Custom exercises (EXL-03): `custom_exercises` (synced, soft delete). `exerciseCatalogProvider`
   returns a combined repository (catalog FTS + custom matched in Dart), so every screen sees
   both; `byId` also finds deleted custom ones so old workouts keep their names.

@@ -2153,7 +2153,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
 }
 
 class $BodySnapshotsTable extends BodySnapshots
-    with TableInfo<$BodySnapshotsTable, BodySnapshot> {
+    with TableInfo<$BodySnapshotsTable, BodySnapshotRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -2231,6 +2231,57 @@ class $BodySnapshotsTable extends BodySnapshots
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _neckCmMeta = const VerificationMeta('neckCm');
+  @override
+  late final GeneratedColumn<double> neckCm = GeneratedColumn<double>(
+    'neck_cm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _hipCmMeta = const VerificationMeta('hipCm');
+  @override
+  late final GeneratedColumn<double> hipCm = GeneratedColumn<double>(
+    'hip_cm',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _scaleBodyFatPctMeta = const VerificationMeta(
+    'scaleBodyFatPct',
+  );
+  @override
+  late final GeneratedColumn<double> scaleBodyFatPct = GeneratedColumn<double>(
+    'scale_body_fat_pct',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityMeta = const VerificationMeta(
+    'activity',
+  );
+  @override
+  late final GeneratedColumn<String> activity = GeneratedColumn<String>(
+    'activity',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resultsMeta = const VerificationMeta(
+    'results',
+  );
+  @override
+  late final GeneratedColumn<String> results = GeneratedColumn<String>(
+    'results',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2240,6 +2291,11 @@ class $BodySnapshotsTable extends BodySnapshots
     date,
     weightKg,
     waistCm,
+    neckCm,
+    hipCm,
+    scaleBodyFatPct,
+    activity,
+    results,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2248,7 +2304,7 @@ class $BodySnapshotsTable extends BodySnapshots
   static const String $name = 'body_snapshots';
   @override
   VerificationContext validateIntegrity(
-    Insertable<BodySnapshot> instance, {
+    Insertable<BodySnapshotRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2290,15 +2346,48 @@ class $BodySnapshotsTable extends BodySnapshots
         waistCm.isAcceptableOrUnknown(data['waist_cm']!, _waistCmMeta),
       );
     }
+    if (data.containsKey('neck_cm')) {
+      context.handle(
+        _neckCmMeta,
+        neckCm.isAcceptableOrUnknown(data['neck_cm']!, _neckCmMeta),
+      );
+    }
+    if (data.containsKey('hip_cm')) {
+      context.handle(
+        _hipCmMeta,
+        hipCm.isAcceptableOrUnknown(data['hip_cm']!, _hipCmMeta),
+      );
+    }
+    if (data.containsKey('scale_body_fat_pct')) {
+      context.handle(
+        _scaleBodyFatPctMeta,
+        scaleBodyFatPct.isAcceptableOrUnknown(
+          data['scale_body_fat_pct']!,
+          _scaleBodyFatPctMeta,
+        ),
+      );
+    }
+    if (data.containsKey('activity')) {
+      context.handle(
+        _activityMeta,
+        activity.isAcceptableOrUnknown(data['activity']!, _activityMeta),
+      );
+    }
+    if (data.containsKey('results')) {
+      context.handle(
+        _resultsMeta,
+        results.isAcceptableOrUnknown(data['results']!, _resultsMeta),
+      );
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  BodySnapshot map(Map<String, dynamic> data, {String? tablePrefix}) {
+  BodySnapshotRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return BodySnapshot(
+    return BodySnapshotRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2329,6 +2418,26 @@ class $BodySnapshotsTable extends BodySnapshots
         DriftSqlType.double,
         data['${effectivePrefix}waist_cm'],
       ),
+      neckCm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}neck_cm'],
+      ),
+      hipCm: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}hip_cm'],
+      ),
+      scaleBodyFatPct: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}scale_body_fat_pct'],
+      ),
+      activity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activity'],
+      ),
+      results: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}results'],
+      ),
     );
   }
 
@@ -2341,7 +2450,7 @@ class $BodySnapshotsTable extends BodySnapshots
       const EnumNameConverter<SyncState>(SyncState.values);
 }
 
-class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
+class BodySnapshotRow extends DataClass implements Insertable<BodySnapshotRow> {
   final String id;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -2349,7 +2458,12 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
   final DateTime date;
   final double? weightKg;
   final double? waistCm;
-  const BodySnapshot({
+  final double? neckCm;
+  final double? hipCm;
+  final double? scaleBodyFatPct;
+  final String? activity;
+  final String? results;
+  const BodySnapshotRow({
     required this.id,
     required this.updatedAt,
     this.deletedAt,
@@ -2357,6 +2471,11 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
     required this.date,
     this.weightKg,
     this.waistCm,
+    this.neckCm,
+    this.hipCm,
+    this.scaleBodyFatPct,
+    this.activity,
+    this.results,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2378,6 +2497,21 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
     if (!nullToAbsent || waistCm != null) {
       map['waist_cm'] = Variable<double>(waistCm);
     }
+    if (!nullToAbsent || neckCm != null) {
+      map['neck_cm'] = Variable<double>(neckCm);
+    }
+    if (!nullToAbsent || hipCm != null) {
+      map['hip_cm'] = Variable<double>(hipCm);
+    }
+    if (!nullToAbsent || scaleBodyFatPct != null) {
+      map['scale_body_fat_pct'] = Variable<double>(scaleBodyFatPct);
+    }
+    if (!nullToAbsent || activity != null) {
+      map['activity'] = Variable<String>(activity);
+    }
+    if (!nullToAbsent || results != null) {
+      map['results'] = Variable<String>(results);
+    }
     return map;
   }
 
@@ -2396,15 +2530,30 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
       waistCm: waistCm == null && nullToAbsent
           ? const Value.absent()
           : Value(waistCm),
+      neckCm: neckCm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(neckCm),
+      hipCm: hipCm == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hipCm),
+      scaleBodyFatPct: scaleBodyFatPct == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scaleBodyFatPct),
+      activity: activity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activity),
+      results: results == null && nullToAbsent
+          ? const Value.absent()
+          : Value(results),
     );
   }
 
-  factory BodySnapshot.fromJson(
+  factory BodySnapshotRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return BodySnapshot(
+    return BodySnapshotRow(
       id: serializer.fromJson<String>(json['id']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -2414,6 +2563,11 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
       date: serializer.fromJson<DateTime>(json['date']),
       weightKg: serializer.fromJson<double?>(json['weightKg']),
       waistCm: serializer.fromJson<double?>(json['waistCm']),
+      neckCm: serializer.fromJson<double?>(json['neckCm']),
+      hipCm: serializer.fromJson<double?>(json['hipCm']),
+      scaleBodyFatPct: serializer.fromJson<double?>(json['scaleBodyFatPct']),
+      activity: serializer.fromJson<String?>(json['activity']),
+      results: serializer.fromJson<String?>(json['results']),
     );
   }
   @override
@@ -2429,10 +2583,15 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
       'date': serializer.toJson<DateTime>(date),
       'weightKg': serializer.toJson<double?>(weightKg),
       'waistCm': serializer.toJson<double?>(waistCm),
+      'neckCm': serializer.toJson<double?>(neckCm),
+      'hipCm': serializer.toJson<double?>(hipCm),
+      'scaleBodyFatPct': serializer.toJson<double?>(scaleBodyFatPct),
+      'activity': serializer.toJson<String?>(activity),
+      'results': serializer.toJson<String?>(results),
     };
   }
 
-  BodySnapshot copyWith({
+  BodySnapshotRow copyWith({
     String? id,
     DateTime? updatedAt,
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -2440,7 +2599,12 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
     DateTime? date,
     Value<double?> weightKg = const Value.absent(),
     Value<double?> waistCm = const Value.absent(),
-  }) => BodySnapshot(
+    Value<double?> neckCm = const Value.absent(),
+    Value<double?> hipCm = const Value.absent(),
+    Value<double?> scaleBodyFatPct = const Value.absent(),
+    Value<String?> activity = const Value.absent(),
+    Value<String?> results = const Value.absent(),
+  }) => BodySnapshotRow(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -2448,9 +2612,16 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
     date: date ?? this.date,
     weightKg: weightKg.present ? weightKg.value : this.weightKg,
     waistCm: waistCm.present ? waistCm.value : this.waistCm,
+    neckCm: neckCm.present ? neckCm.value : this.neckCm,
+    hipCm: hipCm.present ? hipCm.value : this.hipCm,
+    scaleBodyFatPct: scaleBodyFatPct.present
+        ? scaleBodyFatPct.value
+        : this.scaleBodyFatPct,
+    activity: activity.present ? activity.value : this.activity,
+    results: results.present ? results.value : this.results,
   );
-  BodySnapshot copyWithCompanion(BodySnapshotsCompanion data) {
-    return BodySnapshot(
+  BodySnapshotRow copyWithCompanion(BodySnapshotsCompanion data) {
+    return BodySnapshotRow(
       id: data.id.present ? data.id.value : this.id,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -2458,40 +2629,69 @@ class BodySnapshot extends DataClass implements Insertable<BodySnapshot> {
       date: data.date.present ? data.date.value : this.date,
       weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
       waistCm: data.waistCm.present ? data.waistCm.value : this.waistCm,
+      neckCm: data.neckCm.present ? data.neckCm.value : this.neckCm,
+      hipCm: data.hipCm.present ? data.hipCm.value : this.hipCm,
+      scaleBodyFatPct: data.scaleBodyFatPct.present
+          ? data.scaleBodyFatPct.value
+          : this.scaleBodyFatPct,
+      activity: data.activity.present ? data.activity.value : this.activity,
+      results: data.results.present ? data.results.value : this.results,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('BodySnapshot(')
+    return (StringBuffer('BodySnapshotRow(')
           ..write('id: $id, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('syncState: $syncState, ')
           ..write('date: $date, ')
           ..write('weightKg: $weightKg, ')
-          ..write('waistCm: $waistCm')
+          ..write('waistCm: $waistCm, ')
+          ..write('neckCm: $neckCm, ')
+          ..write('hipCm: $hipCm, ')
+          ..write('scaleBodyFatPct: $scaleBodyFatPct, ')
+          ..write('activity: $activity, ')
+          ..write('results: $results')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, updatedAt, deletedAt, syncState, date, weightKg, waistCm);
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    date,
+    weightKg,
+    waistCm,
+    neckCm,
+    hipCm,
+    scaleBodyFatPct,
+    activity,
+    results,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is BodySnapshot &&
+      (other is BodySnapshotRow &&
           other.id == this.id &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt &&
           other.syncState == this.syncState &&
           other.date == this.date &&
           other.weightKg == this.weightKg &&
-          other.waistCm == this.waistCm);
+          other.waistCm == this.waistCm &&
+          other.neckCm == this.neckCm &&
+          other.hipCm == this.hipCm &&
+          other.scaleBodyFatPct == this.scaleBodyFatPct &&
+          other.activity == this.activity &&
+          other.results == this.results);
 }
 
-class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
+class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshotRow> {
   final Value<String> id;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> deletedAt;
@@ -2499,6 +2699,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
   final Value<DateTime> date;
   final Value<double?> weightKg;
   final Value<double?> waistCm;
+  final Value<double?> neckCm;
+  final Value<double?> hipCm;
+  final Value<double?> scaleBodyFatPct;
+  final Value<String?> activity;
+  final Value<String?> results;
   final Value<int> rowid;
   const BodySnapshotsCompanion({
     this.id = const Value.absent(),
@@ -2508,6 +2713,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
     this.date = const Value.absent(),
     this.weightKg = const Value.absent(),
     this.waistCm = const Value.absent(),
+    this.neckCm = const Value.absent(),
+    this.hipCm = const Value.absent(),
+    this.scaleBodyFatPct = const Value.absent(),
+    this.activity = const Value.absent(),
+    this.results = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BodySnapshotsCompanion.insert({
@@ -2518,10 +2728,15 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
     required DateTime date,
     this.weightKg = const Value.absent(),
     this.waistCm = const Value.absent(),
+    this.neckCm = const Value.absent(),
+    this.hipCm = const Value.absent(),
+    this.scaleBodyFatPct = const Value.absent(),
+    this.activity = const Value.absent(),
+    this.results = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        date = Value(date);
-  static Insertable<BodySnapshot> custom({
+  static Insertable<BodySnapshotRow> custom({
     Expression<String>? id,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -2529,6 +2744,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
     Expression<DateTime>? date,
     Expression<double>? weightKg,
     Expression<double>? waistCm,
+    Expression<double>? neckCm,
+    Expression<double>? hipCm,
+    Expression<double>? scaleBodyFatPct,
+    Expression<String>? activity,
+    Expression<String>? results,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2539,6 +2759,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
       if (date != null) 'date': date,
       if (weightKg != null) 'weight_kg': weightKg,
       if (waistCm != null) 'waist_cm': waistCm,
+      if (neckCm != null) 'neck_cm': neckCm,
+      if (hipCm != null) 'hip_cm': hipCm,
+      if (scaleBodyFatPct != null) 'scale_body_fat_pct': scaleBodyFatPct,
+      if (activity != null) 'activity': activity,
+      if (results != null) 'results': results,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2551,6 +2776,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
     Value<DateTime>? date,
     Value<double?>? weightKg,
     Value<double?>? waistCm,
+    Value<double?>? neckCm,
+    Value<double?>? hipCm,
+    Value<double?>? scaleBodyFatPct,
+    Value<String?>? activity,
+    Value<String?>? results,
     Value<int>? rowid,
   }) {
     return BodySnapshotsCompanion(
@@ -2561,6 +2791,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
       date: date ?? this.date,
       weightKg: weightKg ?? this.weightKg,
       waistCm: waistCm ?? this.waistCm,
+      neckCm: neckCm ?? this.neckCm,
+      hipCm: hipCm ?? this.hipCm,
+      scaleBodyFatPct: scaleBodyFatPct ?? this.scaleBodyFatPct,
+      activity: activity ?? this.activity,
+      results: results ?? this.results,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2591,6 +2826,21 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
     if (waistCm.present) {
       map['waist_cm'] = Variable<double>(waistCm.value);
     }
+    if (neckCm.present) {
+      map['neck_cm'] = Variable<double>(neckCm.value);
+    }
+    if (hipCm.present) {
+      map['hip_cm'] = Variable<double>(hipCm.value);
+    }
+    if (scaleBodyFatPct.present) {
+      map['scale_body_fat_pct'] = Variable<double>(scaleBodyFatPct.value);
+    }
+    if (activity.present) {
+      map['activity'] = Variable<String>(activity.value);
+    }
+    if (results.present) {
+      map['results'] = Variable<String>(results.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2607,6 +2857,11 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
           ..write('date: $date, ')
           ..write('weightKg: $weightKg, ')
           ..write('waistCm: $waistCm, ')
+          ..write('neckCm: $neckCm, ')
+          ..write('hipCm: $hipCm, ')
+          ..write('scaleBodyFatPct: $scaleBodyFatPct, ')
+          ..write('activity: $activity, ')
+          ..write('results: $results, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -7811,6 +8066,11 @@ typedef $$BodySnapshotsTableCreateCompanionBuilder =
       required DateTime date,
       Value<double?> weightKg,
       Value<double?> waistCm,
+      Value<double?> neckCm,
+      Value<double?> hipCm,
+      Value<double?> scaleBodyFatPct,
+      Value<String?> activity,
+      Value<String?> results,
       Value<int> rowid,
     });
 typedef $$BodySnapshotsTableUpdateCompanionBuilder =
@@ -7822,6 +8082,11 @@ typedef $$BodySnapshotsTableUpdateCompanionBuilder =
       Value<DateTime> date,
       Value<double?> weightKg,
       Value<double?> waistCm,
+      Value<double?> neckCm,
+      Value<double?> hipCm,
+      Value<double?> scaleBodyFatPct,
+      Value<String?> activity,
+      Value<String?> results,
       Value<int> rowid,
     });
 
@@ -7869,6 +8134,31 @@ class $$BodySnapshotsTableFilterComposer
     column: $table.waistCm,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<double> get neckCm => $composableBuilder(
+    column: $table.neckCm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get hipCm => $composableBuilder(
+    column: $table.hipCm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get scaleBodyFatPct => $composableBuilder(
+    column: $table.scaleBodyFatPct,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activity => $composableBuilder(
+    column: $table.activity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get results => $composableBuilder(
+    column: $table.results,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$BodySnapshotsTableOrderingComposer
@@ -7914,6 +8204,31 @@ class $$BodySnapshotsTableOrderingComposer
     column: $table.waistCm,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<double> get neckCm => $composableBuilder(
+    column: $table.neckCm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get hipCm => $composableBuilder(
+    column: $table.hipCm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get scaleBodyFatPct => $composableBuilder(
+    column: $table.scaleBodyFatPct,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activity => $composableBuilder(
+    column: $table.activity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get results => $composableBuilder(
+    column: $table.results,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BodySnapshotsTableAnnotationComposer
@@ -7945,6 +8260,23 @@ class $$BodySnapshotsTableAnnotationComposer
 
   GeneratedColumn<double> get waistCm =>
       $composableBuilder(column: $table.waistCm, builder: (column) => column);
+
+  GeneratedColumn<double> get neckCm =>
+      $composableBuilder(column: $table.neckCm, builder: (column) => column);
+
+  GeneratedColumn<double> get hipCm =>
+      $composableBuilder(column: $table.hipCm, builder: (column) => column);
+
+  GeneratedColumn<double> get scaleBodyFatPct => $composableBuilder(
+    column: $table.scaleBodyFatPct,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get activity =>
+      $composableBuilder(column: $table.activity, builder: (column) => column);
+
+  GeneratedColumn<String> get results =>
+      $composableBuilder(column: $table.results, builder: (column) => column);
 }
 
 class $$BodySnapshotsTableTableManager
@@ -7952,17 +8284,17 @@ class $$BodySnapshotsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $BodySnapshotsTable,
-          BodySnapshot,
+          BodySnapshotRow,
           $$BodySnapshotsTableFilterComposer,
           $$BodySnapshotsTableOrderingComposer,
           $$BodySnapshotsTableAnnotationComposer,
           $$BodySnapshotsTableCreateCompanionBuilder,
           $$BodySnapshotsTableUpdateCompanionBuilder,
           (
-            BodySnapshot,
-            BaseReferences<_$AppDatabase, $BodySnapshotsTable, BodySnapshot>,
+            BodySnapshotRow,
+            BaseReferences<_$AppDatabase, $BodySnapshotsTable, BodySnapshotRow>,
           ),
-          BodySnapshot,
+          BodySnapshotRow,
           PrefetchHooks Function()
         > {
   $$BodySnapshotsTableTableManager(_$AppDatabase db, $BodySnapshotsTable table)
@@ -7985,6 +8317,11 @@ class $$BodySnapshotsTableTableManager
                 Value<DateTime> date = const Value.absent(),
                 Value<double?> weightKg = const Value.absent(),
                 Value<double?> waistCm = const Value.absent(),
+                Value<double?> neckCm = const Value.absent(),
+                Value<double?> hipCm = const Value.absent(),
+                Value<double?> scaleBodyFatPct = const Value.absent(),
+                Value<String?> activity = const Value.absent(),
+                Value<String?> results = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BodySnapshotsCompanion(
                 id: id,
@@ -7994,6 +8331,11 @@ class $$BodySnapshotsTableTableManager
                 date: date,
                 weightKg: weightKg,
                 waistCm: waistCm,
+                neckCm: neckCm,
+                hipCm: hipCm,
+                scaleBodyFatPct: scaleBodyFatPct,
+                activity: activity,
+                results: results,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8005,6 +8347,11 @@ class $$BodySnapshotsTableTableManager
                 required DateTime date,
                 Value<double?> weightKg = const Value.absent(),
                 Value<double?> waistCm = const Value.absent(),
+                Value<double?> neckCm = const Value.absent(),
+                Value<double?> hipCm = const Value.absent(),
+                Value<double?> scaleBodyFatPct = const Value.absent(),
+                Value<String?> activity = const Value.absent(),
+                Value<String?> results = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BodySnapshotsCompanion.insert(
                 id: id,
@@ -8014,6 +8361,11 @@ class $$BodySnapshotsTableTableManager
                 date: date,
                 weightKg: weightKg,
                 waistCm: waistCm,
+                neckCm: neckCm,
+                hipCm: hipCm,
+                scaleBodyFatPct: scaleBodyFatPct,
+                activity: activity,
+                results: results,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -8028,17 +8380,17 @@ typedef $$BodySnapshotsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $BodySnapshotsTable,
-      BodySnapshot,
+      BodySnapshotRow,
       $$BodySnapshotsTableFilterComposer,
       $$BodySnapshotsTableOrderingComposer,
       $$BodySnapshotsTableAnnotationComposer,
       $$BodySnapshotsTableCreateCompanionBuilder,
       $$BodySnapshotsTableUpdateCompanionBuilder,
       (
-        BodySnapshot,
-        BaseReferences<_$AppDatabase, $BodySnapshotsTable, BodySnapshot>,
+        BodySnapshotRow,
+        BaseReferences<_$AppDatabase, $BodySnapshotsTable, BodySnapshotRow>,
       ),
-      BodySnapshot,
+      BodySnapshotRow,
       PrefetchHooks Function()
     >;
 typedef $$WorkoutTemplatesTableCreateCompanionBuilder =

@@ -2444,5 +2444,331 @@
         "type": "String"
       }
     }
+  },
+  "bodyTitle": "Body",
+  "@bodyTitle": {
+    "description": "Progress: body card title."
+  },
+  "bodyNone": "No body snapshot yet",
+  "@bodyNone": {
+    "description": "Body card empty state."
+  },
+  "bodyNew": "New snapshot",
+  "@bodyNew": {
+    "description": "Open the body snapshot form."
+  },
+  "bodyFormTitle": "Body snapshot",
+  "@bodyFormTitle": {
+    "description": "Form title."
+  },
+  "bodyHistoryTitle": "Body snapshots",
+  "@bodyHistoryTitle": {
+    "description": "History title."
+  },
+  "bodyWeight": "Weight",
+  "@bodyWeight": {
+    "description": "Field and result label."
+  },
+  "bodyWaist": "Waist",
+  "@bodyWaist": {
+    "description": "Field label."
+  },
+  "bodyNeck": "Neck",
+  "@bodyNeck": {
+    "description": "Field label."
+  },
+  "bodyHip": "Hip",
+  "@bodyHip": {
+    "description": "Field label."
+  },
+  "bodyScaleFat": "Body fat % from a scale (optional)",
+  "@bodyScaleFat": {
+    "description": "Field label."
+  },
+  "bodyTapeHint": "Waist and neck (and hip) give a body-fat estimate",
+  "@bodyTapeHint": {
+    "description": "Form hint."
+  },
+  "bodyActivity": "Activity level",
+  "@bodyActivity": {
+    "description": "Field label."
+  },
+  "bodySave": "Save",
+  "@bodySave": {
+    "description": "Save the snapshot."
+  },
+  "bodyWeightRange": "Enter a weight between {min} and {max}",
+  "@bodyWeightRange": {
+    "description": "Weight out of range.",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyFieldRange": "Enter a value between {min} and {max}",
+  "@bodyFieldRange": {
+    "description": "A tape or body-fat value out of range.",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "bodySaveFailed": "Couldn't save the snapshot",
+  "@bodySaveFailed": {
+    "description": "Save failed."
+  },
+  "bodyReplaces": "Saving replaces today's snapshot",
+  "@bodyReplaces": {
+    "description": "Form: one per day."
+  },
+  "bodyBmi": "BMI",
+  "@bodyBmi": {
+    "description": "Result label."
+  },
+  "bodyFat": "Body fat",
+  "@bodyFat": {
+    "description": "Result label."
+  },
+  "bodyLeanMass": "Lean mass",
+  "@bodyLeanMass": {
+    "description": "Result label."
+  },
+  "bodyFfmi": "FFMI",
+  "@bodyFfmi": {
+    "description": "Result label."
+  },
+  "bodyBmr": "BMR",
+  "@bodyBmr": {
+    "description": "Result label."
+  },
+  "bodyTdee": "TDEE",
+  "@bodyTdee": {
+    "description": "Result label."
+  },
+  "bodyCut": "To lose",
+  "@bodyCut": {
+    "description": "Calorie target label."
+  },
+  "bodyMaintain": "To keep",
+  "@bodyMaintain": {
+    "description": "Calorie target label."
+  },
+  "bodyGain": "To gain",
+  "@bodyGain": {
+    "description": "Calorie target label."
+  },
+  "bodyProtein": "Protein",
+  "@bodyProtein": {
+    "description": "Result label."
+  },
+  "bodyKcal": "{n} kcal",
+  "@bodyKcal": {
+    "description": "Calories per day.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyGrams": "{min}–{max} g",
+  "@bodyGrams": {
+    "description": "Protein range per day.",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyPct": "{n} %",
+  "@bodyPct": {
+    "description": "A percentage.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyFromScale": "from scale",
+  "@bodyFromScale": {
+    "description": "Body fat came from a scale."
+  },
+  "bodyApprox": "approx.",
+  "@bodyApprox": {
+    "description": "An estimate that assumed an input (sex unset)."
+  },
+  "bodyNotAvailable": "not available",
+  "@bodyNotAvailable": {
+    "description": "Screen reader for a dash."
+  },
+  "bodyNeedHeight": "Add your height in Profile",
+  "@bodyNeedHeight": {
+    "description": "Reason: no height."
+  },
+  "bodyNeedAge": "Add your birth year in Profile",
+  "@bodyNeedAge": {
+    "description": "Reason: no birth year."
+  },
+  "bodyNeedTape": "Add waist and neck for body fat",
+  "@bodyNeedTape": {
+    "description": "Reason: no tape measures."
+  },
+  "bodyNeedHip": "Add hip for body fat",
+  "@bodyNeedHip": {
+    "description": "Reason: no hip (women)."
+  },
+  "bodyInconsistent": "These measurements don't give a valid body fat",
+  "@bodyInconsistent": {
+    "description": "Reason: impossible tape values."
+  },
+  "bodyOutOfRange": "A value is outside the usual range",
+  "@bodyOutOfRange": {
+    "description": "Reason: out of range."
+  },
+  "bodyNeedBodyFat": "Needs body fat",
+  "@bodyNeedBodyFat": {
+    "description": "Reason: depends on body fat."
+  },
+  "bodyDeleted": "Snapshot deleted",
+  "@bodyDeleted": {
+    "description": "After delete."
+  },
+  "bodyUndo": "Undo",
+  "@bodyUndo": {
+    "description": "Undo a delete."
+  },
+  "bodyDelete": "Delete snapshot",
+  "@bodyDelete": {
+    "description": "Delete action."
+  },
+  "bodyDeleteFailed": "Couldn't delete it",
+  "@bodyDeleteFailed": {
+    "description": "Delete failed."
+  },
+  "bodyRowFat": "Body fat {amount}",
+  "@bodyRowFat": {
+    "description": "History row.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyCm": "{n} cm",
+  "@bodyCm": {
+    "description": "A length in cm.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyIn": "{n} in",
+  "@bodyIn": {
+    "description": "A length in inches.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "spokenKg": "{n} kilograms",
+  "@spokenKg": {
+    "description": "Screen reader: a mass in kg.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "spokenLb": "{n} pounds",
+  "@spokenLb": {
+    "description": "Screen reader: a mass in lb.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "spokenCm": "{n} centimetres",
+  "@spokenCm": {
+    "description": "Screen reader: a length in cm.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "spokenIn": "{n} inches",
+  "@spokenIn": {
+    "description": "Screen reader: a length in inches.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "spokenPct": "{n} percent",
+  "@spokenPct": {
+    "description": "Screen reader: a percentage.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "unitKilograms": "kilograms",
+  "@unitKilograms": {
+    "description": "Screen reader: unit of a field."
+  },
+  "unitPounds": "pounds",
+  "@unitPounds": {
+    "description": "Screen reader: unit of a field."
+  },
+  "unitCentimetres": "centimetres",
+  "@unitCentimetres": {
+    "description": "Screen reader: unit of a field."
+  },
+  "unitInches": "inches",
+  "@unitInches": {
+    "description": "Screen reader: unit of a field."
+  },
+  "unitPercent": "percent",
+  "@unitPercent": {
+    "description": "Screen reader: unit of a field."
+  },
+  "unitCm": "cm",
+  "@unitCm": {
+    "description": "Length unit, short."
+  },
+  "unitIn": "in",
+  "@unitIn": {
+    "description": "Length unit, short."
+  },
+  "fieldInUnit": "{label}, in {unit}",
+  "@fieldInUnit": {
+    "description": "Screen reader: a number field and its unit.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "bodyOpenHistory": "Body, open past snapshots",
+  "@bodyOpenHistory": {
+    "description": "Screen reader: the Body card."
   }
 }

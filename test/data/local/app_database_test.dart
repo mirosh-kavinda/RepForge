@@ -349,9 +349,34 @@ void main() {
     });
   });
 
+  group('BOD-01 schema v14', () {
+    test('v13 -> v14 adds the body snapshot columns', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v13 = AppDatabase(NativeDatabase(file));
+      for (final c in [
+        'neck_cm',
+        'hip_cm',
+        'scale_body_fat_pct',
+        'activity',
+        'results',
+      ]) {
+        await v13.customStatement('ALTER TABLE body_snapshots DROP COLUMN $c');
+      }
+      await v13.customStatement('PRAGMA user_version = 13');
+      await v13.close();
+
+      final v14 = AppDatabase(NativeDatabase(file));
+      addTearDown(v14.close);
+      expect(await v14.select(v14.bodySnapshots).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 13);
+      expect(db.schemaVersion, 14);
       final names =
           (await db
                   .customSelect(

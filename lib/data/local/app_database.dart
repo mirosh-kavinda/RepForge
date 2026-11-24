@@ -65,10 +65,17 @@ class UserProfiles extends Table with SyncedTable {
 }
 
 // ONB-01 creates it with weight and waist; BOD-01 adds the other measurements.
+@DataClassName('BodySnapshotRow')
 class BodySnapshots extends Table with SyncedTable {
   DateTimeColumn get date => dateTime()();
   RealColumn get weightKg => real().nullable()();
   RealColumn get waistCm => real().nullable()();
+  RealColumn get neckCm => real().nullable()();
+  RealColumn get hipCm => real().nullable()();
+  RealColumn get scaleBodyFatPct => real().nullable()();
+  TextColumn get activity => text().nullable()();
+  // BOD-01: every result saved with it (JSON); null for onboarding ones.
+  TextColumn get results => text().nullable()();
 }
 
 // WKT-01. Exercises are a JSON list, matching the Firestore template document.
@@ -180,7 +187,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -235,6 +242,19 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(workoutSessions, workoutSessions.note);
       }
       if (from < 13) await m.createTable(customExercises);
+      if (from < 14) {
+        for (final c in [
+          bodySnapshots.neckCm,
+          bodySnapshots.hipCm,
+          bodySnapshots.scaleBodyFatPct,
+          bodySnapshots.activity,
+          bodySnapshots.results,
+        ]) {
+          if (!await _has('body_snapshots', c.name)) {
+            await m.addColumn(bodySnapshots, c);
+          }
+        }
+      }
       if (from < 12) {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS workout_sessions_template_ended '
