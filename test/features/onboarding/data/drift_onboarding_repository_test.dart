@@ -7,6 +7,8 @@ import 'package:repforge/data/local/local_data_wiper.dart';
 import 'package:repforge/data/sync/sync_state.dart';
 import 'package:repforge/features/onboarding/data/drift_onboarding_repository.dart';
 import 'package:repforge/features/onboarding/domain/onboarding_answers.dart';
+import 'package:repforge/features/schedule/data/drift_cycle_repository.dart';
+import 'package:repforge/features/schedule/domain/cycle.dart';
 
 void main() {
   late AppDatabase db;
@@ -96,5 +98,55 @@ void main() {
       expect(await db.select(db.userProfiles).get(), isEmpty);
       expect(await db.select(db.bodySnapshots).get(), isEmpty);
     });
+  });
+
+  group('WKT-01 watchUnits', () {
+    test('metric until a profile exists, then the profile units', () async {
+      expect(await repo.watchUnits().first, UnitSystem.metric);
+      await repo.complete(full);
+      expect(await repo.watchUnits().first, UnitSystem.imperial);
+    });
+  });
+
+  group('SCH-01 starter cycle with onboarding', () {
+    Cycle plan() => Cycle(
+      id: 'c1',
+      name: 'PPL + Rest',
+      days: const [
+        CycleDay(id: 'd1', workoutId: 'push'),
+        CycleDay(id: 'd2'),
+      ],
+      isActive: true,
+      startDate: DateTime.utc(2026, 11, 21),
+      startDayIndex: 0,
+    );
+
+    test('AC10 the cycle commits with the profile and the flag', () async {
+      final cycles = DriftCycleRepository(db);
+      await repo.complete(full, alsoWrite: () => cycles.save(plan()));
+      expect(await cycles.byId('c1'), plan());
+      expect(await repo.watchDone().first, isTrue);
+    });
+
+    test(
+      'ONB-01 edge a failure after the cycle write rolls back both',
+      () async {
+        final cycles = DriftCycleRepository(db);
+        await expectLater(
+          repo.complete(
+            full,
+            alsoWrite: () async {
+              await cycles.save(plan());
+              throw StateError('boom');
+            },
+          ),
+          throwsA(isA<StateError>()),
+        );
+        expect(await cycles.byId('c1'), isNull);
+        expect(await db.select(db.userProfiles).get(), isEmpty);
+        expect(await db.select(db.outbox).get(), isEmpty);
+        expect(await repo.watchDone().first, isFalse);
+      },
+    );
   });
 }

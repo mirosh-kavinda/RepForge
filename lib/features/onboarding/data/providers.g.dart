@@ -130,3 +130,41 @@ final class DeviceRegionProvider
 }
 
 String _$deviceRegionHash() => r'85dfdad5696fc7dde4710accae7d2cce5881392f';
+
+@ProviderFor(unitSystem)
+final unitSystemProvider = UnitSystemProvider._();
+
+final class UnitSystemProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<UnitSystem>,
+          UnitSystem,
+          Stream<UnitSystem>
+        >
+    with $FutureModifier<UnitSystem>, $StreamProvider<UnitSystem> {
+  UnitSystemProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unitSystemProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$unitSystemHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<UnitSystem> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<UnitSystem> create(Ref ref) {
+    return unitSystem(ref);
+  }
+}
+
+String _$unitSystemHash() => r'85b7a67da37b908858ce1591174b1d23e9f04e9a';

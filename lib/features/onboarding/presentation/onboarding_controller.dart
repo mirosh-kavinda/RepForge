@@ -161,15 +161,23 @@ class OnboardingController extends _$OnboardingController {
     state = next;
   }
 
+  // Step 2 Continue (AC5): the invalid fields; nothing is saved.
+  Set<AnswerField> validate({DateTime? today}) => {
+    ...state.unreadable,
+    ...invalidAnswers(state.toAnswers(), today: today ?? DateTime.now()),
+  };
+
   // Returns the invalid fields, or an empty set once saved (AC5, AC6).
-  Future<Set<AnswerField>> finish({DateTime? today}) async {
+  Future<Set<AnswerField>> finish({
+    DateTime? today,
+    Future<void> Function()? alsoWrite,
+  }) async {
     final answers = state.toAnswers();
-    final invalid = {
-      ...state.unreadable,
-      ...invalidAnswers(answers, today: today ?? DateTime.now()),
-    };
+    final invalid = validate(today: today);
     if (invalid.isNotEmpty) return invalid;
-    await ref.read(onboardingRepositoryProvider).complete(answers);
+    await ref
+        .read(onboardingRepositoryProvider)
+        .complete(answers, alsoWrite: alsoWrite);
     ref.invalidateSelf();
     return const {};
   }

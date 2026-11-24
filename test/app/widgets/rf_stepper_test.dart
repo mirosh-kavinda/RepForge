@@ -206,5 +206,23 @@ void main() {
       await pumpThemed(tester, const Harness(initial: 600, step: 1, max: 500));
       expect(find.text('500 kg', findRichText: true), findsOneWidget);
     });
+
+    testWidgets('WKT-01 format replaces number and unit', (tester) async {
+      await pumpThemed(
+        tester,
+        RfStepper(
+          label: 'Rest',
+          value: 90,
+          step: 15,
+          min: 0,
+          max: 600,
+          format: (v) =>
+              '${v ~/ 60}:${(v % 60).round().toString().padLeft(2, '0')}',
+          onChanged: (_) {},
+        ),
+      );
+      expect(find.text('1:30'), findsOneWidget);
+      expect(tester.getSemantics(find.byKey(RfStepper.valueKey)).value, '1:30');
+    });
   });
 }

@@ -16,9 +16,17 @@ abstract final class RfRadius {
   static const pill = 999.0;
 }
 
+abstract final class RfStroke {
+  static const thin = 1.0;
+  static const medium = 1.5;
+  static const thick = 2.0;
+}
+
 abstract final class RfSize {
   static const minTarget = 48.0;
   static const buttonLg = 52.0;
   static const buttonMd = 44.0;
   static const stepperButton = 44.0;
+  // Status icons inside a calendar cell (SCH-05).
+  static const iconSm = 16.0;
 }

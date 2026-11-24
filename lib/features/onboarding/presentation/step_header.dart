@@ -5,10 +5,9 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 
-// Progress bars + "Step n of total" (design canvas 10, 11). Two steps until
-// SCH-01 adds the starter plan.
+// Progress bars + "Step n of total" (design canvas 10–12).
 class StepHeader extends StatelessWidget {
-  const StepHeader({required this.step, this.total = 2, super.key});
+  const StepHeader({required this.step, this.total = 3, super.key});
 
   final int step;
   final int total;

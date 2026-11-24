@@ -61,6 +61,87 @@ class BodySnapshots extends Table with SyncedTable {
   RealColumn get waistCm => real().nullable()();
 }
 
+// WKT-01. Exercises are a JSON list, matching the Firestore template document.
+@DataClassName('WorkoutTemplateRow')
+class WorkoutTemplates extends Table with SyncedTable {
+  TextColumn get name => text()();
+  TextColumn get exercises => text()();
+}
+
+// SCH-01. Days are a JSON list of {id, workoutId|null}.
+@DataClassName('CycleRow')
+class Cycles extends Table with SyncedTable {
+  TextColumn get name => text()();
+  TextColumn get days => text()();
+  BoolColumn get isActive => boolean()();
+  DateTimeColumn get startDate => dateTime()();
+  IntColumn get startDayIndex => integer()();
+  TextColumn get mode => text().withDefault(const Constant('rolling'))();
+}
+
+// SCH-02. One per (cycle, calendar date): a cycle switched to today has its
+// own today. `dayId` is the cycle row; status is done / missed / rest.
+@DataClassName('ScheduleDayRow')
+// SCH-05 AC7: the calendar reads all cycles by date range.
+@TableIndex(name: 'schedule_days_date', columns: {#date})
+class ScheduleDays extends Table with SyncedTable {
+  TextColumn get cycleId => text()();
+  DateTimeColumn get date => dateTime()();
+  TextColumn get dayId => text()();
+  IntColumn get dayIndex => integer()();
+  TextColumn get status => text()();
+  // SCH-04: the workout for the date when it is not the row's own, and the
+  // other date of a Move.
+  TextColumn get workoutId => text().nullable()();
+  DateTimeColumn get linkedDate => dateTime().nullable()();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {cycleId, date},
+  ];
+}
+
+// LOG-01. A workout, with a copy of the rows it started from (JSON). In
+// progress while ended_at is null; it gets its first outbox row on Finish
+// (NFR-10: one cloud write per finished workout).
+@DataClassName('SessionRow')
+class WorkoutSessions extends Table with SyncedTable {
+  TextColumn get templateId => text().nullable()();
+  TextColumn get name => text()();
+  TextColumn get exercises => text()();
+  TextColumn get cycleId => text().nullable()();
+  TextColumn get dayId => text().nullable()();
+  IntColumn get dayIndex => integer().nullable()();
+  // The calendar day it was started for (edge: midnight mid-workout).
+  DateTimeColumn get date => dateTime()();
+  DateTimeColumn get startedAt => dateTime()();
+  DateTimeColumn get endedAt => dateTime().nullable()();
+  // LOG-03: the running or paused rest (JSON), local only; Finish clears it.
+  TextColumn get rest => text().nullable()();
+}
+
+// LOG-01. Local only: synced inside its session, never on its own.
+@DataClassName('SessionSetRow')
+@TableIndex(name: 'session_sets_session', columns: {#sessionId})
+@TableIndex(name: 'session_sets_exercise', columns: {#exerciseId})
+class SessionSets extends Table {
+  TextColumn get id => text()();
+  TextColumn get sessionId => text()();
+  TextColumn get rowId => text()();
+  TextColumn get exerciseId => text()();
+  IntColumn get setNo => integer()();
+  RealColumn get kg => real()();
+  IntColumn get reps => integer().nullable()();
+  IntColumn get seconds => integer().nullable()();
+  // LOG-02: set at Finish.
+  BoolColumn get isPr => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get loggedAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
 const catalogVersionKey = 'catalogVersion';
 
 @DriftDatabase(
@@ -71,13 +152,18 @@ const catalogVersionKey = 'catalogVersion';
     Outbox,
     UserProfiles,
     BodySnapshots,
+    WorkoutTemplates,
+    Cycles,
+    ScheduleDays,
+    WorkoutSessions,
+    SessionSets,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -93,6 +179,40 @@ class AppDatabase extends _$AppDatabase {
       if (from < 2) {
         await m.createTable(userProfiles);
         await m.createTable(bodySnapshots);
+      }
+      if (from < 3) await m.createTable(workoutTemplates);
+      if (from < 4) await m.createTable(cycles);
+      if (from < 5) await m.createTable(scheduleDays);
+      // v4 created cycles with mode already.
+      if (from >= 4 && from < 6) await m.addColumn(cycles, cycles.mode);
+      // v5 created schedule_days with these already.
+      if (from >= 5 && from < 7) {
+        await m.addColumn(scheduleDays, scheduleDays.workoutId);
+        await m.addColumn(scheduleDays, scheduleDays.linkedDate);
+      }
+      if (from < 8) {
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS schedule_days_date '
+          'ON schedule_days (date)',
+        );
+      }
+      if (from < 9) {
+        await m.createTable(workoutSessions);
+        await m.createTable(sessionSets);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS session_sets_session '
+          'ON session_sets (session_id)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS session_sets_exercise '
+          'ON session_sets (exercise_id)',
+        );
+      }
+      // v9 created session_sets with is_pr already.
+      if (from == 9) await m.addColumn(sessionSets, sessionSets.isPr);
+      // v9 created workout_sessions with rest already.
+      if (from == 9 || from == 10) {
+        await m.addColumn(workoutSessions, workoutSessions.rest);
       }
     },
   );

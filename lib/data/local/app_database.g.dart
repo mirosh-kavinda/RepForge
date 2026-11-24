@@ -2613,6 +2613,3140 @@ class BodySnapshotsCompanion extends UpdateCompanion<BodySnapshot> {
   }
 }
 
+class $WorkoutTemplatesTable extends WorkoutTemplates
+    with TableInfo<$WorkoutTemplatesTable, WorkoutTemplateRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($WorkoutTemplatesTable.$convertersyncState);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exercisesMeta = const VerificationMeta(
+    'exercises',
+  );
+  @override
+  late final GeneratedColumn<String> exercises = GeneratedColumn<String>(
+    'exercises',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    name,
+    exercises,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_templates';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WorkoutTemplateRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('exercises')) {
+      context.handle(
+        _exercisesMeta,
+        exercises.isAcceptableOrUnknown(data['exercises']!, _exercisesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exercisesMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutTemplateRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutTemplateRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $WorkoutTemplatesTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      exercises: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercises'],
+      )!,
+    );
+  }
+
+  @override
+  $WorkoutTemplatesTable createAlias(String alias) {
+    return $WorkoutTemplatesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class WorkoutTemplateRow extends DataClass
+    implements Insertable<WorkoutTemplateRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String name;
+  final String exercises;
+  const WorkoutTemplateRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    required this.name,
+    required this.exercises,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $WorkoutTemplatesTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    map['name'] = Variable<String>(name);
+    map['exercises'] = Variable<String>(exercises);
+    return map;
+  }
+
+  WorkoutTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutTemplatesCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      name: Value(name),
+      exercises: Value(exercises),
+    );
+  }
+
+  factory WorkoutTemplateRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutTemplateRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $WorkoutTemplatesTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      name: serializer.fromJson<String>(json['name']),
+      exercises: serializer.fromJson<String>(json['exercises']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $WorkoutTemplatesTable.$convertersyncState.toJson(syncState),
+      ),
+      'name': serializer.toJson<String>(name),
+      'exercises': serializer.toJson<String>(exercises),
+    };
+  }
+
+  WorkoutTemplateRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    String? name,
+    String? exercises,
+  }) => WorkoutTemplateRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    name: name ?? this.name,
+    exercises: exercises ?? this.exercises,
+  );
+  WorkoutTemplateRow copyWithCompanion(WorkoutTemplatesCompanion data) {
+    return WorkoutTemplateRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      name: data.name.present ? data.name.value : this.name,
+      exercises: data.exercises.present ? data.exercises.value : this.exercises,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplateRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('name: $name, ')
+          ..write('exercises: $exercises')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, updatedAt, deletedAt, syncState, name, exercises);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutTemplateRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.name == this.name &&
+          other.exercises == this.exercises);
+}
+
+class WorkoutTemplatesCompanion extends UpdateCompanion<WorkoutTemplateRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String> name;
+  final Value<String> exercises;
+  final Value<int> rowid;
+  const WorkoutTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.name = const Value.absent(),
+    this.exercises = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutTemplatesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required String name,
+    required String exercises,
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       name = Value(name),
+       exercises = Value(exercises);
+  static Insertable<WorkoutTemplateRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? name,
+    Expression<String>? exercises,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (name != null) 'name': name,
+      if (exercises != null) 'exercises': exercises,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutTemplatesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String>? name,
+    Value<String>? exercises,
+    Value<int>? rowid,
+  }) {
+    return WorkoutTemplatesCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      name: name ?? this.name,
+      exercises: exercises ?? this.exercises,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $WorkoutTemplatesTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (exercises.present) {
+      map['exercises'] = Variable<String>(exercises.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('name: $name, ')
+          ..write('exercises: $exercises, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CyclesTable extends Cycles with TableInfo<$CyclesTable, CycleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CyclesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($CyclesTable.$convertersyncState);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _daysMeta = const VerificationMeta('days');
+  @override
+  late final GeneratedColumn<String> days = GeneratedColumn<String>(
+    'days',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startDayIndexMeta = const VerificationMeta(
+    'startDayIndex',
+  );
+  @override
+  late final GeneratedColumn<int> startDayIndex = GeneratedColumn<int>(
+    'start_day_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('rolling'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    name,
+    days,
+    isActive,
+    startDate,
+    startDayIndex,
+    mode,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cycles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CycleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('days')) {
+      context.handle(
+        _daysMeta,
+        days.isAcceptableOrUnknown(data['days']!, _daysMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_daysMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isActiveMeta);
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('start_day_index')) {
+      context.handle(
+        _startDayIndexMeta,
+        startDayIndex.isAcceptableOrUnknown(
+          data['start_day_index']!,
+          _startDayIndexMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startDayIndexMeta);
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CycleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CycleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $CyclesTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      days: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}days'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_date'],
+      )!,
+      startDayIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}start_day_index'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+    );
+  }
+
+  @override
+  $CyclesTable createAlias(String alias) {
+    return $CyclesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class CycleRow extends DataClass implements Insertable<CycleRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String name;
+  final String days;
+  final bool isActive;
+  final DateTime startDate;
+  final int startDayIndex;
+  final String mode;
+  const CycleRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    required this.name,
+    required this.days,
+    required this.isActive,
+    required this.startDate,
+    required this.startDayIndex,
+    required this.mode,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $CyclesTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    map['name'] = Variable<String>(name);
+    map['days'] = Variable<String>(days);
+    map['is_active'] = Variable<bool>(isActive);
+    map['start_date'] = Variable<DateTime>(startDate);
+    map['start_day_index'] = Variable<int>(startDayIndex);
+    map['mode'] = Variable<String>(mode);
+    return map;
+  }
+
+  CyclesCompanion toCompanion(bool nullToAbsent) {
+    return CyclesCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      name: Value(name),
+      days: Value(days),
+      isActive: Value(isActive),
+      startDate: Value(startDate),
+      startDayIndex: Value(startDayIndex),
+      mode: Value(mode),
+    );
+  }
+
+  factory CycleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CycleRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $CyclesTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      name: serializer.fromJson<String>(json['name']),
+      days: serializer.fromJson<String>(json['days']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      startDate: serializer.fromJson<DateTime>(json['startDate']),
+      startDayIndex: serializer.fromJson<int>(json['startDayIndex']),
+      mode: serializer.fromJson<String>(json['mode']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $CyclesTable.$convertersyncState.toJson(syncState),
+      ),
+      'name': serializer.toJson<String>(name),
+      'days': serializer.toJson<String>(days),
+      'isActive': serializer.toJson<bool>(isActive),
+      'startDate': serializer.toJson<DateTime>(startDate),
+      'startDayIndex': serializer.toJson<int>(startDayIndex),
+      'mode': serializer.toJson<String>(mode),
+    };
+  }
+
+  CycleRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    String? name,
+    String? days,
+    bool? isActive,
+    DateTime? startDate,
+    int? startDayIndex,
+    String? mode,
+  }) => CycleRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    name: name ?? this.name,
+    days: days ?? this.days,
+    isActive: isActive ?? this.isActive,
+    startDate: startDate ?? this.startDate,
+    startDayIndex: startDayIndex ?? this.startDayIndex,
+    mode: mode ?? this.mode,
+  );
+  CycleRow copyWithCompanion(CyclesCompanion data) {
+    return CycleRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      name: data.name.present ? data.name.value : this.name,
+      days: data.days.present ? data.days.value : this.days,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      startDayIndex: data.startDayIndex.present
+          ? data.startDayIndex.value
+          : this.startDayIndex,
+      mode: data.mode.present ? data.mode.value : this.mode,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('name: $name, ')
+          ..write('days: $days, ')
+          ..write('isActive: $isActive, ')
+          ..write('startDate: $startDate, ')
+          ..write('startDayIndex: $startDayIndex, ')
+          ..write('mode: $mode')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    name,
+    days,
+    isActive,
+    startDate,
+    startDayIndex,
+    mode,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CycleRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.name == this.name &&
+          other.days == this.days &&
+          other.isActive == this.isActive &&
+          other.startDate == this.startDate &&
+          other.startDayIndex == this.startDayIndex &&
+          other.mode == this.mode);
+}
+
+class CyclesCompanion extends UpdateCompanion<CycleRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String> name;
+  final Value<String> days;
+  final Value<bool> isActive;
+  final Value<DateTime> startDate;
+  final Value<int> startDayIndex;
+  final Value<String> mode;
+  final Value<int> rowid;
+  const CyclesCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.name = const Value.absent(),
+    this.days = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.startDayIndex = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CyclesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required String name,
+    required String days,
+    required bool isActive,
+    required DateTime startDate,
+    required int startDayIndex,
+    this.mode = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       name = Value(name),
+       days = Value(days),
+       isActive = Value(isActive),
+       startDate = Value(startDate),
+       startDayIndex = Value(startDayIndex);
+  static Insertable<CycleRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? name,
+    Expression<String>? days,
+    Expression<bool>? isActive,
+    Expression<DateTime>? startDate,
+    Expression<int>? startDayIndex,
+    Expression<String>? mode,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (name != null) 'name': name,
+      if (days != null) 'days': days,
+      if (isActive != null) 'is_active': isActive,
+      if (startDate != null) 'start_date': startDate,
+      if (startDayIndex != null) 'start_day_index': startDayIndex,
+      if (mode != null) 'mode': mode,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CyclesCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String>? name,
+    Value<String>? days,
+    Value<bool>? isActive,
+    Value<DateTime>? startDate,
+    Value<int>? startDayIndex,
+    Value<String>? mode,
+    Value<int>? rowid,
+  }) {
+    return CyclesCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      name: name ?? this.name,
+      days: days ?? this.days,
+      isActive: isActive ?? this.isActive,
+      startDate: startDate ?? this.startDate,
+      startDayIndex: startDayIndex ?? this.startDayIndex,
+      mode: mode ?? this.mode,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $CyclesTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (days.present) {
+      map['days'] = Variable<String>(days.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (startDayIndex.present) {
+      map['start_day_index'] = Variable<int>(startDayIndex.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CyclesCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('name: $name, ')
+          ..write('days: $days, ')
+          ..write('isActive: $isActive, ')
+          ..write('startDate: $startDate, ')
+          ..write('startDayIndex: $startDayIndex, ')
+          ..write('mode: $mode, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ScheduleDaysTable extends ScheduleDays
+    with TableInfo<$ScheduleDaysTable, ScheduleDayRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScheduleDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($ScheduleDaysTable.$convertersyncState);
+  static const VerificationMeta _cycleIdMeta = const VerificationMeta(
+    'cycleId',
+  );
+  @override
+  late final GeneratedColumn<String> cycleId = GeneratedColumn<String>(
+    'cycle_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayIdMeta = const VerificationMeta('dayId');
+  @override
+  late final GeneratedColumn<String> dayId = GeneratedColumn<String>(
+    'day_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayIndexMeta = const VerificationMeta(
+    'dayIndex',
+  );
+  @override
+  late final GeneratedColumn<int> dayIndex = GeneratedColumn<int>(
+    'day_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workoutIdMeta = const VerificationMeta(
+    'workoutId',
+  );
+  @override
+  late final GeneratedColumn<String> workoutId = GeneratedColumn<String>(
+    'workout_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linkedDateMeta = const VerificationMeta(
+    'linkedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> linkedDate = GeneratedColumn<DateTime>(
+    'linked_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    cycleId,
+    date,
+    dayId,
+    dayIndex,
+    status,
+    workoutId,
+    linkedDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'schedule_days';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScheduleDayRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('cycle_id')) {
+      context.handle(
+        _cycleIdMeta,
+        cycleId.isAcceptableOrUnknown(data['cycle_id']!, _cycleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cycleIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('day_id')) {
+      context.handle(
+        _dayIdMeta,
+        dayId.isAcceptableOrUnknown(data['day_id']!, _dayIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayIdMeta);
+    }
+    if (data.containsKey('day_index')) {
+      context.handle(
+        _dayIndexMeta,
+        dayIndex.isAcceptableOrUnknown(data['day_index']!, _dayIndexMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayIndexMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('workout_id')) {
+      context.handle(
+        _workoutIdMeta,
+        workoutId.isAcceptableOrUnknown(data['workout_id']!, _workoutIdMeta),
+      );
+    }
+    if (data.containsKey('linked_date')) {
+      context.handle(
+        _linkedDateMeta,
+        linkedDate.isAcceptableOrUnknown(data['linked_date']!, _linkedDateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {cycleId, date},
+  ];
+  @override
+  ScheduleDayRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScheduleDayRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $ScheduleDaysTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      cycleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cycle_id'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      dayId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day_id'],
+      )!,
+      dayIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day_index'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      workoutId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workout_id'],
+      ),
+      linkedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}linked_date'],
+      ),
+    );
+  }
+
+  @override
+  $ScheduleDaysTable createAlias(String alias) {
+    return $ScheduleDaysTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class ScheduleDayRow extends DataClass implements Insertable<ScheduleDayRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String cycleId;
+  final DateTime date;
+  final String dayId;
+  final int dayIndex;
+  final String status;
+  final String? workoutId;
+  final DateTime? linkedDate;
+  const ScheduleDayRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    required this.cycleId,
+    required this.date,
+    required this.dayId,
+    required this.dayIndex,
+    required this.status,
+    this.workoutId,
+    this.linkedDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $ScheduleDaysTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    map['cycle_id'] = Variable<String>(cycleId);
+    map['date'] = Variable<DateTime>(date);
+    map['day_id'] = Variable<String>(dayId);
+    map['day_index'] = Variable<int>(dayIndex);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || workoutId != null) {
+      map['workout_id'] = Variable<String>(workoutId);
+    }
+    if (!nullToAbsent || linkedDate != null) {
+      map['linked_date'] = Variable<DateTime>(linkedDate);
+    }
+    return map;
+  }
+
+  ScheduleDaysCompanion toCompanion(bool nullToAbsent) {
+    return ScheduleDaysCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      cycleId: Value(cycleId),
+      date: Value(date),
+      dayId: Value(dayId),
+      dayIndex: Value(dayIndex),
+      status: Value(status),
+      workoutId: workoutId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(workoutId),
+      linkedDate: linkedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedDate),
+    );
+  }
+
+  factory ScheduleDayRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScheduleDayRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $ScheduleDaysTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      cycleId: serializer.fromJson<String>(json['cycleId']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      dayId: serializer.fromJson<String>(json['dayId']),
+      dayIndex: serializer.fromJson<int>(json['dayIndex']),
+      status: serializer.fromJson<String>(json['status']),
+      workoutId: serializer.fromJson<String?>(json['workoutId']),
+      linkedDate: serializer.fromJson<DateTime?>(json['linkedDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $ScheduleDaysTable.$convertersyncState.toJson(syncState),
+      ),
+      'cycleId': serializer.toJson<String>(cycleId),
+      'date': serializer.toJson<DateTime>(date),
+      'dayId': serializer.toJson<String>(dayId),
+      'dayIndex': serializer.toJson<int>(dayIndex),
+      'status': serializer.toJson<String>(status),
+      'workoutId': serializer.toJson<String?>(workoutId),
+      'linkedDate': serializer.toJson<DateTime?>(linkedDate),
+    };
+  }
+
+  ScheduleDayRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    String? cycleId,
+    DateTime? date,
+    String? dayId,
+    int? dayIndex,
+    String? status,
+    Value<String?> workoutId = const Value.absent(),
+    Value<DateTime?> linkedDate = const Value.absent(),
+  }) => ScheduleDayRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    cycleId: cycleId ?? this.cycleId,
+    date: date ?? this.date,
+    dayId: dayId ?? this.dayId,
+    dayIndex: dayIndex ?? this.dayIndex,
+    status: status ?? this.status,
+    workoutId: workoutId.present ? workoutId.value : this.workoutId,
+    linkedDate: linkedDate.present ? linkedDate.value : this.linkedDate,
+  );
+  ScheduleDayRow copyWithCompanion(ScheduleDaysCompanion data) {
+    return ScheduleDayRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      cycleId: data.cycleId.present ? data.cycleId.value : this.cycleId,
+      date: data.date.present ? data.date.value : this.date,
+      dayId: data.dayId.present ? data.dayId.value : this.dayId,
+      dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
+      status: data.status.present ? data.status.value : this.status,
+      workoutId: data.workoutId.present ? data.workoutId.value : this.workoutId,
+      linkedDate: data.linkedDate.present
+          ? data.linkedDate.value
+          : this.linkedDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleDayRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('date: $date, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('status: $status, ')
+          ..write('workoutId: $workoutId, ')
+          ..write('linkedDate: $linkedDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    cycleId,
+    date,
+    dayId,
+    dayIndex,
+    status,
+    workoutId,
+    linkedDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScheduleDayRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.cycleId == this.cycleId &&
+          other.date == this.date &&
+          other.dayId == this.dayId &&
+          other.dayIndex == this.dayIndex &&
+          other.status == this.status &&
+          other.workoutId == this.workoutId &&
+          other.linkedDate == this.linkedDate);
+}
+
+class ScheduleDaysCompanion extends UpdateCompanion<ScheduleDayRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String> cycleId;
+  final Value<DateTime> date;
+  final Value<String> dayId;
+  final Value<int> dayIndex;
+  final Value<String> status;
+  final Value<String?> workoutId;
+  final Value<DateTime?> linkedDate;
+  final Value<int> rowid;
+  const ScheduleDaysCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.cycleId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.dayId = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    this.status = const Value.absent(),
+    this.workoutId = const Value.absent(),
+    this.linkedDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ScheduleDaysCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required String cycleId,
+    required DateTime date,
+    required String dayId,
+    required int dayIndex,
+    required String status,
+    this.workoutId = const Value.absent(),
+    this.linkedDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       cycleId = Value(cycleId),
+       date = Value(date),
+       dayId = Value(dayId),
+       dayIndex = Value(dayIndex),
+       status = Value(status);
+  static Insertable<ScheduleDayRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? cycleId,
+    Expression<DateTime>? date,
+    Expression<String>? dayId,
+    Expression<int>? dayIndex,
+    Expression<String>? status,
+    Expression<String>? workoutId,
+    Expression<DateTime>? linkedDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (cycleId != null) 'cycle_id': cycleId,
+      if (date != null) 'date': date,
+      if (dayId != null) 'day_id': dayId,
+      if (dayIndex != null) 'day_index': dayIndex,
+      if (status != null) 'status': status,
+      if (workoutId != null) 'workout_id': workoutId,
+      if (linkedDate != null) 'linked_date': linkedDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ScheduleDaysCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String>? cycleId,
+    Value<DateTime>? date,
+    Value<String>? dayId,
+    Value<int>? dayIndex,
+    Value<String>? status,
+    Value<String?>? workoutId,
+    Value<DateTime?>? linkedDate,
+    Value<int>? rowid,
+  }) {
+    return ScheduleDaysCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      cycleId: cycleId ?? this.cycleId,
+      date: date ?? this.date,
+      dayId: dayId ?? this.dayId,
+      dayIndex: dayIndex ?? this.dayIndex,
+      status: status ?? this.status,
+      workoutId: workoutId ?? this.workoutId,
+      linkedDate: linkedDate ?? this.linkedDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $ScheduleDaysTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (cycleId.present) {
+      map['cycle_id'] = Variable<String>(cycleId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (dayId.present) {
+      map['day_id'] = Variable<String>(dayId.value);
+    }
+    if (dayIndex.present) {
+      map['day_index'] = Variable<int>(dayIndex.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (workoutId.present) {
+      map['workout_id'] = Variable<String>(workoutId.value);
+    }
+    if (linkedDate.present) {
+      map['linked_date'] = Variable<DateTime>(linkedDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleDaysCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('date: $date, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('status: $status, ')
+          ..write('workoutId: $workoutId, ')
+          ..write('linkedDate: $linkedDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WorkoutSessionsTable extends WorkoutSessions
+    with TableInfo<$WorkoutSessionsTable, SessionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutSessionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($WorkoutSessionsTable.$convertersyncState);
+  static const VerificationMeta _templateIdMeta = const VerificationMeta(
+    'templateId',
+  );
+  @override
+  late final GeneratedColumn<String> templateId = GeneratedColumn<String>(
+    'template_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exercisesMeta = const VerificationMeta(
+    'exercises',
+  );
+  @override
+  late final GeneratedColumn<String> exercises = GeneratedColumn<String>(
+    'exercises',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cycleIdMeta = const VerificationMeta(
+    'cycleId',
+  );
+  @override
+  late final GeneratedColumn<String> cycleId = GeneratedColumn<String>(
+    'cycle_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dayIdMeta = const VerificationMeta('dayId');
+  @override
+  late final GeneratedColumn<String> dayId = GeneratedColumn<String>(
+    'day_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dayIndexMeta = const VerificationMeta(
+    'dayIndex',
+  );
+  @override
+  late final GeneratedColumn<int> dayIndex = GeneratedColumn<int>(
+    'day_index',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta(
+    'endedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
+    'ended_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _restMeta = const VerificationMeta('rest');
+  @override
+  late final GeneratedColumn<String> rest = GeneratedColumn<String>(
+    'rest',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    templateId,
+    name,
+    exercises,
+    cycleId,
+    dayId,
+    dayIndex,
+    date,
+    startedAt,
+    endedAt,
+    rest,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_sessions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SessionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('template_id')) {
+      context.handle(
+        _templateIdMeta,
+        templateId.isAcceptableOrUnknown(data['template_id']!, _templateIdMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('exercises')) {
+      context.handle(
+        _exercisesMeta,
+        exercises.isAcceptableOrUnknown(data['exercises']!, _exercisesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exercisesMeta);
+    }
+    if (data.containsKey('cycle_id')) {
+      context.handle(
+        _cycleIdMeta,
+        cycleId.isAcceptableOrUnknown(data['cycle_id']!, _cycleIdMeta),
+      );
+    }
+    if (data.containsKey('day_id')) {
+      context.handle(
+        _dayIdMeta,
+        dayId.isAcceptableOrUnknown(data['day_id']!, _dayIdMeta),
+      );
+    }
+    if (data.containsKey('day_index')) {
+      context.handle(
+        _dayIndexMeta,
+        dayIndex.isAcceptableOrUnknown(data['day_index']!, _dayIndexMeta),
+      );
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('ended_at')) {
+      context.handle(
+        _endedAtMeta,
+        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
+      );
+    }
+    if (data.containsKey('rest')) {
+      context.handle(
+        _restMeta,
+        rest.isAcceptableOrUnknown(data['rest']!, _restMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SessionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SessionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $WorkoutSessionsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      templateId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}template_id'],
+      ),
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      exercises: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercises'],
+      )!,
+      cycleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cycle_id'],
+      ),
+      dayId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day_id'],
+      ),
+      dayIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day_index'],
+      ),
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      endedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at'],
+      ),
+      rest: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rest'],
+      ),
+    );
+  }
+
+  @override
+  $WorkoutSessionsTable createAlias(String alias) {
+    return $WorkoutSessionsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class SessionRow extends DataClass implements Insertable<SessionRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String? templateId;
+  final String name;
+  final String exercises;
+  final String? cycleId;
+  final String? dayId;
+  final int? dayIndex;
+  final DateTime date;
+  final DateTime startedAt;
+  final DateTime? endedAt;
+  final String? rest;
+  const SessionRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    this.templateId,
+    required this.name,
+    required this.exercises,
+    this.cycleId,
+    this.dayId,
+    this.dayIndex,
+    required this.date,
+    required this.startedAt,
+    this.endedAt,
+    this.rest,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $WorkoutSessionsTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    if (!nullToAbsent || templateId != null) {
+      map['template_id'] = Variable<String>(templateId);
+    }
+    map['name'] = Variable<String>(name);
+    map['exercises'] = Variable<String>(exercises);
+    if (!nullToAbsent || cycleId != null) {
+      map['cycle_id'] = Variable<String>(cycleId);
+    }
+    if (!nullToAbsent || dayId != null) {
+      map['day_id'] = Variable<String>(dayId);
+    }
+    if (!nullToAbsent || dayIndex != null) {
+      map['day_index'] = Variable<int>(dayIndex);
+    }
+    map['date'] = Variable<DateTime>(date);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || endedAt != null) {
+      map['ended_at'] = Variable<DateTime>(endedAt);
+    }
+    if (!nullToAbsent || rest != null) {
+      map['rest'] = Variable<String>(rest);
+    }
+    return map;
+  }
+
+  WorkoutSessionsCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutSessionsCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      templateId: templateId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(templateId),
+      name: Value(name),
+      exercises: Value(exercises),
+      cycleId: cycleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cycleId),
+      dayId: dayId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dayId),
+      dayIndex: dayIndex == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dayIndex),
+      date: Value(date),
+      startedAt: Value(startedAt),
+      endedAt: endedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAt),
+      rest: rest == null && nullToAbsent ? const Value.absent() : Value(rest),
+    );
+  }
+
+  factory SessionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SessionRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $WorkoutSessionsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      templateId: serializer.fromJson<String?>(json['templateId']),
+      name: serializer.fromJson<String>(json['name']),
+      exercises: serializer.fromJson<String>(json['exercises']),
+      cycleId: serializer.fromJson<String?>(json['cycleId']),
+      dayId: serializer.fromJson<String?>(json['dayId']),
+      dayIndex: serializer.fromJson<int?>(json['dayIndex']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      rest: serializer.fromJson<String?>(json['rest']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $WorkoutSessionsTable.$convertersyncState.toJson(syncState),
+      ),
+      'templateId': serializer.toJson<String?>(templateId),
+      'name': serializer.toJson<String>(name),
+      'exercises': serializer.toJson<String>(exercises),
+      'cycleId': serializer.toJson<String?>(cycleId),
+      'dayId': serializer.toJson<String?>(dayId),
+      'dayIndex': serializer.toJson<int?>(dayIndex),
+      'date': serializer.toJson<DateTime>(date),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'rest': serializer.toJson<String?>(rest),
+    };
+  }
+
+  SessionRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    Value<String?> templateId = const Value.absent(),
+    String? name,
+    String? exercises,
+    Value<String?> cycleId = const Value.absent(),
+    Value<String?> dayId = const Value.absent(),
+    Value<int?> dayIndex = const Value.absent(),
+    DateTime? date,
+    DateTime? startedAt,
+    Value<DateTime?> endedAt = const Value.absent(),
+    Value<String?> rest = const Value.absent(),
+  }) => SessionRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    templateId: templateId.present ? templateId.value : this.templateId,
+    name: name ?? this.name,
+    exercises: exercises ?? this.exercises,
+    cycleId: cycleId.present ? cycleId.value : this.cycleId,
+    dayId: dayId.present ? dayId.value : this.dayId,
+    dayIndex: dayIndex.present ? dayIndex.value : this.dayIndex,
+    date: date ?? this.date,
+    startedAt: startedAt ?? this.startedAt,
+    endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    rest: rest.present ? rest.value : this.rest,
+  );
+  SessionRow copyWithCompanion(WorkoutSessionsCompanion data) {
+    return SessionRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      templateId: data.templateId.present
+          ? data.templateId.value
+          : this.templateId,
+      name: data.name.present ? data.name.value : this.name,
+      exercises: data.exercises.present ? data.exercises.value : this.exercises,
+      cycleId: data.cycleId.present ? data.cycleId.value : this.cycleId,
+      dayId: data.dayId.present ? data.dayId.value : this.dayId,
+      dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
+      date: data.date.present ? data.date.value : this.date,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      rest: data.rest.present ? data.rest.value : this.rest,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('templateId: $templateId, ')
+          ..write('name: $name, ')
+          ..write('exercises: $exercises, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('date: $date, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('rest: $rest')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    templateId,
+    name,
+    exercises,
+    cycleId,
+    dayId,
+    dayIndex,
+    date,
+    startedAt,
+    endedAt,
+    rest,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SessionRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.templateId == this.templateId &&
+          other.name == this.name &&
+          other.exercises == this.exercises &&
+          other.cycleId == this.cycleId &&
+          other.dayId == this.dayId &&
+          other.dayIndex == this.dayIndex &&
+          other.date == this.date &&
+          other.startedAt == this.startedAt &&
+          other.endedAt == this.endedAt &&
+          other.rest == this.rest);
+}
+
+class WorkoutSessionsCompanion extends UpdateCompanion<SessionRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String?> templateId;
+  final Value<String> name;
+  final Value<String> exercises;
+  final Value<String?> cycleId;
+  final Value<String?> dayId;
+  final Value<int?> dayIndex;
+  final Value<DateTime> date;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> endedAt;
+  final Value<String?> rest;
+  final Value<int> rowid;
+  const WorkoutSessionsCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.templateId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.exercises = const Value.absent(),
+    this.cycleId = const Value.absent(),
+    this.dayId = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    this.date = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.rest = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WorkoutSessionsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.templateId = const Value.absent(),
+    required String name,
+    required String exercises,
+    this.cycleId = const Value.absent(),
+    this.dayId = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    required DateTime date,
+    required DateTime startedAt,
+    this.endedAt = const Value.absent(),
+    this.rest = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       name = Value(name),
+       exercises = Value(exercises),
+       date = Value(date),
+       startedAt = Value(startedAt);
+  static Insertable<SessionRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? templateId,
+    Expression<String>? name,
+    Expression<String>? exercises,
+    Expression<String>? cycleId,
+    Expression<String>? dayId,
+    Expression<int>? dayIndex,
+    Expression<DateTime>? date,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? endedAt,
+    Expression<String>? rest,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (templateId != null) 'template_id': templateId,
+      if (name != null) 'name': name,
+      if (exercises != null) 'exercises': exercises,
+      if (cycleId != null) 'cycle_id': cycleId,
+      if (dayId != null) 'day_id': dayId,
+      if (dayIndex != null) 'day_index': dayIndex,
+      if (date != null) 'date': date,
+      if (startedAt != null) 'started_at': startedAt,
+      if (endedAt != null) 'ended_at': endedAt,
+      if (rest != null) 'rest': rest,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WorkoutSessionsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String?>? templateId,
+    Value<String>? name,
+    Value<String>? exercises,
+    Value<String?>? cycleId,
+    Value<String?>? dayId,
+    Value<int?>? dayIndex,
+    Value<DateTime>? date,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? endedAt,
+    Value<String?>? rest,
+    Value<int>? rowid,
+  }) {
+    return WorkoutSessionsCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      templateId: templateId ?? this.templateId,
+      name: name ?? this.name,
+      exercises: exercises ?? this.exercises,
+      cycleId: cycleId ?? this.cycleId,
+      dayId: dayId ?? this.dayId,
+      dayIndex: dayIndex ?? this.dayIndex,
+      date: date ?? this.date,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      rest: rest ?? this.rest,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $WorkoutSessionsTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (templateId.present) {
+      map['template_id'] = Variable<String>(templateId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (exercises.present) {
+      map['exercises'] = Variable<String>(exercises.value);
+    }
+    if (cycleId.present) {
+      map['cycle_id'] = Variable<String>(cycleId.value);
+    }
+    if (dayId.present) {
+      map['day_id'] = Variable<String>(dayId.value);
+    }
+    if (dayIndex.present) {
+      map['day_index'] = Variable<int>(dayIndex.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (endedAt.present) {
+      map['ended_at'] = Variable<DateTime>(endedAt.value);
+    }
+    if (rest.present) {
+      map['rest'] = Variable<String>(rest.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutSessionsCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('templateId: $templateId, ')
+          ..write('name: $name, ')
+          ..write('exercises: $exercises, ')
+          ..write('cycleId: $cycleId, ')
+          ..write('dayId: $dayId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('date: $date, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('rest: $rest, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SessionSetsTable extends SessionSets
+    with TableInfo<$SessionSetsTable, SessionSetRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SessionSetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<String> rowId = GeneratedColumn<String>(
+    'row_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _setNoMeta = const VerificationMeta('setNo');
+  @override
+  late final GeneratedColumn<int> setNo = GeneratedColumn<int>(
+    'set_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kgMeta = const VerificationMeta('kg');
+  @override
+  late final GeneratedColumn<double> kg = GeneratedColumn<double>(
+    'kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _repsMeta = const VerificationMeta('reps');
+  @override
+  late final GeneratedColumn<int> reps = GeneratedColumn<int>(
+    'reps',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _secondsMeta = const VerificationMeta(
+    'seconds',
+  );
+  @override
+  late final GeneratedColumn<int> seconds = GeneratedColumn<int>(
+    'seconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isPrMeta = const VerificationMeta('isPr');
+  @override
+  late final GeneratedColumn<bool> isPr = GeneratedColumn<bool>(
+    'is_pr',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_pr" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _loggedAtMeta = const VerificationMeta(
+    'loggedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> loggedAt = GeneratedColumn<DateTime>(
+    'logged_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    rowId,
+    exerciseId,
+    setNo,
+    kg,
+    reps,
+    seconds,
+    isPr,
+    loggedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'session_sets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SessionSetRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sessionIdMeta);
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rowIdMeta);
+    }
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciseIdMeta);
+    }
+    if (data.containsKey('set_no')) {
+      context.handle(
+        _setNoMeta,
+        setNo.isAcceptableOrUnknown(data['set_no']!, _setNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_setNoMeta);
+    }
+    if (data.containsKey('kg')) {
+      context.handle(_kgMeta, kg.isAcceptableOrUnknown(data['kg']!, _kgMeta));
+    } else if (isInserting) {
+      context.missing(_kgMeta);
+    }
+    if (data.containsKey('reps')) {
+      context.handle(
+        _repsMeta,
+        reps.isAcceptableOrUnknown(data['reps']!, _repsMeta),
+      );
+    }
+    if (data.containsKey('seconds')) {
+      context.handle(
+        _secondsMeta,
+        seconds.isAcceptableOrUnknown(data['seconds']!, _secondsMeta),
+      );
+    }
+    if (data.containsKey('is_pr')) {
+      context.handle(
+        _isPrMeta,
+        isPr.isAcceptableOrUnknown(data['is_pr']!, _isPrMeta),
+      );
+    }
+    if (data.containsKey('logged_at')) {
+      context.handle(
+        _loggedAtMeta,
+        loggedAt.isAcceptableOrUnknown(data['logged_at']!, _loggedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_loggedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SessionSetRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SessionSetRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}row_id'],
+      )!,
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      setNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}set_no'],
+      )!,
+      kg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}kg'],
+      )!,
+      reps: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reps'],
+      ),
+      seconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seconds'],
+      ),
+      isPr: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_pr'],
+      )!,
+      loggedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}logged_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SessionSetsTable createAlias(String alias) {
+    return $SessionSetsTable(attachedDatabase, alias);
+  }
+}
+
+class SessionSetRow extends DataClass implements Insertable<SessionSetRow> {
+  final String id;
+  final String sessionId;
+  final String rowId;
+  final String exerciseId;
+  final int setNo;
+  final double kg;
+  final int? reps;
+  final int? seconds;
+  final bool isPr;
+  final DateTime loggedAt;
+  final DateTime updatedAt;
+  const SessionSetRow({
+    required this.id,
+    required this.sessionId,
+    required this.rowId,
+    required this.exerciseId,
+    required this.setNo,
+    required this.kg,
+    this.reps,
+    this.seconds,
+    required this.isPr,
+    required this.loggedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['session_id'] = Variable<String>(sessionId);
+    map['row_id'] = Variable<String>(rowId);
+    map['exercise_id'] = Variable<String>(exerciseId);
+    map['set_no'] = Variable<int>(setNo);
+    map['kg'] = Variable<double>(kg);
+    if (!nullToAbsent || reps != null) {
+      map['reps'] = Variable<int>(reps);
+    }
+    if (!nullToAbsent || seconds != null) {
+      map['seconds'] = Variable<int>(seconds);
+    }
+    map['is_pr'] = Variable<bool>(isPr);
+    map['logged_at'] = Variable<DateTime>(loggedAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SessionSetsCompanion toCompanion(bool nullToAbsent) {
+    return SessionSetsCompanion(
+      id: Value(id),
+      sessionId: Value(sessionId),
+      rowId: Value(rowId),
+      exerciseId: Value(exerciseId),
+      setNo: Value(setNo),
+      kg: Value(kg),
+      reps: reps == null && nullToAbsent ? const Value.absent() : Value(reps),
+      seconds: seconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(seconds),
+      isPr: Value(isPr),
+      loggedAt: Value(loggedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SessionSetRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SessionSetRow(
+      id: serializer.fromJson<String>(json['id']),
+      sessionId: serializer.fromJson<String>(json['sessionId']),
+      rowId: serializer.fromJson<String>(json['rowId']),
+      exerciseId: serializer.fromJson<String>(json['exerciseId']),
+      setNo: serializer.fromJson<int>(json['setNo']),
+      kg: serializer.fromJson<double>(json['kg']),
+      reps: serializer.fromJson<int?>(json['reps']),
+      seconds: serializer.fromJson<int?>(json['seconds']),
+      isPr: serializer.fromJson<bool>(json['isPr']),
+      loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'sessionId': serializer.toJson<String>(sessionId),
+      'rowId': serializer.toJson<String>(rowId),
+      'exerciseId': serializer.toJson<String>(exerciseId),
+      'setNo': serializer.toJson<int>(setNo),
+      'kg': serializer.toJson<double>(kg),
+      'reps': serializer.toJson<int?>(reps),
+      'seconds': serializer.toJson<int?>(seconds),
+      'isPr': serializer.toJson<bool>(isPr),
+      'loggedAt': serializer.toJson<DateTime>(loggedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SessionSetRow copyWith({
+    String? id,
+    String? sessionId,
+    String? rowId,
+    String? exerciseId,
+    int? setNo,
+    double? kg,
+    Value<int?> reps = const Value.absent(),
+    Value<int?> seconds = const Value.absent(),
+    bool? isPr,
+    DateTime? loggedAt,
+    DateTime? updatedAt,
+  }) => SessionSetRow(
+    id: id ?? this.id,
+    sessionId: sessionId ?? this.sessionId,
+    rowId: rowId ?? this.rowId,
+    exerciseId: exerciseId ?? this.exerciseId,
+    setNo: setNo ?? this.setNo,
+    kg: kg ?? this.kg,
+    reps: reps.present ? reps.value : this.reps,
+    seconds: seconds.present ? seconds.value : this.seconds,
+    isPr: isPr ?? this.isPr,
+    loggedAt: loggedAt ?? this.loggedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SessionSetRow copyWithCompanion(SessionSetsCompanion data) {
+    return SessionSetRow(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      setNo: data.setNo.present ? data.setNo.value : this.setNo,
+      kg: data.kg.present ? data.kg.value : this.kg,
+      reps: data.reps.present ? data.reps.value : this.reps,
+      seconds: data.seconds.present ? data.seconds.value : this.seconds,
+      isPr: data.isPr.present ? data.isPr.value : this.isPr,
+      loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionSetRow(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('rowId: $rowId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('setNo: $setNo, ')
+          ..write('kg: $kg, ')
+          ..write('reps: $reps, ')
+          ..write('seconds: $seconds, ')
+          ..write('isPr: $isPr, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    rowId,
+    exerciseId,
+    setNo,
+    kg,
+    reps,
+    seconds,
+    isPr,
+    loggedAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SessionSetRow &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.rowId == this.rowId &&
+          other.exerciseId == this.exerciseId &&
+          other.setNo == this.setNo &&
+          other.kg == this.kg &&
+          other.reps == this.reps &&
+          other.seconds == this.seconds &&
+          other.isPr == this.isPr &&
+          other.loggedAt == this.loggedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SessionSetsCompanion extends UpdateCompanion<SessionSetRow> {
+  final Value<String> id;
+  final Value<String> sessionId;
+  final Value<String> rowId;
+  final Value<String> exerciseId;
+  final Value<int> setNo;
+  final Value<double> kg;
+  final Value<int?> reps;
+  final Value<int?> seconds;
+  final Value<bool> isPr;
+  final Value<DateTime> loggedAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SessionSetsCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.exerciseId = const Value.absent(),
+    this.setNo = const Value.absent(),
+    this.kg = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.seconds = const Value.absent(),
+    this.isPr = const Value.absent(),
+    this.loggedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SessionSetsCompanion.insert({
+    required String id,
+    required String sessionId,
+    required String rowId,
+    required String exerciseId,
+    required int setNo,
+    required double kg,
+    this.reps = const Value.absent(),
+    this.seconds = const Value.absent(),
+    this.isPr = const Value.absent(),
+    required DateTime loggedAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       sessionId = Value(sessionId),
+       rowId = Value(rowId),
+       exerciseId = Value(exerciseId),
+       setNo = Value(setNo),
+       kg = Value(kg),
+       loggedAt = Value(loggedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SessionSetRow> custom({
+    Expression<String>? id,
+    Expression<String>? sessionId,
+    Expression<String>? rowId,
+    Expression<String>? exerciseId,
+    Expression<int>? setNo,
+    Expression<double>? kg,
+    Expression<int>? reps,
+    Expression<int>? seconds,
+    Expression<bool>? isPr,
+    Expression<DateTime>? loggedAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (rowId != null) 'row_id': rowId,
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (setNo != null) 'set_no': setNo,
+      if (kg != null) 'kg': kg,
+      if (reps != null) 'reps': reps,
+      if (seconds != null) 'seconds': seconds,
+      if (isPr != null) 'is_pr': isPr,
+      if (loggedAt != null) 'logged_at': loggedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SessionSetsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? sessionId,
+    Value<String>? rowId,
+    Value<String>? exerciseId,
+    Value<int>? setNo,
+    Value<double>? kg,
+    Value<int?>? reps,
+    Value<int?>? seconds,
+    Value<bool>? isPr,
+    Value<DateTime>? loggedAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SessionSetsCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      rowId: rowId ?? this.rowId,
+      exerciseId: exerciseId ?? this.exerciseId,
+      setNo: setNo ?? this.setNo,
+      kg: kg ?? this.kg,
+      reps: reps ?? this.reps,
+      seconds: seconds ?? this.seconds,
+      isPr: isPr ?? this.isPr,
+      loggedAt: loggedAt ?? this.loggedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<String>(rowId.value);
+    }
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (setNo.present) {
+      map['set_no'] = Variable<int>(setNo.value);
+    }
+    if (kg.present) {
+      map['kg'] = Variable<double>(kg.value);
+    }
+    if (reps.present) {
+      map['reps'] = Variable<int>(reps.value);
+    }
+    if (seconds.present) {
+      map['seconds'] = Variable<int>(seconds.value);
+    }
+    if (isPr.present) {
+      map['is_pr'] = Variable<bool>(isPr.value);
+    }
+    if (loggedAt.present) {
+      map['logged_at'] = Variable<DateTime>(loggedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SessionSetsCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('rowId: $rowId, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('setNo: $setNo, ')
+          ..write('kg: $kg, ')
+          ..write('reps: $reps, ')
+          ..write('seconds: $seconds, ')
+          ..write('isPr: $isPr, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2626,9 +5760,30 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $OutboxTable outbox = $OutboxTable(this);
   late final $UserProfilesTable userProfiles = $UserProfilesTable(this);
   late final $BodySnapshotsTable bodySnapshots = $BodySnapshotsTable(this);
+  late final $WorkoutTemplatesTable workoutTemplates = $WorkoutTemplatesTable(
+    this,
+  );
+  late final $CyclesTable cycles = $CyclesTable(this);
+  late final $ScheduleDaysTable scheduleDays = $ScheduleDaysTable(this);
+  late final $WorkoutSessionsTable workoutSessions = $WorkoutSessionsTable(
+    this,
+  );
+  late final $SessionSetsTable sessionSets = $SessionSetsTable(this);
   late final Index exerciseMusclesMuscle = Index(
     'exercise_muscles_muscle',
     'CREATE INDEX exercise_muscles_muscle ON exercise_muscles (muscle)',
+  );
+  late final Index scheduleDaysDate = Index(
+    'schedule_days_date',
+    'CREATE INDEX schedule_days_date ON schedule_days (date)',
+  );
+  late final Index sessionSetsSession = Index(
+    'session_sets_session',
+    'CREATE INDEX session_sets_session ON session_sets (session_id)',
+  );
+  late final Index sessionSetsExercise = Index(
+    'session_sets_exercise',
+    'CREATE INDEX session_sets_exercise ON session_sets (exercise_id)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -2641,7 +5796,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     outbox,
     userProfiles,
     bodySnapshots,
+    workoutTemplates,
+    cycles,
+    scheduleDays,
+    workoutSessions,
+    sessionSets,
     exerciseMusclesMuscle,
+    scheduleDaysDate,
+    sessionSetsSession,
+    sessionSetsExercise,
   ];
   @override
   DriftDatabaseOptions get options =>
@@ -4252,6 +7415,1537 @@ typedef $$BodySnapshotsTableProcessedTableManager =
       BodySnapshot,
       PrefetchHooks Function()
     >;
+typedef $$WorkoutTemplatesTableCreateCompanionBuilder =
+    WorkoutTemplatesCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      required String name,
+      required String exercises,
+      Value<int> rowid,
+    });
+typedef $$WorkoutTemplatesTableUpdateCompanionBuilder =
+    WorkoutTemplatesCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String> name,
+      Value<String> exercises,
+      Value<int> rowid,
+    });
+
+class $$WorkoutTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $WorkoutTemplatesTable> {
+  $$WorkoutTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exercises => $composableBuilder(
+    column: $table.exercises,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WorkoutTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $WorkoutTemplatesTable> {
+  $$WorkoutTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exercises => $composableBuilder(
+    column: $table.exercises,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WorkoutTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WorkoutTemplatesTable> {
+  $$WorkoutTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get exercises =>
+      $composableBuilder(column: $table.exercises, builder: (column) => column);
+}
+
+class $$WorkoutTemplatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WorkoutTemplatesTable,
+          WorkoutTemplateRow,
+          $$WorkoutTemplatesTableFilterComposer,
+          $$WorkoutTemplatesTableOrderingComposer,
+          $$WorkoutTemplatesTableAnnotationComposer,
+          $$WorkoutTemplatesTableCreateCompanionBuilder,
+          $$WorkoutTemplatesTableUpdateCompanionBuilder,
+          (
+            WorkoutTemplateRow,
+            BaseReferences<
+              _$AppDatabase,
+              $WorkoutTemplatesTable,
+              WorkoutTemplateRow
+            >,
+          ),
+          WorkoutTemplateRow,
+          PrefetchHooks Function()
+        > {
+  $$WorkoutTemplatesTableTableManager(
+    _$AppDatabase db,
+    $WorkoutTemplatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WorkoutTemplatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WorkoutTemplatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WorkoutTemplatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> exercises = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WorkoutTemplatesCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                name: name,
+                exercises: exercises,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                required String name,
+                required String exercises,
+                Value<int> rowid = const Value.absent(),
+              }) => WorkoutTemplatesCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                name: name,
+                exercises: exercises,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WorkoutTemplatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WorkoutTemplatesTable,
+      WorkoutTemplateRow,
+      $$WorkoutTemplatesTableFilterComposer,
+      $$WorkoutTemplatesTableOrderingComposer,
+      $$WorkoutTemplatesTableAnnotationComposer,
+      $$WorkoutTemplatesTableCreateCompanionBuilder,
+      $$WorkoutTemplatesTableUpdateCompanionBuilder,
+      (
+        WorkoutTemplateRow,
+        BaseReferences<
+          _$AppDatabase,
+          $WorkoutTemplatesTable,
+          WorkoutTemplateRow
+        >,
+      ),
+      WorkoutTemplateRow,
+      PrefetchHooks Function()
+    >;
+typedef $$CyclesTableCreateCompanionBuilder =
+    CyclesCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      required String name,
+      required String days,
+      required bool isActive,
+      required DateTime startDate,
+      required int startDayIndex,
+      Value<String> mode,
+      Value<int> rowid,
+    });
+typedef $$CyclesTableUpdateCompanionBuilder =
+    CyclesCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String> name,
+      Value<String> days,
+      Value<bool> isActive,
+      Value<DateTime> startDate,
+      Value<int> startDayIndex,
+      Value<String> mode,
+      Value<int> rowid,
+    });
+
+class $$CyclesTableFilterComposer
+    extends Composer<_$AppDatabase, $CyclesTable> {
+  $$CyclesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get days => $composableBuilder(
+    column: $table.days,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startDayIndex => $composableBuilder(
+    column: $table.startDayIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CyclesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CyclesTable> {
+  $$CyclesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get days => $composableBuilder(
+    column: $table.days,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get startDayIndex => $composableBuilder(
+    column: $table.startDayIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mode => $composableBuilder(
+    column: $table.mode,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CyclesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CyclesTable> {
+  $$CyclesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get days =>
+      $composableBuilder(column: $table.days, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<int> get startDayIndex => $composableBuilder(
+    column: $table.startDayIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mode =>
+      $composableBuilder(column: $table.mode, builder: (column) => column);
+}
+
+class $$CyclesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CyclesTable,
+          CycleRow,
+          $$CyclesTableFilterComposer,
+          $$CyclesTableOrderingComposer,
+          $$CyclesTableAnnotationComposer,
+          $$CyclesTableCreateCompanionBuilder,
+          $$CyclesTableUpdateCompanionBuilder,
+          (CycleRow, BaseReferences<_$AppDatabase, $CyclesTable, CycleRow>),
+          CycleRow,
+          PrefetchHooks Function()
+        > {
+  $$CyclesTableTableManager(_$AppDatabase db, $CyclesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CyclesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CyclesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CyclesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> days = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> startDate = const Value.absent(),
+                Value<int> startDayIndex = const Value.absent(),
+                Value<String> mode = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CyclesCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                name: name,
+                days: days,
+                isActive: isActive,
+                startDate: startDate,
+                startDayIndex: startDayIndex,
+                mode: mode,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                required String name,
+                required String days,
+                required bool isActive,
+                required DateTime startDate,
+                required int startDayIndex,
+                Value<String> mode = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CyclesCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                name: name,
+                days: days,
+                isActive: isActive,
+                startDate: startDate,
+                startDayIndex: startDayIndex,
+                mode: mode,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CyclesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CyclesTable,
+      CycleRow,
+      $$CyclesTableFilterComposer,
+      $$CyclesTableOrderingComposer,
+      $$CyclesTableAnnotationComposer,
+      $$CyclesTableCreateCompanionBuilder,
+      $$CyclesTableUpdateCompanionBuilder,
+      (CycleRow, BaseReferences<_$AppDatabase, $CyclesTable, CycleRow>),
+      CycleRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ScheduleDaysTableCreateCompanionBuilder =
+    ScheduleDaysCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      required String cycleId,
+      required DateTime date,
+      required String dayId,
+      required int dayIndex,
+      required String status,
+      Value<String?> workoutId,
+      Value<DateTime?> linkedDate,
+      Value<int> rowid,
+    });
+typedef $$ScheduleDaysTableUpdateCompanionBuilder =
+    ScheduleDaysCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String> cycleId,
+      Value<DateTime> date,
+      Value<String> dayId,
+      Value<int> dayIndex,
+      Value<String> status,
+      Value<String?> workoutId,
+      Value<DateTime?> linkedDate,
+      Value<int> rowid,
+    });
+
+class $$ScheduleDaysTableFilterComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScheduleDaysTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workoutId => $composableBuilder(
+    column: $table.workoutId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScheduleDaysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScheduleDaysTable> {
+  $$ScheduleDaysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get cycleId =>
+      $composableBuilder(column: $table.cycleId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get dayId =>
+      $composableBuilder(column: $table.dayId, builder: (column) => column);
+
+  GeneratedColumn<int> get dayIndex =>
+      $composableBuilder(column: $table.dayIndex, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get workoutId =>
+      $composableBuilder(column: $table.workoutId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get linkedDate => $composableBuilder(
+    column: $table.linkedDate,
+    builder: (column) => column,
+  );
+}
+
+class $$ScheduleDaysTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScheduleDaysTable,
+          ScheduleDayRow,
+          $$ScheduleDaysTableFilterComposer,
+          $$ScheduleDaysTableOrderingComposer,
+          $$ScheduleDaysTableAnnotationComposer,
+          $$ScheduleDaysTableCreateCompanionBuilder,
+          $$ScheduleDaysTableUpdateCompanionBuilder,
+          (
+            ScheduleDayRow,
+            BaseReferences<_$AppDatabase, $ScheduleDaysTable, ScheduleDayRow>,
+          ),
+          ScheduleDayRow,
+          PrefetchHooks Function()
+        > {
+  $$ScheduleDaysTableTableManager(_$AppDatabase db, $ScheduleDaysTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScheduleDaysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScheduleDaysTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScheduleDaysTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String> cycleId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<String> dayId = const Value.absent(),
+                Value<int> dayIndex = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> workoutId = const Value.absent(),
+                Value<DateTime?> linkedDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleDaysCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                cycleId: cycleId,
+                date: date,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                status: status,
+                workoutId: workoutId,
+                linkedDate: linkedDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                required String cycleId,
+                required DateTime date,
+                required String dayId,
+                required int dayIndex,
+                required String status,
+                Value<String?> workoutId = const Value.absent(),
+                Value<DateTime?> linkedDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScheduleDaysCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                cycleId: cycleId,
+                date: date,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                status: status,
+                workoutId: workoutId,
+                linkedDate: linkedDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScheduleDaysTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScheduleDaysTable,
+      ScheduleDayRow,
+      $$ScheduleDaysTableFilterComposer,
+      $$ScheduleDaysTableOrderingComposer,
+      $$ScheduleDaysTableAnnotationComposer,
+      $$ScheduleDaysTableCreateCompanionBuilder,
+      $$ScheduleDaysTableUpdateCompanionBuilder,
+      (
+        ScheduleDayRow,
+        BaseReferences<_$AppDatabase, $ScheduleDaysTable, ScheduleDayRow>,
+      ),
+      ScheduleDayRow,
+      PrefetchHooks Function()
+    >;
+typedef $$WorkoutSessionsTableCreateCompanionBuilder =
+    WorkoutSessionsCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String?> templateId,
+      required String name,
+      required String exercises,
+      Value<String?> cycleId,
+      Value<String?> dayId,
+      Value<int?> dayIndex,
+      required DateTime date,
+      required DateTime startedAt,
+      Value<DateTime?> endedAt,
+      Value<String?> rest,
+      Value<int> rowid,
+    });
+typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
+    WorkoutSessionsCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String?> templateId,
+      Value<String> name,
+      Value<String> exercises,
+      Value<String?> cycleId,
+      Value<String?> dayId,
+      Value<int?> dayIndex,
+      Value<DateTime> date,
+      Value<DateTime> startedAt,
+      Value<DateTime?> endedAt,
+      Value<String?> rest,
+      Value<int> rowid,
+    });
+
+class $$WorkoutSessionsTableFilterComposer
+    extends Composer<_$AppDatabase, $WorkoutSessionsTable> {
+  $$WorkoutSessionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exercises => $composableBuilder(
+    column: $table.exercises,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rest => $composableBuilder(
+    column: $table.rest,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WorkoutSessionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WorkoutSessionsTable> {
+  $$WorkoutSessionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exercises => $composableBuilder(
+    column: $table.exercises,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cycleId => $composableBuilder(
+    column: $table.cycleId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dayId => $composableBuilder(
+    column: $table.dayId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dayIndex => $composableBuilder(
+    column: $table.dayIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rest => $composableBuilder(
+    column: $table.rest,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WorkoutSessionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WorkoutSessionsTable> {
+  $$WorkoutSessionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get templateId => $composableBuilder(
+    column: $table.templateId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get exercises =>
+      $composableBuilder(column: $table.exercises, builder: (column) => column);
+
+  GeneratedColumn<String> get cycleId =>
+      $composableBuilder(column: $table.cycleId, builder: (column) => column);
+
+  GeneratedColumn<String> get dayId =>
+      $composableBuilder(column: $table.dayId, builder: (column) => column);
+
+  GeneratedColumn<int> get dayIndex =>
+      $composableBuilder(column: $table.dayIndex, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get rest =>
+      $composableBuilder(column: $table.rest, builder: (column) => column);
+}
+
+class $$WorkoutSessionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WorkoutSessionsTable,
+          SessionRow,
+          $$WorkoutSessionsTableFilterComposer,
+          $$WorkoutSessionsTableOrderingComposer,
+          $$WorkoutSessionsTableAnnotationComposer,
+          $$WorkoutSessionsTableCreateCompanionBuilder,
+          $$WorkoutSessionsTableUpdateCompanionBuilder,
+          (
+            SessionRow,
+            BaseReferences<_$AppDatabase, $WorkoutSessionsTable, SessionRow>,
+          ),
+          SessionRow,
+          PrefetchHooks Function()
+        > {
+  $$WorkoutSessionsTableTableManager(
+    _$AppDatabase db,
+    $WorkoutSessionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WorkoutSessionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WorkoutSessionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WorkoutSessionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String?> templateId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> exercises = const Value.absent(),
+                Value<String?> cycleId = const Value.absent(),
+                Value<String?> dayId = const Value.absent(),
+                Value<int?> dayIndex = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> rest = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WorkoutSessionsCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                templateId: templateId,
+                name: name,
+                exercises: exercises,
+                cycleId: cycleId,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                date: date,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                rest: rest,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String?> templateId = const Value.absent(),
+                required String name,
+                required String exercises,
+                Value<String?> cycleId = const Value.absent(),
+                Value<String?> dayId = const Value.absent(),
+                Value<int?> dayIndex = const Value.absent(),
+                required DateTime date,
+                required DateTime startedAt,
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<String?> rest = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WorkoutSessionsCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                templateId: templateId,
+                name: name,
+                exercises: exercises,
+                cycleId: cycleId,
+                dayId: dayId,
+                dayIndex: dayIndex,
+                date: date,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                rest: rest,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WorkoutSessionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WorkoutSessionsTable,
+      SessionRow,
+      $$WorkoutSessionsTableFilterComposer,
+      $$WorkoutSessionsTableOrderingComposer,
+      $$WorkoutSessionsTableAnnotationComposer,
+      $$WorkoutSessionsTableCreateCompanionBuilder,
+      $$WorkoutSessionsTableUpdateCompanionBuilder,
+      (
+        SessionRow,
+        BaseReferences<_$AppDatabase, $WorkoutSessionsTable, SessionRow>,
+      ),
+      SessionRow,
+      PrefetchHooks Function()
+    >;
+typedef $$SessionSetsTableCreateCompanionBuilder =
+    SessionSetsCompanion Function({
+      required String id,
+      required String sessionId,
+      required String rowId,
+      required String exerciseId,
+      required int setNo,
+      required double kg,
+      Value<int?> reps,
+      Value<int?> seconds,
+      Value<bool> isPr,
+      required DateTime loggedAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$SessionSetsTableUpdateCompanionBuilder =
+    SessionSetsCompanion Function({
+      Value<String> id,
+      Value<String> sessionId,
+      Value<String> rowId,
+      Value<String> exerciseId,
+      Value<int> setNo,
+      Value<double> kg,
+      Value<int?> reps,
+      Value<int?> seconds,
+      Value<bool> isPr,
+      Value<DateTime> loggedAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$SessionSetsTableFilterComposer
+    extends Composer<_$AppDatabase, $SessionSetsTable> {
+  $$SessionSetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get setNo => $composableBuilder(
+    column: $table.setNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get kg => $composableBuilder(
+    column: $table.kg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reps => $composableBuilder(
+    column: $table.reps,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get seconds => $composableBuilder(
+    column: $table.seconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isPr => $composableBuilder(
+    column: $table.isPr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SessionSetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SessionSetsTable> {
+  $$SessionSetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get setNo => $composableBuilder(
+    column: $table.setNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get kg => $composableBuilder(
+    column: $table.kg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reps => $composableBuilder(
+    column: $table.reps,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get seconds => $composableBuilder(
+    column: $table.seconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isPr => $composableBuilder(
+    column: $table.isPr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SessionSetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SessionSetsTable> {
+  $$SessionSetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get rowId =>
+      $composableBuilder(column: $table.rowId, builder: (column) => column);
+
+  GeneratedColumn<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get setNo =>
+      $composableBuilder(column: $table.setNo, builder: (column) => column);
+
+  GeneratedColumn<double> get kg =>
+      $composableBuilder(column: $table.kg, builder: (column) => column);
+
+  GeneratedColumn<int> get reps =>
+      $composableBuilder(column: $table.reps, builder: (column) => column);
+
+  GeneratedColumn<int> get seconds =>
+      $composableBuilder(column: $table.seconds, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPr =>
+      $composableBuilder(column: $table.isPr, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$SessionSetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SessionSetsTable,
+          SessionSetRow,
+          $$SessionSetsTableFilterComposer,
+          $$SessionSetsTableOrderingComposer,
+          $$SessionSetsTableAnnotationComposer,
+          $$SessionSetsTableCreateCompanionBuilder,
+          $$SessionSetsTableUpdateCompanionBuilder,
+          (
+            SessionSetRow,
+            BaseReferences<_$AppDatabase, $SessionSetsTable, SessionSetRow>,
+          ),
+          SessionSetRow,
+          PrefetchHooks Function()
+        > {
+  $$SessionSetsTableTableManager(_$AppDatabase db, $SessionSetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SessionSetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SessionSetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SessionSetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> sessionId = const Value.absent(),
+                Value<String> rowId = const Value.absent(),
+                Value<String> exerciseId = const Value.absent(),
+                Value<int> setNo = const Value.absent(),
+                Value<double> kg = const Value.absent(),
+                Value<int?> reps = const Value.absent(),
+                Value<int?> seconds = const Value.absent(),
+                Value<bool> isPr = const Value.absent(),
+                Value<DateTime> loggedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SessionSetsCompanion(
+                id: id,
+                sessionId: sessionId,
+                rowId: rowId,
+                exerciseId: exerciseId,
+                setNo: setNo,
+                kg: kg,
+                reps: reps,
+                seconds: seconds,
+                isPr: isPr,
+                loggedAt: loggedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String sessionId,
+                required String rowId,
+                required String exerciseId,
+                required int setNo,
+                required double kg,
+                Value<int?> reps = const Value.absent(),
+                Value<int?> seconds = const Value.absent(),
+                Value<bool> isPr = const Value.absent(),
+                required DateTime loggedAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SessionSetsCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                rowId: rowId,
+                exerciseId: exerciseId,
+                setNo: setNo,
+                kg: kg,
+                reps: reps,
+                seconds: seconds,
+                isPr: isPr,
+                loggedAt: loggedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SessionSetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SessionSetsTable,
+      SessionSetRow,
+      $$SessionSetsTableFilterComposer,
+      $$SessionSetsTableOrderingComposer,
+      $$SessionSetsTableAnnotationComposer,
+      $$SessionSetsTableCreateCompanionBuilder,
+      $$SessionSetsTableUpdateCompanionBuilder,
+      (
+        SessionSetRow,
+        BaseReferences<_$AppDatabase, $SessionSetsTable, SessionSetRow>,
+      ),
+      SessionSetRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4268,4 +8962,14 @@ class $AppDatabaseManager {
       $$UserProfilesTableTableManager(_db, _db.userProfiles);
   $$BodySnapshotsTableTableManager get bodySnapshots =>
       $$BodySnapshotsTableTableManager(_db, _db.bodySnapshots);
+  $$WorkoutTemplatesTableTableManager get workoutTemplates =>
+      $$WorkoutTemplatesTableTableManager(_db, _db.workoutTemplates);
+  $$CyclesTableTableManager get cycles =>
+      $$CyclesTableTableManager(_db, _db.cycles);
+  $$ScheduleDaysTableTableManager get scheduleDays =>
+      $$ScheduleDaysTableTableManager(_db, _db.scheduleDays);
+  $$WorkoutSessionsTableTableManager get workoutSessions =>
+      $$WorkoutSessionsTableTableManager(_db, _db.workoutSessions);
+  $$SessionSetsTableTableManager get sessionSets =>
+      $$SessionSetsTableTableManager(_db, _db.sessionSets);
 }

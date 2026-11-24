@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/data/local/app_database.dart';
@@ -35,6 +36,9 @@ void main() {
       await v1.writeMeta('auth.choiceMade', 'true');
       await v1.customStatement('DROP TABLE user_profiles');
       await v1.customStatement('DROP TABLE body_snapshots');
+      await v1.customStatement('DROP TABLE workout_templates');
+      await v1.customStatement('DROP TABLE cycles');
+      await v1.customStatement('DROP TABLE schedule_days');
       await v1.customStatement('PRAGMA user_version = 1');
       await v1.close();
 
@@ -48,9 +52,262 @@ void main() {
     });
   });
 
+  group('WKT-01 schema v3', () {
+    test('v2 -> v3 upgrade adds workout_templates and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v2 = AppDatabase(NativeDatabase(file));
+      await v2.writeMeta('onboarding.done', 'true');
+      await v2.customStatement('DROP TABLE workout_templates');
+      await v2.customStatement('DROP TABLE cycles');
+      await v2.customStatement('DROP TABLE schedule_days');
+      await v2.customStatement('PRAGMA user_version = 2');
+      await v2.close();
+
+      final v3 = AppDatabase(NativeDatabase(file));
+      addTearDown(v3.close);
+      final names =
+          (await v3
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('workout_templates'));
+      expect(await v3.readMeta('onboarding.done'), 'true');
+    });
+  });
+
+  group('SCH-01 schema v4', () {
+    test('v3 -> v4 upgrade adds cycles and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v3 = AppDatabase(NativeDatabase(file));
+      await v3.writeMeta('workout.startersSeeded', 'true');
+      await v3.customStatement('DROP TABLE cycles');
+      await v3.customStatement('DROP TABLE schedule_days');
+      await v3.customStatement('PRAGMA user_version = 3');
+      await v3.close();
+
+      final v4 = AppDatabase(NativeDatabase(file));
+      addTearDown(v4.close);
+      final names =
+          (await v4
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('cycles'));
+      expect(await v4.readMeta('workout.startersSeeded'), 'true');
+    });
+  });
+
+  group('SCH-02 schema v5', () {
+    test('v4 -> v5 upgrade adds schedule_days and keeps data', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v4 = AppDatabase(NativeDatabase(file));
+      await v4.writeMeta('workout.startersSeeded', 'true');
+      await v4.customStatement('DROP TABLE schedule_days');
+      await v4.customStatement('ALTER TABLE cycles DROP COLUMN mode');
+      await v4.customStatement('PRAGMA user_version = 4');
+      await v4.close();
+
+      final v5 = AppDatabase(NativeDatabase(file));
+      addTearDown(v5.close);
+      final names =
+          (await v5
+                  .customSelect(
+                    "SELECT name FROM sqlite_master WHERE type = 'table'",
+                  )
+                  .get())
+              .map((r) => r.read<String>('name'));
+      expect(names, contains('schedule_days'));
+      expect(await v5.readMeta('workout.startersSeeded'), 'true');
+    });
+
+    test('AC13 one record per cycle and calendar date', () async {
+      ScheduleDaysCompanion row(String id, String cycle) =>
+          ScheduleDaysCompanion.insert(
+            id: Value(id),
+            cycleId: cycle,
+            date: DateTime.utc(2026, 11, 22),
+            dayId: 'd1',
+            dayIndex: 0,
+            status: 'done',
+            updatedAt: DateTime.utc(2026, 11, 22),
+          );
+      await db.into(db.scheduleDays).insert(row('a', 'c1'));
+      await db.into(db.scheduleDays).insert(row('b', 'c2'));
+      await expectLater(
+        db.into(db.scheduleDays).insert(row('c', 'c1')),
+        throwsA(isA<SqliteException>()),
+      );
+    });
+  });
+
+  group('SCH-03 schema v6', () {
+    test(
+      'v5 -> v6 adds cycles.mode; existing cycles read as Rolling',
+      () async {
+        final dir = await Directory.systemTemp.createTemp('rf_migration');
+        addTearDown(() => dir.delete(recursive: true));
+        final file = File('${dir.path}/app.db');
+
+        final v5 = AppDatabase(NativeDatabase(file));
+        await v5.customStatement('ALTER TABLE cycles DROP COLUMN mode');
+        await v5.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN workout_id',
+        );
+        await v5.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN linked_date',
+        );
+        await v5.customStatement(
+          'INSERT INTO cycles (id, name, days, is_active, start_date, '
+          "start_day_index, updated_at, sync_state) VALUES ('c1', 'PPL', '[]', "
+          "1, '2026-11-23T00:00:00.000Z', 0, '2026-11-23T00:00:00.000Z', "
+          "'pending')",
+        );
+        await v5.customStatement('PRAGMA user_version = 5');
+        await v5.close();
+
+        final v6 = AppDatabase(NativeDatabase(file));
+        addTearDown(v6.close);
+        final row = await v6.select(v6.cycles).getSingle();
+        expect((row.name, row.mode), ('PPL', 'rolling'));
+      },
+    );
+  });
+
+  group('SCH-04 schema v7', () {
+    test(
+      'v6 -> v7 adds workout_id and linked_date; old rows read null',
+      () async {
+        final dir = await Directory.systemTemp.createTemp('rf_migration');
+        addTearDown(() => dir.delete(recursive: true));
+        final file = File('${dir.path}/app.db');
+
+        final v6 = AppDatabase(NativeDatabase(file));
+        await v6.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN workout_id',
+        );
+        await v6.customStatement(
+          'ALTER TABLE schedule_days DROP COLUMN linked_date',
+        );
+        await v6.customStatement(
+          'INSERT INTO schedule_days (id, cycle_id, date, day_id, day_index, '
+          "status, updated_at, sync_state) VALUES ('r1', 'c1', "
+          "'2026-11-23T00:00:00.000Z', 'd1', 0, 'done', "
+          "'2026-11-23T00:00:00.000Z', 'pending')",
+        );
+        await v6.customStatement('PRAGMA user_version = 6');
+        await v6.close();
+
+        final v7 = AppDatabase(NativeDatabase(file));
+        addTearDown(v7.close);
+        final row = await v7.select(v7.scheduleDays).getSingle();
+        expect(
+          (row.status, row.workoutId, row.linkedDate),
+          ('done', null, null),
+        );
+      },
+    );
+  });
+
+  group('SCH-05 schema v8', () {
+    test('v7 -> v8 adds the schedule_days date index', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v7 = AppDatabase(NativeDatabase(file));
+      await v7.customStatement('DROP INDEX schedule_days_date');
+      await v7.customStatement('PRAGMA user_version = 7');
+      await v7.close();
+
+      final v8 = AppDatabase(NativeDatabase(file));
+      addTearDown(v8.close);
+      final names = await v8
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND name = 'schedule_days_date'",
+          )
+          .get();
+      expect(names, hasLength(1));
+    });
+  });
+
+  group('LOG-01 schema v9', () {
+    test('v8 -> v9 adds workout sessions and their sets', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v8 = AppDatabase(NativeDatabase(file));
+      await v8.customStatement('DROP TABLE workout_sessions');
+      await v8.customStatement('DROP TABLE session_sets');
+      await v8.customStatement('PRAGMA user_version = 8');
+      await v8.close();
+
+      final v9 = AppDatabase(NativeDatabase(file));
+      addTearDown(v9.close);
+      expect(await v9.select(v9.workoutSessions).get(), isEmpty);
+      expect(await v9.select(v9.sessionSets).get(), isEmpty);
+    });
+  });
+
+  group('LOG-02 schema v10', () {
+    test('v9 -> v10 adds session_sets.is_pr, false for old sets', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v9 = AppDatabase(NativeDatabase(file));
+      await v9.customStatement('ALTER TABLE session_sets DROP COLUMN is_pr');
+      await v9.customStatement('ALTER TABLE workout_sessions DROP COLUMN rest');
+      await v9.customStatement(
+        'INSERT INTO session_sets (id, session_id, row_id, exercise_id, '
+        "set_no, kg, logged_at, updated_at) VALUES ('a', 's', 'r', 'e', 1, "
+        "60, '2026-11-23T00:00:00.000Z', '2026-11-23T00:00:00.000Z')",
+      );
+      await v9.customStatement('PRAGMA user_version = 9');
+      await v9.close();
+
+      final v10 = AppDatabase(NativeDatabase(file));
+      addTearDown(v10.close);
+      expect((await v10.select(v10.sessionSets).getSingle()).isPr, isFalse);
+    });
+  });
+
+  group('LOG-03 schema v11', () {
+    test('v10 -> v11 adds workout_sessions.rest', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v10 = AppDatabase(NativeDatabase(file));
+      await v10.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN rest',
+      );
+      await v10.customStatement('PRAGMA user_version = 10');
+      await v10.close();
+
+      final v11 = AppDatabase(NativeDatabase(file));
+      addTearDown(v11.close);
+      expect(await v11.select(v11.workoutSessions).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 2);
+      expect(db.schemaVersion, 11);
       final names =
           (await db
                   .customSelect(

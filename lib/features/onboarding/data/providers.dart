@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/metrics/units.dart';
 import '../../../data/local/database_provider.dart';
 import '../domain/onboarding_repository.dart';
 import 'drift_onboarding_repository.dart';
@@ -21,3 +22,7 @@ Stream<bool> onboardingDone(Ref ref) =>
 // The phone's region, for the default unit system (AC4).
 @Riverpod(keepAlive: true)
 String? deviceRegion(Ref ref) => PlatformDispatcher.instance.locale.countryCode;
+
+@Riverpod(keepAlive: true)
+Stream<UnitSystem> unitSystem(Ref ref) =>
+    ref.watch(onboardingRepositoryProvider).watchUnits();

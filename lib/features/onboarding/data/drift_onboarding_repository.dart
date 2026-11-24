@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
 
 import '../../../core/ids.dart';
+import '../../../core/metrics/units.dart';
 import '../../../data/local/app_database.dart';
+import '../../../data/local/base_columns.dart';
 import '../../../data/sync/sync_state.dart';
 import '../../../data/sync/synced_writer.dart';
 import '../domain/onboarding_answers.dart';
@@ -21,7 +23,23 @@ class DriftOnboardingRepository implements OnboardingRepository {
       _db.watchMeta(doneKey).map((v) => v == 'true').distinct();
 
   @override
-  Future<void> complete(OnboardingAnswers a) => _db.transaction(() async {
+  Stream<UnitSystem> watchUnits() =>
+      (_db.selectActive(_db.userProfiles)
+            ..orderBy([(p) => OrderingTerm.desc(p.updatedAt)])
+            ..limit(1))
+          .watchSingleOrNull()
+          .map(
+            (p) => p == null
+                ? UnitSystem.metric
+                : UnitSystem.values.byName(p.units),
+          )
+          .distinct();
+
+  @override
+  Future<void> complete(
+    OnboardingAnswers a, {
+    Future<void> Function()? alsoWrite,
+  }) => _db.transaction(() async {
     final writer = SyncedWriter(_db, now: _now);
     final profileId = newId();
     await writer.run(
@@ -67,6 +85,7 @@ class DriftOnboardingRepository implements OnboardingRepository {
             ),
       );
     }
+    await alsoWrite?.call();
     // Last, so a failure above leaves onboarding not done (edge case).
     await _db.writeMeta(doneKey, 'true');
   });

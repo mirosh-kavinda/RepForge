@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'l10n/app_locale.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'router.dart';
 import 'theme/rf_theme.dart';
@@ -21,8 +22,8 @@ class RepForgeApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      // AC5: English only until si/ta are translated (their ARB files stay empty).
-      supportedLocales: const [Locale('en')],
+      supportedLocales: appLocales,
+      localeListResolutionCallback: resolveAppLocale,
       theme: rfTheme(Brightness.light),
       darkTheme: rfTheme(Brightness.dark),
       themeMode: ref.watch(appThemeModeProvider),

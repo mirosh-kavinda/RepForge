@@ -360,10 +360,6 @@
   "@onbWeightError": {
     "description": "Weight out of range."
   },
-  "onbFinish": "Finish",
-  "@onbFinish": {
-    "description": "Onboarding finish button."
-  },
   "onbSaveFailed": "Couldn't save. Please try again.",
   "@onbSaveFailed": {
     "description": "Onboarding save failed."
@@ -571,5 +567,1356 @@
   "accountSaveFailed": "Couldn't save your choices. Please try again.",
   "@accountSaveFailed": {
     "description": "Account screen save failed."
+  },
+  "scheduleMyWorkouts": "My workouts",
+  "@scheduleMyWorkouts": {
+    "description": "Schedule entry and screen title: workout templates."
+  },
+  "scheduleMyWorkoutsHint": "Build the workouts your cycle days use",
+  "@scheduleMyWorkoutsHint": {
+    "description": "Schedule entry hint."
+  },
+  "workoutsNew": "New workout",
+  "@workoutsNew": {
+    "description": "Create a workout template."
+  },
+  "workoutsEmptyTitle": "No workouts yet",
+  "@workoutsEmptyTitle": {
+    "description": "My workouts empty state title."
+  },
+  "workoutsEmptyBody": "Build one to use on your cycle days.",
+  "@workoutsEmptyBody": {
+    "description": "My workouts empty state body."
+  },
+  "workoutsExerciseCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@workoutsExerciseCount": {
+    "description": "Number of exercises.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutsSetCount": "{count, plural, =1{1 set} other{{count} sets}}",
+  "@workoutsSetCount": {
+    "description": "Number of sets.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutsMinutes": "~{minutes} min",
+  "@workoutsMinutes": {
+    "description": "Estimated duration in minutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutsActions": "Actions for {name}",
+  "@workoutsActions": {
+    "description": "Menu button label for one workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "workoutsDuplicate": "Duplicate",
+  "@workoutsDuplicate": {
+    "description": "Copy a workout."
+  },
+  "workoutsDelete": "Delete",
+  "@workoutsDelete": {
+    "description": "Delete a workout."
+  },
+  "workoutsDeleted": "{name} deleted",
+  "@workoutsDeleted": {
+    "description": "Snackbar after deleting a workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "undo": "Undo",
+  "@undo": {
+    "description": "Generic undo action."
+  },
+  "editorNewTitle": "New workout",
+  "@editorNewTitle": {
+    "description": "Editor title for a new workout."
+  },
+  "editorEditTitle": "Edit workout",
+  "@editorEditTitle": {
+    "description": "Editor overline for an existing workout."
+  },
+  "editorNameLabel": "Workout name",
+  "@editorNameLabel": {
+    "description": "Name field label."
+  },
+  "editorNameError": "Use 1 to 40 characters.",
+  "@editorNameError": {
+    "description": "Name field error."
+  },
+  "editorSave": "Save",
+  "@editorSave": {
+    "description": "Save the workout."
+  },
+  "editorAddExercise": "+ Add exercise",
+  "@editorAddExercise": {
+    "description": "Open the exercise picker."
+  },
+  "editorLimitReached": "Up to 30 exercises per workout.",
+  "@editorLimitReached": {
+    "description": "Shown when the workout is full."
+  },
+  "editorNeedsExercise": "Add at least one exercise to save.",
+  "@editorNeedsExercise": {
+    "description": "Shown while the workout has no exercises."
+  },
+  "editorSaveFailed": "Couldn't save. Try again.",
+  "@editorSaveFailed": {
+    "description": "Save failed."
+  },
+  "editorDiscardTitle": "Discard changes?",
+  "@editorDiscardTitle": {
+    "description": "Leave-with-unsaved-changes dialog title."
+  },
+  "editorDiscardBody": "Your edits to this workout will be lost.",
+  "@editorDiscardBody": {
+    "description": "Leave dialog body."
+  },
+  "editorDiscard": "Discard",
+  "@editorDiscard": {
+    "description": "Leave without saving."
+  },
+  "editorKeepEditing": "Keep editing",
+  "@editorKeepEditing": {
+    "description": "Stay in the editor."
+  },
+  "editorReorder": "Reorder {name}",
+  "@editorReorder": {
+    "description": "Drag handle label.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editorRowActions": "Actions for {name}",
+  "@editorRowActions": {
+    "description": "Row menu button label.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editorEditTargets": "Edit {name}",
+  "@editorEditTargets": {
+    "description": "Row tap semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editorMoveUp": "Move up",
+  "@editorMoveUp": {
+    "description": "Row action."
+  },
+  "editorMoveDown": "Move down",
+  "@editorMoveDown": {
+    "description": "Row action."
+  },
+  "editorSelectSuperset": "Select for superset",
+  "@editorSelectSuperset": {
+    "description": "Row action: start picking rows to link."
+  },
+  "editorUnlink": "Unlink superset",
+  "@editorUnlink": {
+    "description": "Row action."
+  },
+  "editorRemove": "Remove",
+  "@editorRemove": {
+    "description": "Row action."
+  },
+  "editorSupersetLabel": "Superset {letter}",
+  "@editorSupersetLabel": {
+    "description": "Superset tag.",
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
+  "editorSupersetAction": "Superset",
+  "@editorSupersetAction": {
+    "description": "Link the selected rows."
+  },
+  "editorSelectHint": "Pick 2 or more exercises next to each other.",
+  "@editorSelectHint": {
+    "description": "Selection bar hint."
+  },
+  "editorSelectRow": "Select {name}",
+  "@editorSelectRow": {
+    "description": "Selection checkbox label.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "editorUnknownExercise": "Unknown exercise",
+  "@editorUnknownExercise": {
+    "description": "Exercise id not in the catalog."
+  },
+  "targetsSets": "Sets",
+  "@targetsSets": {
+    "description": "Sets stepper."
+  },
+  "targetsKind": "Target",
+  "@targetsKind": {
+    "description": "Reps or time choice."
+  },
+  "targetsReps": "Reps",
+  "@targetsReps": {
+    "description": "Reps option."
+  },
+  "targetsTime": "Time",
+  "@targetsTime": {
+    "description": "Time option."
+  },
+  "targetsRepsMode": "Rep target",
+  "@targetsRepsMode": {
+    "description": "Range or fixed choice."
+  },
+  "targetsRange": "Range",
+  "@targetsRange": {
+    "description": "Rep range option."
+  },
+  "targetsFixed": "Fixed",
+  "@targetsFixed": {
+    "description": "Single rep number option."
+  },
+  "targetsRepMin": "Min reps",
+  "@targetsRepMin": {
+    "description": "Range lower bound."
+  },
+  "targetsRepMax": "Max reps",
+  "@targetsRepMax": {
+    "description": "Range upper bound."
+  },
+  "targetsSeconds": "Seconds",
+  "@targetsSeconds": {
+    "description": "Timed set length."
+  },
+  "targetsWeight": "Target weight ({unit}), optional",
+  "@targetsWeight": {
+    "description": "Weight field label.",
+    "placeholders": {
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsWeightUnreadable": "Enter a number.",
+  "@targetsWeightUnreadable": {
+    "description": "Weight field error."
+  },
+  "targetsWeightRange": "Enter 0 to {max}.",
+  "@targetsWeightRange": {
+    "description": "Weight field range error.",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "targetsRest": "Rest",
+  "@targetsRest": {
+    "description": "Rest stepper."
+  },
+  "targetsRestSuperset": "No rest (superset). Rest comes after the last exercise in the group.",
+  "@targetsRestSuperset": {
+    "description": "Rest note for inner superset members."
+  },
+  "targetsDone": "Done",
+  "@targetsDone": {
+    "description": "Close the targets sheet."
+  },
+  "fmtRest": "rest {time}",
+  "@fmtRest": {
+    "description": "Row rest text.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "fmtNoRest": "no rest (superset)",
+  "@fmtNoRest": {
+    "description": "Row rest text inside a superset."
+  },
+  "fmtSeconds": "{seconds} s",
+  "@fmtSeconds": {
+    "description": "Timed set length.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "unitKg": "kg",
+  "@unitKg": {
+    "description": "Kilogram unit."
+  },
+  "unitLb": "lb",
+  "@unitLb": {
+    "description": "Pound unit."
+  },
+  "pickerTitle": "Add exercises",
+  "@pickerTitle": {
+    "description": "Picker title."
+  },
+  "pickerSearch": "Search name, muscle or machine",
+  "@pickerSearch": {
+    "description": "Picker search field."
+  },
+  "pickerAdd": "Add ({count})",
+  "@pickerAdd": {
+    "description": "Add the picked exercises.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickerAdded": "Added",
+  "@pickerAdded": {
+    "description": "Marks an exercise already in the workout."
+  },
+  "pickerEquipment": "Equipment: {name}",
+  "@pickerEquipment": {
+    "description": "Equipment filter button.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pickerAll": "All",
+  "@pickerAll": {
+    "description": "No filter."
+  },
+  "pickerResults": "{count, plural, =1{1 result} other{{count} results}}",
+  "@pickerResults": {
+    "description": "Result count.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pickerNoResults": "No exercises match.",
+  "@pickerNoResults": {
+    "description": "Empty search."
+  },
+  "pickerFull": "Up to 30 exercises per workout.",
+  "@pickerFull": {
+    "description": "Picker capacity reached."
+  },
+  "pickerToggle": "Pick {name}",
+  "@pickerToggle": {
+    "description": "Row label.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pickerMuscleGroup": "Muscle group",
+  "@pickerMuscleGroup": {
+    "description": "Muscle chip group label."
+  },
+  "groupChest": "Chest",
+  "@groupChest": {
+    "description": "Muscle group filter."
+  },
+  "groupBack": "Back",
+  "@groupBack": {
+    "description": "Muscle group filter."
+  },
+  "groupShoulders": "Shoulders",
+  "@groupShoulders": {
+    "description": "Muscle group filter."
+  },
+  "groupLegs": "Legs",
+  "@groupLegs": {
+    "description": "Muscle group filter."
+  },
+  "groupArms": "Arms",
+  "@groupArms": {
+    "description": "Muscle group filter."
+  },
+  "groupCore": "Core",
+  "@groupCore": {
+    "description": "Muscle group filter."
+  },
+  "muscleChest": "Chest",
+  "@muscleChest": {
+    "description": "Muscle name."
+  },
+  "muscleShoulders": "Shoulders",
+  "@muscleShoulders": {
+    "description": "Muscle name."
+  },
+  "muscleTriceps": "Triceps",
+  "@muscleTriceps": {
+    "description": "Muscle name."
+  },
+  "muscleBiceps": "Biceps",
+  "@muscleBiceps": {
+    "description": "Muscle name."
+  },
+  "muscleForearms": "Forearms",
+  "@muscleForearms": {
+    "description": "Muscle name."
+  },
+  "muscleLats": "Lats",
+  "@muscleLats": {
+    "description": "Muscle name."
+  },
+  "muscleMiddleBack": "Middle back",
+  "@muscleMiddleBack": {
+    "description": "Muscle name."
+  },
+  "muscleLowerBack": "Lower back",
+  "@muscleLowerBack": {
+    "description": "Muscle name."
+  },
+  "muscleTraps": "Traps",
+  "@muscleTraps": {
+    "description": "Muscle name."
+  },
+  "muscleAbdominals": "Abs",
+  "@muscleAbdominals": {
+    "description": "Muscle name."
+  },
+  "muscleQuadriceps": "Quads",
+  "@muscleQuadriceps": {
+    "description": "Muscle name."
+  },
+  "muscleHamstrings": "Hamstrings",
+  "@muscleHamstrings": {
+    "description": "Muscle name."
+  },
+  "muscleGlutes": "Glutes",
+  "@muscleGlutes": {
+    "description": "Muscle name."
+  },
+  "muscleCalves": "Calves",
+  "@muscleCalves": {
+    "description": "Muscle name."
+  },
+  "muscleAdductors": "Adductors",
+  "@muscleAdductors": {
+    "description": "Muscle name."
+  },
+  "muscleAbductors": "Abductors",
+  "@muscleAbductors": {
+    "description": "Muscle name."
+  },
+  "muscleNeck": "Neck",
+  "@muscleNeck": {
+    "description": "Muscle name."
+  },
+  "equipmentBarbell": "Barbell",
+  "@equipmentBarbell": {
+    "description": "Equipment name."
+  },
+  "equipmentDumbbell": "Dumbbell",
+  "@equipmentDumbbell": {
+    "description": "Equipment name."
+  },
+  "equipmentCable": "Cable",
+  "@equipmentCable": {
+    "description": "Equipment name."
+  },
+  "equipmentMachine": "Machine",
+  "@equipmentMachine": {
+    "description": "Equipment name."
+  },
+  "equipmentKettlebell": "Kettlebell",
+  "@equipmentKettlebell": {
+    "description": "Equipment name."
+  },
+  "equipmentBands": "Bands",
+  "@equipmentBands": {
+    "description": "Equipment name."
+  },
+  "equipmentBodyOnly": "Body only",
+  "@equipmentBodyOnly": {
+    "description": "Equipment name."
+  },
+  "equipmentEzBar": "EZ bar",
+  "@equipmentEzBar": {
+    "description": "Equipment name."
+  },
+  "equipmentSmithMachine": "Smith machine",
+  "@equipmentSmithMachine": {
+    "description": "Equipment name."
+  },
+  "equipmentOther": "Other",
+  "@equipmentOther": {
+    "description": "Equipment name."
+  },
+  "editorNotFound": "This workout no longer exists.",
+  "@editorNotFound": {
+    "description": "Editor opened for a deleted or missing workout."
+  },
+  "cycleNewTitle": "New cycle",
+  "@cycleNewTitle": {
+    "description": "Cycle builder title, new cycle."
+  },
+  "cycleEditTitle": "Edit cycle",
+  "@cycleEditTitle": {
+    "description": "Cycle builder title, existing cycle."
+  },
+  "cycleNameLabel": "Cycle name",
+  "@cycleNameLabel": {
+    "description": "Cycle name field."
+  },
+  "cycleDaysTitle": "Days in the cycle",
+  "@cycleDaysTitle": {
+    "description": "Cycle builder section title."
+  },
+  "cycleCounts": "{days, plural, =1{1 day} other{{days} days}} · {train} train, {rest} rest",
+  "@cycleCounts": {
+    "description": "Cycle day counts.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "train": {
+        "type": "int"
+      },
+      "rest": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleAddTraining": "+ Training day",
+  "@cycleAddTraining": {
+    "description": "Add a training day."
+  },
+  "cycleAddRest": "+ Rest day",
+  "@cycleAddRest": {
+    "description": "Add a rest day."
+  },
+  "cycleRest": "Rest",
+  "@cycleRest": {
+    "description": "A rest day."
+  },
+  "cycleRestHint": "Recovery",
+  "@cycleRestHint": {
+    "description": "Rest day subtitle."
+  },
+  "cycleWorkoutDeleted": "Workout deleted",
+  "@cycleWorkoutDeleted": {
+    "description": "Day whose workout no longer exists."
+  },
+  "cyclePickWorkout": "Pick workout",
+  "@cyclePickWorkout": {
+    "description": "Choose a workout for a day."
+  },
+  "cycleChangeWorkout": "Change workout",
+  "@cycleChangeWorkout": {
+    "description": "Day action."
+  },
+  "cycleMakeRest": "Make rest day",
+  "@cycleMakeRest": {
+    "description": "Day action."
+  },
+  "cycleMakeTraining": "Make training day",
+  "@cycleMakeTraining": {
+    "description": "Day action."
+  },
+  "cycleDayLabel": "Day {n}",
+  "@cycleDayLabel": {
+    "description": "Day number label.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleDayActions": "Actions for day {n}",
+  "@cycleDayActions": {
+    "description": "Day menu button label.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleReorderDay": "Reorder day {n}",
+  "@cycleReorderDay": {
+    "description": "Day drag handle label.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "cycleMaxDays": "Up to 14 days in a cycle.",
+  "@cycleMaxDays": {
+    "description": "Shown at 14 days."
+  },
+  "cycleNeedName": "Name the cycle (1 to 40 characters).",
+  "@cycleNeedName": {
+    "description": "Save blocked: name."
+  },
+  "cycleNeedDays": "Add at least one day.",
+  "@cycleNeedDays": {
+    "description": "Save blocked: no days."
+  },
+  "cycleNeedTraining": "Add at least one training day.",
+  "@cycleNeedTraining": {
+    "description": "Save blocked: only rest."
+  },
+  "cyclePreviewTitle": "Preview · starts today",
+  "@cyclePreviewTitle": {
+    "description": "Preview card title."
+  },
+  "cycleTodayIs": "Today is day",
+  "@cycleTodayIs": {
+    "description": "Start day stepper label."
+  },
+  "cyclePickTitle": "Pick a workout",
+  "@cyclePickTitle": {
+    "description": "Workout pick sheet title."
+  },
+  "cycleNoWorkouts": "No workouts yet. Build one in My workouts.",
+  "@cycleNoWorkouts": {
+    "description": "Workout pick sheet empty."
+  },
+  "cycleToday": "today",
+  "@cycleToday": {
+    "description": "Marks today's day in a cycle."
+  },
+  "scheduleNewCycle": "+ New cycle",
+  "@scheduleNewCycle": {
+    "description": "Create a cycle."
+  },
+  "scheduleCycleLength": "{n}-day cycle",
+  "@scheduleCycleLength": {
+    "description": "Cycle length.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "scheduleShiftHint": "Miss a day? The cycle shifts forward, so nothing gets skipped.",
+  "@scheduleShiftHint": {
+    "description": "Rolling cycle explainer."
+  },
+  "scheduleEmptyTitle": "No cycle yet",
+  "@scheduleEmptyTitle": {
+    "description": "Schedule empty state."
+  },
+  "scheduleEmptyBody": "Pick a starter plan or build your own.",
+  "@scheduleEmptyBody": {
+    "description": "Schedule empty state body."
+  },
+  "scheduleMyCycles": "My cycles",
+  "@scheduleMyCycles": {
+    "description": "Saved cycles list."
+  },
+  "scheduleExercises": "{count} ex",
+  "@scheduleExercises": {
+    "description": "Exercise count on a day row.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cyclesActive": "Active",
+  "@cyclesActive": {
+    "description": "Marks the active cycle."
+  },
+  "cyclesMakeActive": "Make active",
+  "@cyclesMakeActive": {
+    "description": "Cycle action."
+  },
+  "cyclesDeleted": "{name} deleted",
+  "@cyclesDeleted": {
+    "description": "Snackbar after deleting a cycle.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclesActiveNoDelete": "Switch to another cycle before deleting this one.",
+  "@cyclesActiveNoDelete": {
+    "description": "Active cycle cannot be deleted."
+  },
+  "cyclesActions": "Actions for {name}",
+  "@cyclesActions": {
+    "description": "Cycle menu button label.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclesStartTitle": "Start {name}",
+  "@cyclesStartTitle": {
+    "description": "Activate cycle sheet title.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclesStartToday": "Start today",
+  "@cyclesStartToday": {
+    "description": "Activate the cycle."
+  },
+  "homeToday": "Day {n} of {total} · {name}",
+  "@homeToday": {
+    "description": "Home: today in the active cycle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeNoCycle": "No cycle yet. Set one up in Schedule.",
+  "@homeNoCycle": {
+    "description": "Home with no active cycle."
+  },
+  "onbPlanTitle": "Pick a starting plan",
+  "@onbPlanTitle": {
+    "description": "Onboarding step 3 title."
+  },
+  "onbPlanBuildOwn": "Build my own cycle instead",
+  "@onbPlanBuildOwn": {
+    "description": "Onboarding: open the cycle builder."
+  },
+  "onbPlanSkip": "Skip for now",
+  "@onbPlanSkip": {
+    "description": "Onboarding: finish without a cycle."
+  },
+  "onbStartTraining": "Start training",
+  "@onbStartTraining": {
+    "description": "Onboarding: save plan and finish."
+  },
+  "planRecommended": "Recommended",
+  "@planRecommended": {
+    "description": "Marks the recommended starter plan."
+  },
+  "planPpl": "PPL + Rest",
+  "@planPpl": {
+    "description": "Starter plan name."
+  },
+  "planPplDesc": "4-day rolling cycle",
+  "@planPplDesc": {
+    "description": "Starter plan description."
+  },
+  "planUpperLower": "Upper / Lower",
+  "@planUpperLower": {
+    "description": "Starter plan name."
+  },
+  "planUpperLowerDesc": "6-day cycle with 2 rest days",
+  "@planUpperLowerDesc": {
+    "description": "Starter plan description."
+  },
+  "planFullBody": "Full Body + Rest",
+  "@planFullBody": {
+    "description": "Starter plan name."
+  },
+  "planFullBodyDesc": "Train every other day",
+  "@planFullBodyDesc": {
+    "description": "Starter plan description."
+  },
+  "planUse": "Use {name}",
+  "@planUse": {
+    "description": "Starter plan button label on Schedule.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cyclePreview": "Preview",
+  "@cyclePreview": {
+    "description": "Preview card title when editing a cycle."
+  },
+  "cyclesEmpty": "No saved cycles yet.",
+  "@cyclesEmpty": {
+    "description": "My cycles empty state."
+  },
+  "scheduleLoadFailed": "Couldn't load your cycle.",
+  "@scheduleLoadFailed": {
+    "description": "Schedule failed to read the active cycle."
+  },
+  "homeDayOf": "Day {n} of {total}",
+  "@homeDayOf": {
+    "description": "Home rest-day card: where today is in the cycle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "homeMarkDone": "Mark done",
+  "@homeMarkDone": {
+    "description": "Home: mark today's training day done so the cycle moves on."
+  },
+  "homeDone": "Done",
+  "@homeDone": {
+    "description": "Status: today's training day is marked done."
+  },
+  "homeNext": "Next: {name}",
+  "@homeNext": {
+    "description": "Home: the cycle day after today.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMissed": "{count, plural, =1{{name} · missed yesterday} other{{name} · missed {count} days}}",
+  "@homeMissed": {
+    "description": "Home: today's training day carried over from missed days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeRestDay": "Rest day",
+  "@homeRestDay": {
+    "description": "Home rest-day card heading."
+  },
+  "cycleModeLabel": "Cycle mode",
+  "@cycleModeLabel": {
+    "description": "Rolling / Weekdays choice label."
+  },
+  "cycleModeRolling": "Rolling",
+  "@cycleModeRolling": {
+    "description": "Mode: the cycle rolls on from the last done day."
+  },
+  "cycleModeWeekdays": "Weekdays",
+  "@cycleModeWeekdays": {
+    "description": "Mode: each weekday has its own workout."
+  },
+  "cycleWeekdaysNeedSeven": "Weekday mode needs exactly 7 days",
+  "@cycleWeekdaysNeedSeven": {
+    "description": "Why Weekdays, add or remove is unavailable."
+  },
+  "cycleWeekdayActions": "Actions for {weekday}",
+  "@cycleWeekdayActions": {
+    "description": "Weekday row menu button label.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "cycleReorderWeekday": "Reorder {weekday}",
+  "@cycleReorderWeekday": {
+    "description": "Weekday row drag handle label.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleWeekdaysLength": "Weekdays · {n}-day cycle",
+  "@scheduleWeekdaysLength": {
+    "description": "Schedule card header for a Weekdays cycle.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "scheduleWeekdaysHint": "Each weekday has its own workout. A missed day simply passes.",
+  "@scheduleWeekdaysHint": {
+    "description": "Schedule hint for a Weekdays cycle."
+  },
+  "homeWeekdayToday": "{weekday} · {name}",
+  "@homeWeekdayToday": {
+    "description": "Home card heading in Weekdays mode.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeDayActions": "Day actions",
+  "@homeDayActions": {
+    "description": "Home button that opens the day actions sheet."
+  },
+  "dayActionsTitle": "Change today",
+  "@dayActionsTitle": {
+    "description": "Day actions sheet title."
+  },
+  "dayActionSwap": "Swap workout",
+  "@dayActionSwap": {
+    "description": "Day action."
+  },
+  "dayActionSwapHint": "Do another workout today. Your cycle stays the same.",
+  "@dayActionSwapHint": {
+    "description": "Day action hint."
+  },
+  "dayActionSkip": "Skip",
+  "@dayActionSkip": {
+    "description": "Day action."
+  },
+  "dayActionSkipHintRolling": "Drop today's workout. Tomorrow is the next day.",
+  "@dayActionSkipHintRolling": {
+    "description": "Day action hint, rolling cycle."
+  },
+  "dayActionSkipHintWeekdays": "Drop today's workout. Not counted as missed.",
+  "@dayActionSkipHintWeekdays": {
+    "description": "Day action hint, weekday cycle."
+  },
+  "dayActionRest": "Unplanned rest",
+  "@dayActionRest": {
+    "description": "Day action."
+  },
+  "dayActionRestHintRolling": "Rest today. The same workout waits for tomorrow.",
+  "@dayActionRestHintRolling": {
+    "description": "Day action hint, rolling cycle."
+  },
+  "dayActionRestHintWeekdays": "Rest today. Not counted as missed.",
+  "@dayActionRestHintWeekdays": {
+    "description": "Day action hint, weekday cycle."
+  },
+  "dayActionMove": "Move to another day",
+  "@dayActionMove": {
+    "description": "Day action, weekday cycles."
+  },
+  "dayActionMoveHint": "Do today's workout later this week.",
+  "@dayActionMoveHint": {
+    "description": "Day action hint."
+  },
+  "dayActionTrainToday": "Train today",
+  "@dayActionTrainToday": {
+    "description": "Rest-day action."
+  },
+  "dayActionTrainTodayHint": "Do a workout on this rest day.",
+  "@dayActionTrainTodayHint": {
+    "description": "Rest-day action hint."
+  },
+  "dayMoveTitle": "Move {name} to",
+  "@dayMoveTitle": {
+    "description": "Move target sheet title.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSwappedFrom": "Swapped from {name}",
+  "@homeSwappedFrom": {
+    "description": "Home line under a swapped workout.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMovedFrom": "Moved from {weekday}",
+  "@homeMovedFrom": {
+    "description": "Home line under a moved-in workout.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "homeMovedTo": "Moved to {weekday}",
+  "@homeMovedTo": {
+    "description": "Home line on a day whose workout was moved.",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      }
+    }
+  },
+  "homeSkipped": "Skipped",
+  "@homeSkipped": {
+    "description": "Home status when today was skipped."
+  },
+  "homeExtraSession": "Extra session on a rest day",
+  "@homeExtraSession": {
+    "description": "Home line for Train today."
+  },
+  "swapNoOthers": "No other workouts yet. Build one in My workouts.",
+  "@swapNoOthers": {
+    "description": "Swap with no other workouts."
+  },
+  "scheduleViewLabel": "Schedule view",
+  "@scheduleViewLabel": {
+    "description": "Cycle / Calendar choice label."
+  },
+  "scheduleViewCycle": "Cycle",
+  "@scheduleViewCycle": {
+    "description": "Schedule view: the cycle card."
+  },
+  "scheduleViewCalendar": "Calendar",
+  "@scheduleViewCalendar": {
+    "description": "Schedule view: the month calendar."
+  },
+  "calendarPrevMonth": "Previous month",
+  "@calendarPrevMonth": {
+    "description": "Calendar navigation."
+  },
+  "calendarNextMonth": "Next month",
+  "@calendarNextMonth": {
+    "description": "Calendar navigation."
+  },
+  "calendarThisMonth": "This month",
+  "@calendarThisMonth": {
+    "description": "Calendar navigation back to the current month."
+  },
+  "calendarNoCycle": "No active cycle. Past days still show here.",
+  "@calendarNoCycle": {
+    "description": "Calendar with no active cycle."
+  },
+  "calendarLoadFailed": "Couldn't load your calendar.",
+  "@calendarLoadFailed": {
+    "description": "Calendar read failed."
+  },
+  "calendarPlanned": "planned",
+  "@calendarPlanned": {
+    "description": "Calendar: a date's plan, not history."
+  },
+  "calendarOtherMonth": "other month",
+  "@calendarOtherMonth": {
+    "description": "Calendar: a date outside the shown month."
+  },
+  "calendarMissed": "Missed",
+  "@calendarMissed": {
+    "description": "Calendar status."
+  },
+  "calendarMoved": "Moved",
+  "@calendarMoved": {
+    "description": "Calendar status."
+  },
+  "calendarCycle": "Cycle: {name}",
+  "@calendarCycle": {
+    "description": "Day sheet: the cycle the date belongs to.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarNothing": "Nothing recorded",
+  "@calendarNothing": {
+    "description": "Day sheet for a date with no history or plan."
+  },
+  "calendarToday": "Today: {summary}",
+  "@calendarToday": {
+    "description": "Visible line naming today on the calendar.",
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "calendarSwapped": "Swapped",
+  "@calendarSwapped": {
+    "description": "Calendar legend: a swapped or moved-in workout."
+  },
+  "calendarPlannedRest": "Rest, planned",
+  "@calendarPlannedRest": {
+    "description": "Calendar legend: a planned rest day."
+  },
+  "calendarWorkoutPlanned": "Workout, planned",
+  "@calendarWorkoutPlanned": {
+    "description": "Calendar legend: a planned training day."
+  },
+  "homeStartWorkout": "Start workout",
+  "@homeStartWorkout": {
+    "description": "Home: open today's workout in the logger."
+  },
+  "homeResumeWorkout": "Resume workout",
+  "@homeResumeWorkout": {
+    "description": "Home: back to the workout in progress."
+  },
+  "loggerFinish": "Finish",
+  "@loggerFinish": {
+    "description": "Logger: end the workout."
+  },
+  "loggerLog": "Log",
+  "@loggerLog": {
+    "description": "Logger: save this set."
+  },
+  "loggerLogSet": "Log set {n}",
+  "@loggerLogSet": {
+    "description": "Logger: Log button semantics.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerSet": "Set {n}",
+  "@loggerSet": {
+    "description": "Logger: set number.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerAddSet": "+ Set",
+  "@loggerAddSet": {
+    "description": "Logger: add one more set."
+  },
+  "loggerAddExercise": "Add exercise",
+  "@loggerAddExercise": {
+    "description": "Logger: add an exercise at the end."
+  },
+  "loggerSwapExercise": "Swap exercise",
+  "@loggerSwapExercise": {
+    "description": "Logger: replace an exercise."
+  },
+  "loggerExerciseActions": "Actions for {name}",
+  "@loggerExerciseActions": {
+    "description": "Logger: exercise menu.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerMenu": "Workout actions",
+  "@loggerMenu": {
+    "description": "Logger: overflow menu."
+  },
+  "loggerDiscard": "Discard workout",
+  "@loggerDiscard": {
+    "description": "Logger: throw the workout away."
+  },
+  "loggerDiscardTitle": "Discard this workout?",
+  "@loggerDiscardTitle": {
+    "description": "Discard dialog title."
+  },
+  "loggerDiscardBody": "Its logged sets will be removed.",
+  "@loggerDiscardBody": {
+    "description": "Discard dialog body."
+  },
+  "loggerKeepGoing": "Keep going",
+  "@loggerKeepGoing": {
+    "description": "Discard dialog: cancel."
+  },
+  "loggerNeedSet": "Log at least one set",
+  "@loggerNeedSet": {
+    "description": "Finish with no sets."
+  },
+  "loggerWeight": "Weight",
+  "@loggerWeight": {
+    "description": "Stepper label."
+  },
+  "loggerReps": "Reps",
+  "@loggerReps": {
+    "description": "Stepper label."
+  },
+  "loggerSeconds": "Seconds",
+  "@loggerSeconds": {
+    "description": "Stepper label."
+  },
+  "loggerBodyweight": "Bodyweight",
+  "@loggerBodyweight": {
+    "description": "A bodyweight set with no added load."
+  },
+  "loggerEditSet": "Edit set {n}",
+  "@loggerEditSet": {
+    "description": "Edit sheet title.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerDeleteSet": "Delete set",
+  "@loggerDeleteSet": {
+    "description": "Edit sheet action."
+  },
+  "loggerReps1": "{n} reps",
+  "@loggerReps1": {
+    "description": "A set's reps.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerSeconds1": "{n} s",
+  "@loggerSeconds1": {
+    "description": "A set's seconds.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "loggerKg": "{value} kg",
+  "@loggerKg": {
+    "description": "Weight in kg.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerLb": "{value} lb",
+  "@loggerLb": {
+    "description": "Weight in lb.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitKg": "kg",
+  "@unitKg": {
+    "description": "Unit."
+  },
+  "unitLb": "lb",
+  "@unitLb": {
+    "description": "Unit."
+  },
+  "loggerLast": "Last: {set}",
+  "@loggerLast": {
+    "description": "Ghost line: last session's set.",
+    "placeholders": {
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerTarget": "Target: {set}",
+  "@loggerTarget": {
+    "description": "Suggested target for this set.",
+    "placeholders": {
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "loggerPr": "PR",
+  "@loggerPr": {
+    "description": "Personal record badge."
+  },
+  "loggerTimes": "{weight} × {reps}",
+  "@loggerTimes": {
+    "description": "Weight times reps, e.g. 60 kg × 8.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      },
+      "reps": {
+        "type": "int"
+      }
+    }
+  },
+  "restLeft": "Rest {time}",
+  "@restLeft": {
+    "description": "Rest bar countdown.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restPausedLeft": "Paused · {time}",
+  "@restPausedLeft": {
+    "description": "Rest bar while paused.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restNext": "Next: {name}, set {n}",
+  "@restNext": {
+    "description": "What comes after the rest.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "restLastSet": "Last set done",
+  "@restLastSet": {
+    "description": "Nothing left after this rest."
+  },
+  "restOver": "Rest over",
+  "@restOver": {
+    "description": "Rest finished."
+  },
+  "restPlus": "Add 15 seconds",
+  "@restPlus": {
+    "description": "Rest control."
+  },
+  "restMinus": "Take off 15 seconds",
+  "@restMinus": {
+    "description": "Rest control."
+  },
+  "restPause": "Pause rest",
+  "@restPause": {
+    "description": "Rest control."
+  },
+  "restResume": "Resume rest",
+  "@restResume": {
+    "description": "Rest control."
+  },
+  "restSkip": "Skip rest",
+  "@restSkip": {
+    "description": "Rest control."
+  },
+  "restDismiss": "Dismiss",
+  "@restDismiss": {
+    "description": "Hide the Rest over bar."
+  },
+  "restNotificationsOff": "Turn on notifications to be alerted when locked",
+  "@restNotificationsOff": {
+    "description": "Notifications not allowed."
+  },
+  "restOpenSettings": "Open settings",
+  "@restOpenSettings": {
+    "description": "Open the phone's notification settings."
   }
 }
