@@ -6,6 +6,7 @@ import 'package:repforge/features/body/data/providers.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/logger/data/providers.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
+import 'package:repforge/features/progress/data/providers.dart';
 import 'package:repforge/features/schedule/data/providers.dart';
 import 'package:repforge/features/workout/data/providers.dart';
 
@@ -16,6 +17,7 @@ import '../features/logger/fake_rest_alarm.dart';
 import '../features/logger/fake_session_repository.dart';
 import '../features/logger/fake_summary_share.dart';
 import '../features/onboarding/fake_onboarding_repository.dart';
+import '../features/progress/fake_progress_prefs.dart';
 import '../features/schedule/fake_cycle_repository.dart';
 import '../features/schedule/fake_day_record_repository.dart';
 import '../features/workout/fakes.dart';
@@ -32,6 +34,7 @@ List<Override> signedInOverrides({
   FakeSummaryShare? share,
   FakeCustomExerciseRepository? custom,
   FakeBodyRepository? body,
+  FakeProgressPrefs? prefs,
   UnitSystem units = UnitSystem.metric,
 }) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
@@ -64,4 +67,5 @@ List<Override> signedInOverrides({
     custom ?? FakeCustomExerciseRepository(),
   ),
   bodyRepositoryProvider.overrideWithValue(body ?? FakeBodyRepository()),
+  progressPrefsProvider.overrideWithValue(prefs ?? FakeProgressPrefs()),
 ];

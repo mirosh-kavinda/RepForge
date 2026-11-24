@@ -40,10 +40,22 @@ abstract interface class SessionRepository {
 
   // EXL-02 AC7: the last [limit] finished workouts with [exerciseId], newest
   // first, each with its date and that exercise's sets.
+  // A null [limit] returns every one; [since] keeps workouts on or after
+  // that date (PRG-01).
   Future<List<ExerciseLogEntry>> exerciseLog(
     String exerciseId, {
-    int limit = 5,
+    int? limit = 5,
+    DateTime? since,
   });
+
+  // PRG-01 AC2: finished sets per exercise, for the default and the picker.
+  Future<Map<String, int>> exerciseSetCounts();
+
+  // PRG-01 AC3: every finished set on or after [from] (all when null), with
+  // its workout's date.
+  Future<List<({DateTime date, LoggedSet set})>> finishedSetsSince(
+    DateTime? from,
+  );
 
   Future<void> discard(String sessionId);
 

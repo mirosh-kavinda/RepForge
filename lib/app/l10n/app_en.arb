@@ -2770,5 +2770,182 @@
   "bodyOpenHistory": "Body, open past snapshots",
   "@bodyOpenHistory": {
     "description": "Screen reader: the Body card."
+  },
+  "rangeLabel": "Time range",
+  "@rangeLabel": {
+    "description": "Progress range switch label."
+  },
+  "range4w": "4 weeks",
+  "@range4w": {
+    "description": "Range option."
+  },
+  "range3m": "3 months",
+  "@range3m": {
+    "description": "Range option."
+  },
+  "range1y": "1 year",
+  "@range1y": {
+    "description": "Range option."
+  },
+  "rangeAll": "All",
+  "@rangeAll": {
+    "description": "Range option."
+  },
+  "strengthTitle": "Strength",
+  "@strengthTitle": {
+    "description": "Section title."
+  },
+  "strengthChange": "Change exercise",
+  "@strengthChange": {
+    "description": "Open the exercise list."
+  },
+  "strengthPick": "Show which exercise?",
+  "@strengthPick": {
+    "description": "Exercise list title."
+  },
+  "strengthE1rm": "Estimated 1RM",
+  "@strengthE1rm": {
+    "description": "Chart and summary label."
+  },
+  "strengthBestReps": "Best reps",
+  "@strengthBestReps": {
+    "description": "Chart label for bodyweight exercises."
+  },
+  "strengthBestTime": "Best time",
+  "@strengthBestTime": {
+    "description": "Chart label for timed exercises."
+  },
+  "strengthBest": "Best: {amount}",
+  "@strengthBest": {
+    "description": "Summary: best value.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "strengthBestSet": "Best set: {set}",
+  "@strengthBestSet": {
+    "description": "Summary: best set.",
+    "placeholders": {
+      "set": {
+        "type": "String"
+      }
+    }
+  },
+  "strengthNoData": "Finish a workout to see your strength here",
+  "@strengthNoData": {
+    "description": "No workouts yet."
+  },
+  "strengthNeedTwo": "Log this lift in 2 workouts to see a trend",
+  "@strengthNeedTwo": {
+    "description": "Fewer than 2 points."
+  },
+  "volumeTitle": "Weekly volume",
+  "@volumeTitle": {
+    "description": "Section title."
+  },
+  "volumeThisWeek": "This week: {amount}",
+  "@volumeThisWeek": {
+    "description": "Volume this week.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeNoData": "No weighted sets in this range",
+  "@volumeNoData": {
+    "description": "No volume."
+  },
+  "bodyTrendsTitle": "Body trends",
+  "@bodyTrendsTitle": {
+    "description": "Section title."
+  },
+  "bodyTrendsNoData": "Save 2 body snapshots to see a trend",
+  "@bodyTrendsNoData": {
+    "description": "Fewer than 2 points."
+  },
+  "bodyFatNeedTwo": "Save body fat in 2 snapshots to see its trend",
+  "@bodyFatNeedTwo": {
+    "description": "Weight has a trend but body fat has fewer than 2 points."
+  },
+  "trendLatest": "{label}: {amount}",
+  "@trendLatest": {
+    "description": "Latest value of a line.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "changeOverRange": "{change} in this range",
+  "@changeOverRange": {
+    "description": "Change over the range.",
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "chartSummary": "{title}, {range}: {first} to {last}, {change}",
+  "@chartSummary": {
+    "description": "Screen reader summary of a line chart.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      },
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "chartSummaryBars": "{title}, {range}: {weeks} weeks, this week {amount}",
+  "@chartSummaryBars": {
+    "description": "Screen reader summary of the volume bars.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "repsN": "{n} reps",
+  "@repsN": {
+    "description": "A number of reps.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "secondsN": "{n} s",
+  "@secondsN": {
+    "description": "A number of seconds.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
   }
 }

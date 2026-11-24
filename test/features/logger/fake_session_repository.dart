@@ -202,12 +202,14 @@ class FakeSessionRepository implements SessionRepository {
   @override
   Future<List<ExerciseLogEntry>> exerciseLog(
     String exerciseId, {
-    int limit = 5,
+    int? limit = 5,
+    DateTime? since,
   }) async {
     if (logFails case final e?) throw e;
     return [
       for (final w in _byEnd)
-        if (w.sets.any((x) => x.exerciseId == exerciseId))
+        if (w.sets.any((x) => x.exerciseId == exerciseId) &&
+            (since == null || !w.date.isBefore(since)))
           (
             date: w.date,
             sets: [
@@ -215,8 +217,28 @@ class FakeSessionRepository implements SessionRepository {
                 if (x.exerciseId == exerciseId) x,
             ],
           ),
-    ].take(limit).toList();
+    ].take(limit ?? 1 << 30).toList();
   }
+
+  @override
+  Future<Map<String, int>> exerciseSetCounts() async {
+    final out = <String, int>{};
+    for (final w in finishedList) {
+      for (final x in w.sets) {
+        out[x.exerciseId] = (out[x.exerciseId] ?? 0) + 1;
+      }
+    }
+    return out;
+  }
+
+  @override
+  Future<List<({DateTime date, LoggedSet set})>> finishedSetsSince(
+    DateTime? from,
+  ) async => [
+    for (final w in finishedList)
+      if (from == null || !w.date.isBefore(from))
+        for (final x in w.sets) (date: w.date, set: x),
+  ];
 
   @override
   Future<void> setNote(String id, String? note) async {

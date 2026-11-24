@@ -546,4 +546,72 @@ void main() {
       },
     );
   });
+
+  group('PRG-01 progress reads', () {
+    late DateTime clock;
+    late DriftSessionRepository r;
+
+    setUp(() {
+      clock = DateTime.utc(2026, 11, 23, 10);
+      r = DriftSessionRepository(db, days, now: () => clock);
+    });
+
+    Future<void> done(String id, DateTime start, List<LoggedSet> sets) async {
+      await r.start(
+        draft(
+          id,
+          date: DateTime.utc(start.year, start.month, start.day),
+        ).copyWith(startedAt: start),
+      );
+      for (final x in sets) {
+        await r.logSet(id, x.copyWith(id: '$id-${x.id}'));
+      }
+      clock = start.add(const Duration(hours: 1));
+      await r.finish(id);
+    }
+
+    test('set counts per exercise; sets since a date; all of a log', () async {
+      for (var i = 0; i < 7; i++) {
+        await done('w$i', DateTime.utc(2026, 11, 2 + i, 9), [
+          set('1', 1, 60.0 + i),
+          set('2', 1, 0, row: 'r2'),
+        ]);
+      }
+      await r.start(draft('live', date: DateTime.utc(2026, 11, 20)));
+      await r.logSet('live', set('x', 1, 70));
+      expect(await r.exerciseSetCounts(), {'bench': 7, 'dips': 7});
+      final since = await r.finishedSetsSince(DateTime.utc(2026, 11, 7));
+      expect(since, hasLength(4));
+      expect(
+        since.every((x) => !x.date.isBefore(DateTime.utc(2026, 11, 7))),
+        isTrue,
+      );
+      expect(await r.finishedSetsSince(null), hasLength(14));
+      expect(await r.exerciseLog('bench', limit: null), hasLength(7));
+    });
+
+    test('a deleted workout is left out; a log since a date', () async {
+      for (var i = 0; i < 3; i++) {
+        await done('w$i', DateTime.utc(2026, 11, 2 + i, 9), [
+          set('1', 1, 60.0 + i),
+          set('2', 2, 62.0 + i),
+        ]);
+      }
+      await done('gone', DateTime.utc(2026, 11, 10, 9), [set('1', 1, 99)]);
+      await (db.update(db.workoutSessions)..where((s) => s.id.equals('gone')))
+          .write(WorkoutSessionsCompanion(deletedAt: Value(clock)));
+
+      expect(await r.exerciseSetCounts(), {'bench': 6});
+      expect(await r.finishedSetsSince(null), hasLength(6));
+      final all = await r.exerciseLog('bench', limit: null);
+      expect([for (final e in all) e.date.day], [4, 3, 2]);
+      expect([for (final x in all.first.sets) x.kg], unorderedEquals([62, 64]));
+      final since = await r.exerciseLog(
+        'bench',
+        limit: null,
+        since: DateTime.utc(2026, 11, 3),
+      );
+      expect([for (final e in since) e.date.day], [4, 3]);
+    });
+  });
 }

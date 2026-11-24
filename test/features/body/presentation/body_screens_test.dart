@@ -73,7 +73,11 @@ Future<void> openProgress(
 }
 
 Future<void> openForm(WidgetTester tester) async {
-  await tester.ensureVisible(find.byKey(BodyCard.newKey));
+  await tester.scrollUntilVisible(
+    find.byKey(BodyCard.newKey),
+    300,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.byKey(BodyCard.newKey));
   await tester.pumpAndSettle();
@@ -114,6 +118,11 @@ void main() {
           snap('a', DateTime.utc(2026, 11, 20), 82),
           snap('b', DateTime.utc(2026, 11, 23), 81),
         ],
+      );
+      await tester.scrollUntilVisible(
+        find.text('Mon, Nov 23, 2026'),
+        300,
+        scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Mon, Nov 23, 2026'), findsOneWidget);
       expect(find.text('81.0 kg · Body fat —'), findsOneWidget);
@@ -236,7 +245,18 @@ void main() {
           snap('b', DateTime.utc(2026, 11, 23), 81),
         ],
       );
-      await tester.tap(find.byKey(BodyCard.openKey));
+      await tester.scrollUntilVisible(
+        find.byKey(BodyCard.openKey),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final title = find.descendant(
+        of: find.byKey(BodyCard.openKey),
+        matching: find.text('Body'),
+      );
+      await tester.ensureVisible(title);
+      await tester.pumpAndSettle();
+      await tester.tap(title);
       await tester.pumpAndSettle();
       expect(find.byType(BodyHistoryScreen), findsOneWidget);
       final dates = [
@@ -274,7 +294,18 @@ void main() {
           BodySnapshot(id: 'o', date: DateTime.utc(2026, 11, 1), weightKg: 81),
         ],
       );
-      await tester.tap(find.byKey(BodyCard.openKey));
+      await tester.scrollUntilVisible(
+        find.byKey(BodyCard.openKey),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final title = find.descendant(
+        of: find.byKey(BodyCard.openKey),
+        matching: find.text('Body'),
+      );
+      await tester.ensureVisible(title);
+      await tester.pumpAndSettle();
+      await tester.tap(title);
       await tester.pumpAndSettle();
       await tester.tap(find.text('Sun, Nov 1, 2026'));
       await tester.pumpAndSettle();

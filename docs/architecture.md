@@ -90,6 +90,9 @@ Design choices:
   time left), local only. One local notification (`RestAlarm` port over
   flutter_local_notifications, scheduled in UTC) is replaced on every change and cancelled on
   Finish / Discard.
+- Progress (PRG-01): `progress_rules.dart` builds chart series from finished sets and body
+  snapshots for a range (e1RM and volume from `lib/core/metrics`); charts are `fl_chart`, each
+  hidden from screen readers behind a text summary. The chosen exercise lives in `app_meta`.
 - Body Snapshot (BOD-01): `body_snapshots` stores the inputs and every result (JSON, from
   `lib/core/metrics` via `computeBodyResults`) together; one row per calendar day, replaced on
   re-save. Onboarding rows have no results and are worked out on view, never stored back.

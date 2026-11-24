@@ -29,4 +29,9 @@ abstract final class RfSize {
   static const stepperButton = 44.0;
   // Status icons inside a calendar cell (SCH-05).
   static const iconSm = 16.0;
+  // Progress charts (PRG-01).
+  static const lineChartHeight = 180.0;
+  static const barChartHeight = 160.0;
+  static const chartLineWidth = 3.0;
+  static const chartBarWidth = 8.0;
 }

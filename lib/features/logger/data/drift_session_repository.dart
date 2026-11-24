@@ -420,9 +420,17 @@ class DriftSessionRepository implements SessionRepository {
   @override
   Future<List<ExerciseLogEntry>> exerciseLog(
     String exerciseId, {
-    int limit = 5,
+    int? limit = 5,
+    DateTime? since,
   }) async {
     final ended = _db.workoutSessions.endedAt.max();
+    var where =
+        _db.sessionSets.exerciseId.equals(exerciseId) &
+        _db.workoutSessions.endedAt.isNotNull() &
+        _db.workoutSessions.deletedAt.isNull();
+    if (since != null) {
+      where = where & _db.workoutSessions.date.isBiggerOrEqualValue(since);
+    }
     final ids =
         await (_db.selectOnly(_db.sessionSets).join([
                 innerJoin(
@@ -432,32 +440,83 @@ class DriftSessionRepository implements SessionRepository {
                 ),
               ])
               ..addColumns([_db.sessionSets.sessionId, ended])
-              ..where(
-                _db.sessionSets.exerciseId.equals(exerciseId) &
-                    _db.workoutSessions.endedAt.isNotNull() &
-                    _db.workoutSessions.deletedAt.isNull(),
-              )
+              ..where(where)
               ..groupBy([_db.sessionSets.sessionId])
               ..orderBy([OrderingTerm.desc(ended)])
-              ..limit(limit))
+              // SQLite reads a negative LIMIT as none.
+              ..limit(limit ?? -1))
             .map((r) => r.read(_db.sessionSets.sessionId)!)
             .get();
-    final out = <ExerciseLogEntry>[];
-    for (final id in ids) {
-      final w = await (_db.select(
-        _db.workoutSessions,
-      )..where((s) => s.id.equals(id))).getSingle();
-      final sets =
-          await (_db.select(_db.sessionSets)
-                ..where(
-                  (x) =>
-                      x.sessionId.equals(id) & x.exerciseId.equals(exerciseId),
-                )
-                ..orderBy([(x) => OrderingTerm.asc(x.loggedAt)]))
-              .get();
-      out.add((date: w.date, sets: sets.map(_set).toList()));
+    if (ids.isEmpty) return const [];
+    // One query for every listed workout's sets (NFR-01), grouped in Dart.
+    final rows =
+        await (_db.select(_db.sessionSets).join([
+                innerJoin(
+                  _db.workoutSessions,
+                  _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+                ),
+              ])
+              ..where(
+                _db.sessionSets.sessionId.isIn(ids) &
+                    _db.sessionSets.exerciseId.equals(exerciseId),
+              )
+              ..orderBy([OrderingTerm.asc(_db.sessionSets.loggedAt)]))
+            .get();
+    final dates = <String, DateTime>{};
+    final sets = <String, List<LoggedSet>>{};
+    for (final r in rows) {
+      final w = r.readTable(_db.workoutSessions);
+      dates[w.id] = w.date;
+      (sets[w.id] ??= []).add(_set(r.readTable(_db.sessionSets)));
     }
-    return out;
+    return [for (final id in ids) (date: dates[id]!, sets: sets[id]!)];
+  }
+
+  Expression<bool> get _finished =>
+      _db.workoutSessions.endedAt.isNotNull() &
+      _db.workoutSessions.deletedAt.isNull();
+
+  Join<HasResultSet, dynamic> get _session => innerJoin(
+    _db.workoutSessions,
+    _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+    useColumns: false,
+  );
+
+  @override
+  Future<Map<String, int>> exerciseSetCounts() async {
+    final n = _db.sessionSets.id.count();
+    final q = _db.selectOnly(_db.sessionSets).join([_session])
+      ..addColumns([_db.sessionSets.exerciseId, n])
+      ..where(_finished)
+      ..groupBy([_db.sessionSets.exerciseId]);
+    return {
+      for (final r in await q.get())
+        r.read(_db.sessionSets.exerciseId)!: r.read(n)!,
+    };
+  }
+
+  @override
+  Future<List<({DateTime date, LoggedSet set})>> finishedSetsSince(
+    DateTime? from,
+  ) async {
+    final q =
+        _db.select(_db.sessionSets).join([
+          innerJoin(
+            _db.workoutSessions,
+            _db.workoutSessions.id.equalsExp(_db.sessionSets.sessionId),
+          ),
+        ])..where(
+          from == null
+              ? _finished
+              : _finished & _db.workoutSessions.date.isBiggerOrEqualValue(from),
+        );
+    return [
+      for (final r in await q.get())
+        (
+          date: r.readTable(_db.workoutSessions).date,
+          set: _set(r.readTable(_db.sessionSets)),
+        ),
+    ];
   }
 
   @override
