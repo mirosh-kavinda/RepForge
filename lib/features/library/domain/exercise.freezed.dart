@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Exercise {
 
- String get id; String get name; List<Muscle> get primaryMuscles; List<Muscle> get secondaryMuscles; Equipment get equipment; ExerciseCategory get category; ExerciseLevel get level; List<String> get instructions; List<String> get images; Mechanic? get mechanic; Force? get force;
+ String get id; String get name; List<Muscle> get primaryMuscles; List<Muscle> get secondaryMuscles; Equipment get equipment; ExerciseCategory get category; ExerciseLevel get level; List<String> get instructions; List<String> get images; Mechanic? get mechanic; Force? get force;// EXL-03: made by the user; [notes] stands in for instructions.
+ bool get custom; String? get notes;
 /// Create a copy of Exercise
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +26,16 @@ $ExerciseCopyWith<Exercise> get copyWith => _$ExerciseCopyWithImpl<Exercise>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Exercise&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.primaryMuscles, primaryMuscles)&&const DeepCollectionEquality().equals(other.secondaryMuscles, secondaryMuscles)&&(identical(other.equipment, equipment) || other.equipment == equipment)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other.instructions, instructions)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.mechanic, mechanic) || other.mechanic == mechanic)&&(identical(other.force, force) || other.force == force));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Exercise&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.primaryMuscles, primaryMuscles)&&const DeepCollectionEquality().equals(other.secondaryMuscles, secondaryMuscles)&&(identical(other.equipment, equipment) || other.equipment == equipment)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other.instructions, instructions)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.mechanic, mechanic) || other.mechanic == mechanic)&&(identical(other.force, force) || other.force == force)&&(identical(other.custom, custom) || other.custom == custom)&&(identical(other.notes, notes) || other.notes == notes));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(primaryMuscles),const DeepCollectionEquality().hash(secondaryMuscles),equipment,category,level,const DeepCollectionEquality().hash(instructions),const DeepCollectionEquality().hash(images),mechanic,force);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(primaryMuscles),const DeepCollectionEquality().hash(secondaryMuscles),equipment,category,level,const DeepCollectionEquality().hash(instructions),const DeepCollectionEquality().hash(images),mechanic,force,custom,notes);
 
 @override
 String toString() {
-  return 'Exercise(id: $id, name: $name, primaryMuscles: $primaryMuscles, secondaryMuscles: $secondaryMuscles, equipment: $equipment, category: $category, level: $level, instructions: $instructions, images: $images, mechanic: $mechanic, force: $force)';
+  return 'Exercise(id: $id, name: $name, primaryMuscles: $primaryMuscles, secondaryMuscles: $secondaryMuscles, equipment: $equipment, category: $category, level: $level, instructions: $instructions, images: $images, mechanic: $mechanic, force: $force, custom: $custom, notes: $notes)';
 }
 
 
@@ -45,7 +46,7 @@ abstract mixin class $ExerciseCopyWith<$Res>  {
   factory $ExerciseCopyWith(Exercise value, $Res Function(Exercise) _then) = _$ExerciseCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, List<Muscle> primaryMuscles, List<Muscle> secondaryMuscles, Equipment equipment, ExerciseCategory category, ExerciseLevel level, List<String> instructions, List<String> images, Mechanic? mechanic, Force? force
+ String id, String name, List<Muscle> primaryMuscles, List<Muscle> secondaryMuscles, Equipment equipment, ExerciseCategory category, ExerciseLevel level, List<String> instructions, List<String> images, Mechanic? mechanic, Force? force, bool custom, String? notes
 });
 
 
@@ -62,7 +63,7 @@ class _$ExerciseCopyWithImpl<$Res>
 
 /// Create a copy of Exercise
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? primaryMuscles = null,Object? secondaryMuscles = null,Object? equipment = null,Object? category = null,Object? level = null,Object? instructions = null,Object? images = null,Object? mechanic = freezed,Object? force = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? primaryMuscles = null,Object? secondaryMuscles = null,Object? equipment = null,Object? category = null,Object? level = null,Object? instructions = null,Object? images = null,Object? mechanic = freezed,Object? force = freezed,Object? custom = null,Object? notes = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -75,7 +76,9 @@ as ExerciseLevel,instructions: null == instructions ? _self.instructions : instr
 as List<String>,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,mechanic: freezed == mechanic ? _self.mechanic : mechanic // ignore: cast_nullable_to_non_nullable
 as Mechanic?,force: freezed == force ? _self.force : force // ignore: cast_nullable_to_non_nullable
-as Force?,
+as Force?,custom: null == custom ? _self.custom : custom // ignore: cast_nullable_to_non_nullable
+as bool,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force,  bool custom,  String? notes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Exercise() when $default != null:
-return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force);case _:
+return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force,_that.custom,_that.notes);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force,  bool custom,  String? notes)  $default,) {final _that = this;
 switch (_that) {
 case _Exercise():
-return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force);case _:
+return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force,_that.custom,_that.notes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  List<Muscle> primaryMuscles,  List<Muscle> secondaryMuscles,  Equipment equipment,  ExerciseCategory category,  ExerciseLevel level,  List<String> instructions,  List<String> images,  Mechanic? mechanic,  Force? force,  bool custom,  String? notes)?  $default,) {final _that = this;
 switch (_that) {
 case _Exercise() when $default != null:
-return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force);case _:
+return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,_that.equipment,_that.category,_that.level,_that.instructions,_that.images,_that.mechanic,_that.force,_that.custom,_that.notes);case _:
   return null;
 
 }
@@ -216,7 +219,7 @@ return $default(_that.id,_that.name,_that.primaryMuscles,_that.secondaryMuscles,
 
 
 class _Exercise implements Exercise {
-  const _Exercise({required this.id, required this.name, required final  List<Muscle> primaryMuscles, required final  List<Muscle> secondaryMuscles, required this.equipment, required this.category, required this.level, required final  List<String> instructions, required final  List<String> images, this.mechanic, this.force}): _primaryMuscles = primaryMuscles,_secondaryMuscles = secondaryMuscles,_instructions = instructions,_images = images;
+  const _Exercise({required this.id, required this.name, required final  List<Muscle> primaryMuscles, required final  List<Muscle> secondaryMuscles, required this.equipment, required this.category, required this.level, required final  List<String> instructions, required final  List<String> images, this.mechanic, this.force, this.custom = false, this.notes}): _primaryMuscles = primaryMuscles,_secondaryMuscles = secondaryMuscles,_instructions = instructions,_images = images;
   
 
 @override final  String id;
@@ -254,6 +257,9 @@ class _Exercise implements Exercise {
 
 @override final  Mechanic? mechanic;
 @override final  Force? force;
+// EXL-03: made by the user; [notes] stands in for instructions.
+@override@JsonKey() final  bool custom;
+@override final  String? notes;
 
 /// Create a copy of Exercise
 /// with the given fields replaced by the non-null parameter values.
@@ -265,16 +271,16 @@ _$ExerciseCopyWith<_Exercise> get copyWith => __$ExerciseCopyWithImpl<_Exercise>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Exercise&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._primaryMuscles, _primaryMuscles)&&const DeepCollectionEquality().equals(other._secondaryMuscles, _secondaryMuscles)&&(identical(other.equipment, equipment) || other.equipment == equipment)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other._instructions, _instructions)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.mechanic, mechanic) || other.mechanic == mechanic)&&(identical(other.force, force) || other.force == force));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Exercise&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._primaryMuscles, _primaryMuscles)&&const DeepCollectionEquality().equals(other._secondaryMuscles, _secondaryMuscles)&&(identical(other.equipment, equipment) || other.equipment == equipment)&&(identical(other.category, category) || other.category == category)&&(identical(other.level, level) || other.level == level)&&const DeepCollectionEquality().equals(other._instructions, _instructions)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.mechanic, mechanic) || other.mechanic == mechanic)&&(identical(other.force, force) || other.force == force)&&(identical(other.custom, custom) || other.custom == custom)&&(identical(other.notes, notes) || other.notes == notes));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_primaryMuscles),const DeepCollectionEquality().hash(_secondaryMuscles),equipment,category,level,const DeepCollectionEquality().hash(_instructions),const DeepCollectionEquality().hash(_images),mechanic,force);
+int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_primaryMuscles),const DeepCollectionEquality().hash(_secondaryMuscles),equipment,category,level,const DeepCollectionEquality().hash(_instructions),const DeepCollectionEquality().hash(_images),mechanic,force,custom,notes);
 
 @override
 String toString() {
-  return 'Exercise(id: $id, name: $name, primaryMuscles: $primaryMuscles, secondaryMuscles: $secondaryMuscles, equipment: $equipment, category: $category, level: $level, instructions: $instructions, images: $images, mechanic: $mechanic, force: $force)';
+  return 'Exercise(id: $id, name: $name, primaryMuscles: $primaryMuscles, secondaryMuscles: $secondaryMuscles, equipment: $equipment, category: $category, level: $level, instructions: $instructions, images: $images, mechanic: $mechanic, force: $force, custom: $custom, notes: $notes)';
 }
 
 
@@ -285,7 +291,7 @@ abstract mixin class _$ExerciseCopyWith<$Res> implements $ExerciseCopyWith<$Res>
   factory _$ExerciseCopyWith(_Exercise value, $Res Function(_Exercise) _then) = __$ExerciseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, List<Muscle> primaryMuscles, List<Muscle> secondaryMuscles, Equipment equipment, ExerciseCategory category, ExerciseLevel level, List<String> instructions, List<String> images, Mechanic? mechanic, Force? force
+ String id, String name, List<Muscle> primaryMuscles, List<Muscle> secondaryMuscles, Equipment equipment, ExerciseCategory category, ExerciseLevel level, List<String> instructions, List<String> images, Mechanic? mechanic, Force? force, bool custom, String? notes
 });
 
 
@@ -302,7 +308,7 @@ class __$ExerciseCopyWithImpl<$Res>
 
 /// Create a copy of Exercise
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? primaryMuscles = null,Object? secondaryMuscles = null,Object? equipment = null,Object? category = null,Object? level = null,Object? instructions = null,Object? images = null,Object? mechanic = freezed,Object? force = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? primaryMuscles = null,Object? secondaryMuscles = null,Object? equipment = null,Object? category = null,Object? level = null,Object? instructions = null,Object? images = null,Object? mechanic = freezed,Object? force = freezed,Object? custom = null,Object? notes = freezed,}) {
   return _then(_Exercise(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -315,7 +321,9 @@ as ExerciseLevel,instructions: null == instructions ? _self._instructions : inst
 as List<String>,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,mechanic: freezed == mechanic ? _self.mechanic : mechanic // ignore: cast_nullable_to_non_nullable
 as Mechanic?,force: freezed == force ? _self.force : force // ignore: cast_nullable_to_non_nullable
-as Force?,
+as Force?,custom: null == custom ? _self.custom : custom // ignore: cast_nullable_to_non_nullable
+as bool,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

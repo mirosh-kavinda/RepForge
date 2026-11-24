@@ -28,6 +28,8 @@ Future<List<Muscle>> workoutMuscles(Ref ref, String workoutId) async {
   final all = await ref.watch(templatesProvider.future);
   final w = all.where((t) => t.id == workoutId).firstOrNull;
   if (w == null) return const [];
+  // EXL-03 AC6: a custom exercise's muscles were edited.
+  ref.watch(customExercisesProvider);
   final catalog = await ref.watch(exerciseCatalogProvider.future);
   final found = <String, Exercise>{};
   for (final id in {for (final e in w.exercises) e.exerciseId}) {

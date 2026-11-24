@@ -107,5 +107,8 @@ abstract class Exercise with _$Exercise {
     required List<String> images,
     Mechanic? mechanic,
     Force? force,
+    // EXL-03: made by the user; [notes] stands in for instructions.
+    @Default(false) bool custom,
+    String? notes,
   }) = _Exercise;
 }

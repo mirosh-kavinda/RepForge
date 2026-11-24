@@ -10,6 +10,7 @@ import '../../../app/widgets/rf_chip.dart';
 import '../../../app/widgets/rf_tappable.dart';
 import '../data/providers.dart';
 import '../domain/exercise.dart';
+import 'custom_exercise_form.dart';
 import 'exercise_filters.dart';
 import 'exercise_search.dart';
 import 'muscle_groups.dart';
@@ -24,6 +25,7 @@ class ExercisePickerScreen extends ConsumerStatefulWidget {
 
   static const searchKey = ValueKey('picker.search');
   static const addKey = ValueKey('picker.add');
+  static const createKey = ValueKey('picker.create');
 
   final Set<String> alreadyAdded;
   final int capacity;
@@ -66,6 +68,15 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
 
   bool get _full => _picked.length >= widget.capacity;
 
+  Future<void> _create() async {
+    final id = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => CustomExerciseForm(initialName: _text.trim()),
+      ),
+    );
+    if (id != null) await _search();
+  }
+
   void _toggle(String id) => setState(() {
     if (!_picked.remove(id) && !_full) _picked.add(id);
   });
@@ -76,6 +87,8 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
     final c = RfColors.of(context);
     final t = RfTextStyles.of(context);
     final results = _results;
+    // EXL-03: my exercises changed.
+    ref.listen(customExercisesProvider, (_, _) => _search());
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.pickerTitle)),
@@ -134,9 +147,29 @@ class _ExercisePickerScreenState extends ConsumerState<ExercisePickerScreen> {
               child: switch (results) {
                 null => const Center(child: CircularProgressIndicator()),
                 [] => Center(
-                  child: Text(
-                    l10n.pickerNoResults,
-                    style: t.body.copyWith(color: c.textSecondary),
+                  child: Padding(
+                    padding: const EdgeInsets.all(RfSpace.s24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.pickerNoResults,
+                          textAlign: TextAlign.center,
+                          style: t.body.copyWith(color: c.textSecondary),
+                        ),
+                        const SizedBox(height: RfSpace.s12),
+                        // EXL-03 AC4: make it, named as searched.
+                        RfButton(
+                          key: ExercisePickerScreen.createKey,
+                          label: _text.trim().isEmpty
+                              ? l10n.customNew
+                              : l10n.customCreateNamed(_text.trim()),
+                          variant: RfButtonVariant.secondary,
+                          size: RfButtonSize.md,
+                          onPressed: _create,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 _ => ListView.separated(
@@ -215,10 +248,7 @@ class _PickRow extends StatelessWidget {
     final c = RfColors.of(context);
     final t = RfTextStyles.of(context);
     final picked = order != null;
-    final meta = [
-      equipmentLabel(l10n, exercise.equipment),
-      exercise.primaryMuscles.map((m) => muscleLabel(l10n, m)).join(', '),
-    ].where((s) => s.isNotEmpty).join(' · ');
+    final meta = exerciseMeta(l10n, exercise);
 
     return Semantics(
       button: true,

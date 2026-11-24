@@ -90,6 +90,9 @@ Design choices:
   time left), local only. One local notification (`RestAlarm` port over
   flutter_local_notifications, scheduled in UTC) is replaced on every change and cancelled on
   Finish / Discard.
+- Custom exercises (EXL-03): `custom_exercises` (synced, soft delete). `exerciseCatalogProvider`
+  returns a combined repository (catalog FTS + custom matched in Dart), so every screen sees
+  both; `byId` also finds deleted custom ones so old workouts keep their names.
 - Exercise pictures (EXL-02): only paths are in the catalog; the detail loads them from the
   pinned Free Exercise DB commit on GitHub and `cached_network_image` keeps them on disk, so
   a picture needs a connection once. The Library and the picker share one search path.

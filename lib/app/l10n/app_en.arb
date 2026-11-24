@@ -2322,5 +2322,127 @@
   "categoryCardio": "Cardio",
   "@categoryCardio": {
     "description": "Exercise type."
+  },
+  "customNew": "New exercise",
+  "@customNew": {
+    "description": "Create a custom exercise."
+  },
+  "customEditTitle": "Edit exercise",
+  "@customEditTitle": {
+    "description": "Form title when editing."
+  },
+  "customName": "Name",
+  "@customName": {
+    "description": "Form field."
+  },
+  "customEquipment": "Equipment",
+  "@customEquipment": {
+    "description": "Form field."
+  },
+  "customMain": "Main muscles",
+  "@customMain": {
+    "description": "Form: required muscle chips."
+  },
+  "customOther": "Other muscles (optional)",
+  "@customOther": {
+    "description": "Form: optional muscle chips."
+  },
+  "customNotes": "Notes (optional)",
+  "@customNotes": {
+    "description": "Form field."
+  },
+  "customNotesHint": "Setup, cues, machine settings",
+  "@customNotesHint": {
+    "description": "Notes hint."
+  },
+  "customSave": "Save",
+  "@customSave": {
+    "description": "Save the exercise."
+  },
+  "customNeedMuscle": "Pick at least one main muscle",
+  "@customNeedMuscle": {
+    "description": "Form helper when no main muscle."
+  },
+  "customClashMine": "You already have an exercise called {name}",
+  "@customClashMine": {
+    "description": "Name clash with a custom one.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customClashCatalog": "{name} is already in the library",
+  "@customClashCatalog": {
+    "description": "Name clash with the catalog.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customSaveFailed": "Couldn't save the exercise",
+  "@customSaveFailed": {
+    "description": "Save failed."
+  },
+  "customTag": "Custom",
+  "@customTag": {
+    "description": "Marks a user-made exercise, in text."
+  },
+  "customEdit": "Edit",
+  "@customEdit": {
+    "description": "Edit a custom exercise."
+  },
+  "customDelete": "Delete",
+  "@customDelete": {
+    "description": "Delete a custom exercise."
+  },
+  "customDeleted": "{name} deleted",
+  "@customDeleted": {
+    "description": "Snackbar after delete.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "customUndo": "Undo",
+  "@customUndo": {
+    "description": "Undo a delete."
+  },
+  "customDeleteFailed": "Couldn't delete it",
+  "@customDeleteFailed": {
+    "description": "Delete failed."
+  },
+  "customNotesHeading": "Notes",
+  "@customNotesHeading": {
+    "description": "Detail: notes heading."
+  },
+  "customMuscleChip": "{muscle}, main",
+  "@customMuscleChip": {
+    "description": "Screen reader: a main-muscle chip.",
+    "placeholders": {
+      "muscle": {
+        "type": "String"
+      }
+    }
+  },
+  "customOtherChip": "{muscle}, other",
+  "@customOtherChip": {
+    "description": "Screen reader: an other-muscle chip.",
+    "placeholders": {
+      "muscle": {
+        "type": "String"
+      }
+    }
+  },
+  "customCreateNamed": "New exercise “{name}”",
+  "@customCreateNamed": {
+    "description": "Picker: create from the search text.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

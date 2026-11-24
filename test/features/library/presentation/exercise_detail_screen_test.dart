@@ -8,8 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
 import 'package:repforge/app/router.dart';
 import 'package:repforge/core/metrics/units.dart';
+import 'package:repforge/features/library/data/combined_catalog.dart';
 import 'package:repforge/features/library/data/exercise_images.dart';
 import 'package:repforge/features/library/data/providers.dart';
+import 'package:repforge/features/library/domain/exercise.dart';
+import 'package:repforge/features/library/presentation/custom_exercise_form.dart';
 import 'package:repforge/features/library/presentation/exercise_detail_screen.dart';
 import 'package:repforge/features/logger/data/providers.dart';
 import 'package:repforge/features/logger/domain/workout_session.dart';
@@ -19,6 +22,7 @@ import 'package:repforge/features/workout/presentation/template_editor_screen.da
 import '../../../helpers/app_overrides.dart';
 import '../../logger/fake_session_repository.dart';
 import '../../workout/fakes.dart';
+import '../fake_custom_exercise_repository.dart';
 import '../library_fakes.dart';
 
 LoggedSet squat(String id, double kg, int reps) => LoggedSet(
@@ -51,6 +55,7 @@ const push = WorkoutTemplate(
 late FakeSessionRepository sessions;
 late FakeTemplateRepository templates;
 late List<String> imageCalls;
+late FakeCustomExerciseRepository custom;
 
 // A 1x1 PNG, standing in for a picture already kept on the phone.
 final onePixel = base64Decode(
@@ -65,6 +70,7 @@ Future<void> openDetail(
   UnitSystem units = UnitSystem.metric,
   double textScale = 1,
   ImageProvider Function(String path)? images,
+  List<Exercise> mine = const [],
 }) async {
   tester.view
     ..devicePixelRatio = 1
@@ -77,6 +83,7 @@ Future<void> openDetail(
     }
   }
   templates = FakeTemplateRepository(workouts);
+  custom = FakeCustomExerciseRepository(mine);
   imageCalls = [];
   await tester.pumpWidget(
     ProviderScope(
@@ -85,8 +92,11 @@ Future<void> openDetail(
           sessions: sessions,
           templates: templates,
           units: units,
+          custom: custom,
         ),
-        exerciseCatalogProvider.overrideWith((ref) async => LibraryCatalog()),
+        exerciseCatalogProvider.overrideWith(
+          (ref) async => CombinedCatalog(LibraryCatalog(), custom),
+        ),
         // Never loads here, as with no connection: the placeholder shows.
         exerciseImageProvider.overrideWithValue((path) {
           imageCalls.add(path);
@@ -317,6 +327,63 @@ void main() {
       await tester.tap(find.text('New workout'));
       await tester.pumpAndSettle();
       expect(find.byType(TemplateEditorScreen), findsOneWidget);
+    });
+
+    testWidgets('EXL-03 AC5 a custom one: Custom, notes, Edit, Delete', (
+      tester,
+    ) async {
+      await openDetail(
+        tester,
+        'c1',
+        mine: [
+          ex(
+            'c1',
+            'Hack Squat',
+            [Muscle.quadriceps],
+            equipment: Equipment.machine,
+          ).copyWith(custom: true, notes: 'Seat 4, pin 7'),
+        ],
+      );
+      expect(find.text('Custom'), findsOneWidget);
+      expect(find.text('Machine'), findsOneWidget);
+      expect(find.text('Seat 4, pin 7'), findsOneWidget);
+      expect(find.text('Level'), findsNothing);
+      expect(find.text('How to do it'), findsNothing);
+      expect(find.byType(Image), findsNothing);
+      expect(find.byKey(ExerciseDetailScreen.editKey), findsOneWidget);
+      expect(find.byKey(ExerciseDetailScreen.deleteKey), findsOneWidget);
+      expect(find.byKey(ExerciseDetailScreen.addKey), findsOneWidget);
+    });
+
+    testWidgets('EXL-03 AC5 a catalog one has no Edit or Delete', (
+      tester,
+    ) async {
+      await openDetail(tester, 'Bench_Press');
+      expect(find.byKey(ExerciseDetailScreen.editKey), findsNothing);
+      expect(find.byKey(ExerciseDetailScreen.deleteKey), findsNothing);
+      expect(find.text('Custom'), findsNothing);
+    });
+
+    testWidgets('EXL-03 AC6 Edit saves and the detail shows the change', (
+      tester,
+    ) async {
+      await openDetail(
+        tester,
+        'c1',
+        mine: [
+          ex('c1', 'Hack Squat', [Muscle.quadriceps]).copyWith(custom: true),
+        ],
+      );
+      await tester.tap(find.byKey(ExerciseDetailScreen.editKey));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(CustomExerciseForm.nameKey),
+        'Hack Squat (Gym 2)',
+      );
+      await tester.tap(find.byKey(CustomExerciseForm.saveKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExerciseDetailScreen), findsOneWidget);
+      expect(find.text('Hack Squat (Gym 2)'), findsOneWidget);
     });
 
     testWidgets('error an id not in the catalog', (tester) async {

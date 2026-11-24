@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../../app/widgets/rf_chip.dart';
 import '../../../core/metrics/units.dart';
 import '../../logger/data/providers.dart';
 import '../../logger/domain/session_repository.dart';
@@ -24,6 +27,39 @@ class ExerciseDetailScreen extends ConsumerWidget {
   const ExerciseDetailScreen({required this.id, super.key});
 
   static const addKey = ValueKey('exercise.add');
+  static const editKey = ValueKey('exercise.edit');
+  static const deleteKey = ValueKey('exercise.delete');
+
+  // EXL-03 AC7: back to the list, with Undo.
+  Future<void> _delete(BuildContext context, WidgetRef ref, Exercise e) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final repo = ref.read(customExerciseRepositoryProvider);
+    try {
+      await repo.delete(e.id);
+    } on Object {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.customDeleteFailed)));
+      return;
+    }
+    if (context.mounted) context.pop();
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.customDeleted(e.name)),
+        action: SnackBarAction(
+          label: l10n.customUndo,
+          onPressed: () async {
+            try {
+              await repo.restore(e.id);
+            } on Object {
+              messenger.showSnackBar(
+                SnackBar(content: Text(l10n.customSaveFailed)),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
 
   final String id;
 
@@ -73,7 +109,24 @@ class ExerciseDetailScreen extends ConsumerWidget {
         m.map((x) => muscleLabel(l10n, x)).join(', ');
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          if (e.custom) ...[
+            IconButton(
+              key: editKey,
+              tooltip: l10n.customEdit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => context.push(Routes.exerciseEdit(e.id)),
+            ),
+            IconButton(
+              key: deleteKey,
+              tooltip: l10n.customDelete,
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _delete(context, ref, e),
+            ),
+          ],
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(RfSpace.s16),
@@ -96,6 +149,14 @@ class ExerciseDetailScreen extends ConsumerWidget {
                 style: t.title.copyWith(color: c.textPrimary),
               ),
             ),
+            if (e.custom)
+              Padding(
+                padding: const EdgeInsets.only(top: RfSpace.s4),
+                child: RfChip.status(
+                  label: l10n.customTag,
+                  role: RfRole.action,
+                ),
+              ),
             const SizedBox(height: RfSpace.s12),
             if (e.images.isNotEmpty) _Pictures(exercise: e),
             if (e.primaryMuscles.isNotEmpty)
@@ -103,8 +164,14 @@ class ExerciseDetailScreen extends ConsumerWidget {
             if (e.secondaryMuscles.isNotEmpty)
               fact(l10n.exerciseOther, muscles(e.secondaryMuscles)),
             fact(l10n.exerciseEquipment, equipmentLabel(l10n, e.equipment)),
-            fact(l10n.exerciseLevel, levelLabel(l10n, e.level)),
-            fact(l10n.exerciseType, categoryLabel(l10n, e.category)),
+            if (!e.custom) ...[
+              fact(l10n.exerciseLevel, levelLabel(l10n, e.level)),
+              fact(l10n.exerciseType, categoryLabel(l10n, e.category)),
+            ],
+            if (e.notes case final notes?) ...[
+              heading(l10n.customNotesHeading),
+              Text(notes, style: t.body.copyWith(color: c.textPrimary)),
+            ],
             if (e.instructions.isNotEmpty) ...[
               heading(l10n.exerciseSteps),
               for (final (i, step) in e.instructions.indexed)

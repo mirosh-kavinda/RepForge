@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
+import 'package:repforge/features/library/data/combined_catalog.dart';
 import 'package:repforge/features/library/data/providers.dart';
+import 'package:repforge/features/library/domain/exercise.dart';
+import 'package:repforge/features/library/presentation/custom_exercise_form.dart';
 import 'package:repforge/features/library/presentation/exercise_detail_screen.dart';
 import 'package:repforge/features/library/presentation/library_screen.dart';
 import 'package:repforge/features/logger/domain/workout_session.dart';
 
 import '../../../helpers/app_overrides.dart';
 import '../../logger/fake_session_repository.dart';
+import '../fake_custom_exercise_repository.dart';
 import '../library_fakes.dart';
 
 WorkoutSession done(String id, String exerciseId, DateTime end) =>
@@ -34,10 +38,12 @@ WorkoutSession done(String id, String exerciseId, DateTime end) =>
     );
 
 late FakeSessionRepository sessions;
+late FakeCustomExerciseRepository custom;
 
 Future<void> openLibrary(
   WidgetTester tester, {
   List<WorkoutSession> finished = const [],
+  List<Exercise> mine = const [],
   double textScale = 1,
 }) async {
   tester.view
@@ -45,11 +51,14 @@ Future<void> openLibrary(
     ..physicalSize = const Size(390, 844);
   addTearDown(tester.view.reset);
   sessions = FakeSessionRepository()..finishedList.addAll(finished);
+  custom = FakeCustomExerciseRepository(mine);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        ...signedInOverrides(sessions: sessions),
-        exerciseCatalogProvider.overrideWith((ref) async => LibraryCatalog()),
+        ...signedInOverrides(sessions: sessions, custom: custom),
+        exerciseCatalogProvider.overrideWith(
+          (ref) async => CombinedCatalog(LibraryCatalog(), custom),
+        ),
       ],
       child: MediaQuery.withClampedTextScaling(
         minScaleFactor: textScale,
@@ -183,6 +192,86 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(find.byType(LibraryScreen), findsOneWidget);
+    });
+
+    testWidgets('EXL-03 AC1 New exercise saves and opens its detail', (
+      tester,
+    ) async {
+      await openLibrary(tester);
+      await tester.tap(find.byKey(LibraryScreen.newKey));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(CustomExerciseForm.nameKey),
+        'Hack Squat',
+      );
+      await tester.tap(find.text('Quads').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(CustomExerciseForm.saveKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExerciseDetailScreen), findsOneWidget);
+      expect(find.text('Hack Squat'), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(names(tester), contains('Hack Squat'));
+    });
+
+    testWidgets('EXL-03 AC3 mine sit A–Z, marked Custom; found first', (
+      tester,
+    ) async {
+      await openLibrary(
+        tester,
+        mine: [
+          ex('c1', 'Hack Squat', [
+            Muscle.quadriceps,
+          ], equipment: Equipment.machine).copyWith(custom: true),
+        ],
+      );
+      expect(names(tester), [
+        'Barbell Squat',
+        'Bench Press',
+        'Hack Squat',
+        'Leg Press',
+        'Plank',
+      ]);
+      expect(find.text('Custom · Machine · Quads'), findsOneWidget);
+      await type(tester, 'squat');
+      expect(names(tester), ['Hack Squat', 'Barbell Squat']);
+    });
+
+    testWidgets('EXL-03 edge a custom one in Recent opens its detail', (
+      tester,
+    ) async {
+      await openLibrary(
+        tester,
+        finished: [done('a', 'c1', DateTime.utc(2026, 11, 20, 10))],
+        mine: [
+          ex('c1', 'Hack Squat', [Muscle.quadriceps]).copyWith(custom: true),
+        ],
+      );
+      expect(find.text('RECENT'), findsOneWidget);
+      expect(names(tester).first, 'Hack Squat');
+      await tester.tap(find.text('Hack Squat').first);
+      await tester.pumpAndSettle();
+      expect(find.byKey(ExerciseDetailScreen.editKey), findsOneWidget);
+    });
+
+    testWidgets('EXL-03 AC7 delete hides it, with Undo', (tester) async {
+      await openLibrary(
+        tester,
+        mine: [
+          ex('c1', 'Hack Squat', [Muscle.quadriceps]).copyWith(custom: true),
+        ],
+      );
+      await tester.tap(find.text('Hack Squat'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(ExerciseDetailScreen.deleteKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExerciseDetailScreen), findsNothing);
+      expect(names(tester), isNot(contains('Hack Squat')));
+      expect(find.text('Hack Squat deleted'), findsOneWidget);
+      await tester.tap(find.text('Undo'));
+      await tester.pumpAndSettle();
+      expect(names(tester), contains('Hack Squat'));
     });
 
     testWidgets('NFR-06 labelled rows; fits at 200 % text', (tester) async {

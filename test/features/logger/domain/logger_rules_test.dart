@@ -159,4 +159,32 @@ void main() {
       ]);
     });
   });
+
+  test('EXL-03 edge a custom "Body only" exercise logs as Bodyweight', () {
+    const mine = Exercise(
+      id: 'c1',
+      name: 'Ring Dip',
+      primaryMuscles: [Muscle.triceps],
+      secondaryMuscles: [],
+      equipment: Equipment.bodyOnly,
+      category: ExerciseCategory.strength,
+      level: ExerciseLevel.beginner,
+      instructions: [],
+      images: [],
+      custom: true,
+    );
+    final s = sessionFromTemplate(
+      id: 's',
+      template: const WorkoutTemplate(
+        id: 't',
+        name: 'Dips',
+        exercises: [TemplateExercise(id: 'r', exerciseId: 'c1')],
+      ),
+      exercises: {'c1': mine},
+      date: DateTime.utc(2026, 11, 24),
+      startedAt: DateTime.utc(2026, 11, 24, 9),
+    );
+    expect(s.exercises.single.bodyweight, isTrue);
+    expect(s.exercises.single.name, 'Ring Dip');
+  });
 }

@@ -22,6 +22,7 @@ class LibraryScreen extends ConsumerStatefulWidget {
 
   static const searchKey = ValueKey('library.search');
   static const clearKey = ValueKey('library.clear');
+  static const newKey = ValueKey('library.new');
 
   @override
   ConsumerState<LibraryScreen> createState() => _LibraryScreenState();
@@ -66,6 +67,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     }
   }
 
+  // EXL-03 AC1: a new exercise opens its detail.
+  Future<void> _create() async {
+    final id = await context.push<String>(Routes.exerciseNew);
+    if (id != null && mounted) await context.push(Routes.exercise(id));
+  }
+
   void _clear() {
     _search.clear();
     setState(() {
@@ -82,6 +89,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final t = RfTextStyles.of(context);
     final results = _results;
     final recent = _browsing ? _recent() : const <Exercise>[];
+    // EXL-03: my exercises changed (added, edited, deleted, restored).
+    ref.listen(customExercisesProvider, (_, _) => _run());
 
     Widget header(String text) => Padding(
       padding: const EdgeInsets.fromLTRB(0, RfSpace.s16, 0, RfSpace.s8),
@@ -148,7 +157,21 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabLibrary)),
+      appBar: AppBar(
+        title: Text(l10n.tabLibrary),
+        actions: [
+          IconButton(
+            key: LibraryScreen.newKey,
+            tooltip: l10n.customNew,
+            constraints: const BoxConstraints(
+              minWidth: RfSize.minTarget,
+              minHeight: RfSize.minTarget,
+            ),
+            icon: const Icon(Icons.add),
+            onPressed: _create,
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

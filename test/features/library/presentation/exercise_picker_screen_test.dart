@@ -11,12 +11,18 @@ import 'package:repforge/app/theme/rf_theme.dart';
 import 'package:repforge/app/widgets/rf_button.dart';
 import 'package:repforge/data/local/app_database.dart';
 import 'package:repforge/features/library/data/catalog_importer.dart';
+import 'package:repforge/features/library/data/combined_catalog.dart';
 import 'package:repforge/features/library/data/drift_exercise_catalog_repository.dart';
 import 'package:repforge/features/library/data/providers.dart';
+import 'package:repforge/features/library/domain/exercise.dart';
+import 'package:repforge/features/library/presentation/custom_exercise_form.dart';
 import 'package:repforge/features/library/presentation/exercise_picker_screen.dart';
+
+import '../fake_custom_exercise_repository.dart';
 
 late AppDatabase _db;
 late DriftExerciseCatalogRepository _repo;
+late FakeCustomExerciseRepository _custom;
 
 // Opens the picker from a button and records what it pops with.
 Future<List<List<String>?>> pumpPicker(
@@ -24,7 +30,9 @@ Future<List<List<String>?>> pumpPicker(
   Set<String> added = const {},
   int capacity = 30,
   double textScale = 1,
+  List<Exercise> mine = const [],
 }) async {
+  _custom = FakeCustomExerciseRepository(mine);
   tester.view
     ..devicePixelRatio = 1
     ..physicalSize = const Size(390, 844);
@@ -32,7 +40,12 @@ Future<List<List<String>?>> pumpPicker(
   final popped = <List<String>?>[];
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [exerciseCatalogProvider.overrideWith((ref) async => _repo)],
+      overrides: [
+        customExerciseRepositoryProvider.overrideWithValue(_custom),
+        exerciseCatalogProvider.overrideWith(
+          (ref) async => CombinedCatalog(_repo, _custom),
+        ),
+      ],
       child: MaterialApp(
         theme: rfTheme(Brightness.dark),
         localizationsDelegates: const [
@@ -197,6 +210,54 @@ void main() {
             .first,
       );
       expect(size.height, greaterThanOrEqualTo(RfSize.minTarget));
+      handle.dispose();
+    });
+  });
+
+  group('EXL-03 picker', () {
+    const hack = Exercise(
+      id: 'c1',
+      name: 'Zottman Hack',
+      primaryMuscles: [Muscle.biceps],
+      secondaryMuscles: [],
+      equipment: Equipment.dumbbell,
+      category: ExerciseCategory.strength,
+      level: ExerciseLevel.beginner,
+      instructions: [],
+      images: [],
+      custom: true,
+    );
+
+    testWidgets('AC3 mine are found and marked Custom', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpPicker(tester, mine: [hack]);
+      await search(tester, 'zottman');
+      expect(
+        find.bySemanticsLabel(RegExp('^Pick Zottman Hack, Custom · Dumbbell')),
+        findsOneWidget,
+      );
+      handle.dispose();
+    });
+
+    testWidgets('AC4 nothing found: New exercise named as searched', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await pumpPicker(tester);
+      await search(tester, 'Zottman Hack');
+      await tester.tap(find.byKey(ExercisePickerScreen.createKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(CustomExerciseForm), findsOneWidget);
+      expect(find.text('Zottman Hack'), findsOneWidget);
+      await tester.tap(find.text('Biceps').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(CustomExerciseForm.saveKey));
+      await tester.pumpAndSettle();
+      expect(find.byType(ExercisePickerScreen), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(RegExp('^Pick Zottman Hack')),
+        findsOneWidget,
+      );
       handle.dispose();
     });
   });

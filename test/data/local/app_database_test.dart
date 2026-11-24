@@ -332,9 +332,26 @@ void main() {
     });
   });
 
+  group('EXL-03 schema v13', () {
+    test('v12 -> v13 adds custom_exercises', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v12 = AppDatabase(NativeDatabase(file));
+      await v12.customStatement('DROP TABLE custom_exercises');
+      await v12.customStatement('PRAGMA user_version = 12');
+      await v12.close();
+
+      final v13 = AppDatabase(NativeDatabase(file));
+      addTearDown(v13.close);
+      expect(await v13.select(v13.customExercises).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 12);
+      expect(db.schemaVersion, 13);
       final names =
           (await db
                   .customSelect(

@@ -134,7 +134,94 @@ final class ExerciseCatalogProvider
   }
 }
 
-String _$exerciseCatalogHash() => r'f8c32e14449a203b113ebd2c42f8574fe75517af';
+String _$exerciseCatalogHash() => r'ebf94dda6da67133c70801ce5c65e247dd8e700c';
+
+@ProviderFor(customExerciseRepository)
+final customExerciseRepositoryProvider = CustomExerciseRepositoryProvider._();
+
+final class CustomExerciseRepositoryProvider
+    extends
+        $FunctionalProvider<
+          CustomExerciseRepository,
+          CustomExerciseRepository,
+          CustomExerciseRepository
+        >
+    with $Provider<CustomExerciseRepository> {
+  CustomExerciseRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'customExerciseRepositoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$customExerciseRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<CustomExerciseRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  CustomExerciseRepository create(Ref ref) {
+    return customExerciseRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CustomExerciseRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<CustomExerciseRepository>(value),
+    );
+  }
+}
+
+String _$customExerciseRepositoryHash() =>
+    r'1ca8ebf85c0dc03d9f75118b7ffbc8c48994ef28';
+
+@ProviderFor(customExercises)
+final customExercisesProvider = CustomExercisesProvider._();
+
+final class CustomExercisesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Exercise>>,
+          List<Exercise>,
+          Stream<List<Exercise>>
+        >
+    with $FutureModifier<List<Exercise>>, $StreamProvider<List<Exercise>> {
+  CustomExercisesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'customExercisesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$customExercisesHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Exercise>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Exercise>> create(Ref ref) {
+    return customExercises(ref);
+  }
+}
+
+String _$customExercisesHash() => r'223d804c9bc1bb403c85552bcb2e62b4e70c8ede';
 
 @ProviderFor(exerciseById)
 final exerciseByIdProvider = ExerciseByIdFamily._();
@@ -190,7 +277,7 @@ final class ExerciseByIdProvider
   }
 }
 
-String _$exerciseByIdHash() => r'fc188be33ec142102884da55dc4520b47795d065';
+String _$exerciseByIdHash() => r'0744b1a73bba252a8a983ebd621a97a3489b89fe';
 
 final class ExerciseByIdFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Exercise?>, String> {

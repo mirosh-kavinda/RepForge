@@ -78,8 +78,9 @@ String categoryLabel(AppLocalizations l10n, ExerciseCategory v) => switch (v) {
   ExerciseCategory.cardio => l10n.categoryCardio,
 };
 
-// "Barbell · Chest, Triceps" (EXL-01 AC4, WKT-01 picker).
+// "Barbell · Chest, Triceps"; "Custom · …" for mine (EXL-01 AC4, EXL-03 AC3).
 String exerciseMeta(AppLocalizations l10n, Exercise e) => [
+  if (e.custom) l10n.customTag,
   equipmentLabel(l10n, e.equipment),
   e.primaryMuscles.map((m) => muscleLabel(l10n, m)).join(', '),
 ].where((s) => s.isNotEmpty).join(' · ');

@@ -8,6 +8,16 @@ import 'base_columns.dart';
 
 part 'app_database.g.dart';
 
+// EXL-03: the user's own exercises. Muscles are JSON lists of keys.
+@DataClassName('CustomExerciseRow')
+class CustomExercises extends Table with SyncedTable {
+  TextColumn get name => text()();
+  TextColumn get equipment => text()();
+  TextColumn get primaryMuscles => text()();
+  TextColumn get secondaryMuscles => text()();
+  TextColumn get notes => text().nullable()();
+}
+
 class CatalogExercises extends Table {
   TextColumn get id => text()();
   TextColumn get name => text()();
@@ -163,13 +173,14 @@ const catalogVersionKey = 'catalogVersion';
     ScheduleDays,
     WorkoutSessions,
     SessionSets,
+    CustomExercises,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -223,6 +234,7 @@ class AppDatabase extends _$AppDatabase {
       if (from >= 9 && from < 12 && !await _has('workout_sessions', 'note')) {
         await m.addColumn(workoutSessions, workoutSessions.note);
       }
+      if (from < 13) await m.createTable(customExercises);
       if (from < 12) {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS workout_sessions_template_ended '
