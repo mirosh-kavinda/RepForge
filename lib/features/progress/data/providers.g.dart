@@ -185,7 +185,7 @@ final class LoggedExercisesProvider
   }
 }
 
-String _$loggedExercisesHash() => r'dcbbbc3b2a1e4a68b1643b015c80dd118ce8f8fd';
+String _$loggedExercisesHash() => r'1e652285fae6bcfaa6279d06a972163661239a89';
 
 @ProviderFor(strengthProgress)
 final strengthProgressProvider = StrengthProgressProvider._();
@@ -226,7 +226,7 @@ final class StrengthProgressProvider
   }
 }
 
-String _$strengthProgressHash() => r'8b1dd3e726f5d5ec17b73502230dd7a751094e7f';
+String _$strengthProgressHash() => r'8e9b965b0f23642179c31724f5c27778c9d0a0ca';
 
 @ProviderFor(volumeProgress)
 final volumeProgressProvider = VolumeProgressProvider._();
@@ -304,3 +304,145 @@ final class BodyProgressProvider
 }
 
 String _$bodyProgressHash() => r'1135b57b7af5b719142718e917270ec0cb8c6a69';
+
+@ProviderFor(statusHistory)
+final statusHistoryProvider = StatusHistoryProvider._();
+
+final class StatusHistoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<DatedStatus>>,
+          AsyncValue<List<DatedStatus>>,
+          AsyncValue<List<DatedStatus>>
+        >
+    with $Provider<AsyncValue<List<DatedStatus>>> {
+  StatusHistoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'statusHistoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$statusHistoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<List<DatedStatus>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<List<DatedStatus>> create(Ref ref) {
+    return statusHistory(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<List<DatedStatus>> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<List<DatedStatus>>>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$statusHistoryHash() => r'a42d2621970b78439a5a90871c3eaa36bf6646ef';
+
+@ProviderFor(streak)
+final streakProvider = StreakProvider._();
+
+final class StreakProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<int?>,
+          AsyncValue<int?>,
+          AsyncValue<int?>
+        >
+    with $Provider<AsyncValue<int?>> {
+  StreakProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'streakProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$streakHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<int?>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AsyncValue<int?> create(Ref ref) {
+    return streak(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<int?> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<int?>>(value),
+    );
+  }
+}
+
+String _$streakHash() => r'18b001e0921a3f242cee1328b6b582d7f1ff979a';
+
+@ProviderFor(adherence)
+final adherenceProvider = AdherenceProvider._();
+
+final class AdherenceProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<AdherenceSummary>,
+          AsyncValue<AdherenceSummary>,
+          AsyncValue<AdherenceSummary>
+        >
+    with $Provider<AsyncValue<AdherenceSummary>> {
+  AdherenceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'adherenceProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$adherenceHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<AdherenceSummary>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  AsyncValue<AdherenceSummary> create(Ref ref) {
+    return adherence(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<AdherenceSummary> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<AdherenceSummary>>(value),
+    );
+  }
+}
+
+String _$adherenceHash() => r'7324b5457cf97dc09e3bde8be64b16a0e86e9128';

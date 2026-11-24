@@ -93,6 +93,10 @@ Design choices:
 - Progress (PRG-01): `progress_rules.dart` builds chart series from finished sets and body
   snapshots for a range (e1RM and volume from `lib/core/metrics`); charts are `fl_chart`, each
   hidden from screen readers behind a text summary. The chosen exercise lives in `app_meta`.
+- Adherence (PRG-02): `adherence_rules.dart` reads every cycle's day records (no new table):
+  one status per date up to today (the active cycle's wins on a shared date), today from its
+  record or else its row (training = pending, rest = rest). Dates with no record are absent, so
+  they neither count nor break a streak. Home's streak chip and the Progress card share it.
 - Body Snapshot (BOD-01): `body_snapshots` stores the inputs and every result (JSON, from
   `lib/core/metrics` via `computeBodyResults`) together; one row per calendar day, replaced on
   re-save. Onboarding rows have no results and are worked out on view, never stored back.
@@ -147,8 +151,8 @@ w = weight kg, h = height cm, a = age years. All results are labelled as estimat
 - Volume = Σ weight × reps over working sets (warm-ups excluded)
 - Adherence % = completed training days ÷ planned training days
 - Cycle streak = walk back from today: done and rest extend it, skipped, unplanned rest and
-  moved are neutral,
-  a missed training day ends it; today not yet done never breaks it (FND-04 AC8)
+  moved are neutral, a missed training day ends it; today not yet done never breaks it
+  (FND-04 AC8). Best streak = the longest such run in all history (PRG-02)
 - Goal projection = linear regression over last 4–8 weeks; finish = where the line meets target
 - Ghost target = last set + 2.5 kg if all reps hit top of range, else same weight + 1 rep
 

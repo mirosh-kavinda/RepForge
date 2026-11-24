@@ -72,7 +72,9 @@ class FakeDayRecordRepository implements DayRecordRepository {
     if (existing != null &&
         existing.status != DayStatus.done &&
         existing.status != DayStatus.planned &&
-        !(fromWorkout && existing.status == DayStatus.missed)) {
+        !(fromWorkout &&
+            (existing.status == DayStatus.missed ||
+                existing.status == DayStatus.rest))) {
       return;
     }
     _all[(cycleId, date)] = DayRecord(

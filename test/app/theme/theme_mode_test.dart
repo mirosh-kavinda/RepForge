@@ -7,6 +7,7 @@ import 'package:repforge/app/theme/rf_tokens.dart';
 import 'package:repforge/app/theme/theme_mode.dart';
 
 import '../../helpers/app_overrides.dart';
+import '../../helpers/static_today.dart';
 
 RfColors colorsIn(WidgetTester tester) =>
     RfColors.of(tester.element(find.byType(Scaffold).first));
@@ -19,7 +20,9 @@ void main() {
 
   group('FND-02 theme mode', () {
     test('AC4 default System', () {
-      final container = ProviderContainer(overrides: signedInOverrides());
+      final container = ProviderContainer(
+        overrides: [...signedInOverrides(), staticToday],
+      );
       addTearDown(container.dispose);
       expect(container.read(appThemeModeProvider), ThemeMode.system);
     });
@@ -42,7 +45,9 @@ void main() {
 
     testWidgets('AC4 set light/dark applies immediately', (tester) async {
       tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
-      final container = ProviderContainer(overrides: signedInOverrides());
+      final container = ProviderContainer(
+        overrides: [...signedInOverrides(), staticToday],
+      );
       addTearDown(container.dispose);
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -62,7 +67,9 @@ void main() {
     });
 
     testWidgets('AC4 state kept on switch', (tester) async {
-      final container = ProviderContainer(overrides: signedInOverrides());
+      final container = ProviderContainer(
+        overrides: [...signedInOverrides(), staticToday],
+      );
       addTearDown(container.dispose);
       await tester.pumpWidget(
         UncontrolledProviderScope(

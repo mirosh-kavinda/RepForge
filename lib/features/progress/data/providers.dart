@@ -1,10 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/clock.dart';
+import '../../../core/metrics/adherence.dart' as m;
 import '../../../data/local/database_provider.dart';
 import '../../body/data/providers.dart';
 import '../../library/data/providers.dart';
 import '../../logger/data/providers.dart';
+import '../../schedule/data/providers.dart';
+import '../domain/adherence_rules.dart';
 import '../domain/progress_rules.dart';
 
 part 'providers.g.dart';
@@ -109,3 +112,59 @@ Future<List<ChartPoint>> volumeProgress(Ref ref) async {
 @riverpod
 Future<BodyTrends> bodyProgress(Ref ref) async =>
     bodyTrends(await ref.watch(bodySnapshotsProvider.future), _from(ref));
+
+// Fixed bounds: a new day must not open a new stream (and flash a loading
+// state); [dayHistory] drops records after today.
+final _epoch = DateTime.utc(2000);
+final _end = DateTime.utc(9999);
+
+// PRG-02: every date's status up to today, from every cycle. Streams from
+// the day records, so it changes as soon as one is written (AC9).
+@riverpod
+AsyncValue<List<DatedStatus>> statusHistory(Ref ref) {
+  final today = ref.watch(todayProvider);
+  final records = ref.watch(rangeRecordsProvider(_epoch, _end));
+  final cycles = ref.watch(cyclesProvider);
+  final t = ref.watch(cycleTodayProvider);
+  for (final a in <AsyncValue<Object?>>[records, cycles, t]) {
+    if (a case AsyncError(:final error, :final stackTrace)) {
+      return AsyncError(error, stackTrace);
+    }
+  }
+  if (!records.hasValue || !cycles.hasValue || !t.hasValue) {
+    return const AsyncLoading();
+  }
+  final active = t.value;
+  final row = active?.cycle.days[active.today.index];
+  return AsyncData(
+    dayHistory(
+      records: records.value!,
+      activeCycleId: active?.cycle.id,
+      cycles: {for (final c in cycles.value!) c.id: c},
+      today: today,
+      todayRow: row == null
+          ? null
+          : (isRest: row.isRest, workoutId: row.workoutId),
+    ),
+  );
+}
+
+// PRG-02 AC1, AC2; null with no schedule history at all.
+@riverpod
+AsyncValue<int?> streak(Ref ref) => ref
+    .watch(statusHistoryProvider)
+    .whenData(
+      (h) => h.isEmpty ? null : m.cycleStreak([for (final x in h) x.status]),
+    );
+
+// PRG-02 AC3–AC7, on the PRG-01 range.
+@riverpod
+AsyncValue<AdherenceSummary> adherence(Ref ref) => ref
+    .watch(statusHistoryProvider)
+    .whenData(
+      (h) => adherenceSummary(
+        h,
+        from: _from(ref),
+        today: ref.watch(todayProvider),
+      ),
+    );

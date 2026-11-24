@@ -107,6 +107,11 @@ void main() {
       tester,
     ) async {
       await openProgress(tester);
+      await tester.scrollUntilVisible(
+        find.text('No body snapshot yet'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('No body snapshot yet'), findsOneWidget);
       expect(find.byKey(BodyCard.newKey), findsOneWidget);
     });

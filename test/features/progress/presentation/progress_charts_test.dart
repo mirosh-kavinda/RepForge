@@ -33,4 +33,19 @@ void main() {
       );
     });
   });
+
+  group('PRG-02 chart tooltips', () {
+    test('AC5 AC8 a week with nothing planned says so', () {
+      expect(
+        tooltipText(
+          'en',
+          date,
+          0,
+          (v) => '$v %',
+          noData: 'No training planned',
+        ),
+        'Nov 17\nNo training planned',
+      );
+    });
+  });
 }

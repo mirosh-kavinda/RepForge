@@ -162,6 +162,30 @@ void main() {
       },
     );
 
+    test(
+      'PRG-02 edge a rest day trained past midnight is still marked done',
+      () async {
+        final sun = DateTime.utc(2026, 11, 22);
+        await repo.start(draft('s1', date: sun));
+        await repo.logSet('s1', set('a', 1, 60));
+        await days.writeSettled([
+          DayRecord(
+            id: 'r',
+            cycleId: 'c1',
+            date: sun,
+            dayId: 'd1',
+            dayIndex: 0,
+            status: DayStatus.rest,
+          ),
+        ]);
+        await repo.finish('s1');
+        expect(
+          (await days.watchSince('c1', sun).first).single.status,
+          DayStatus.done,
+        );
+      },
+    );
+
     test('edge finish keeps a swapped workout on the day', () async {
       await days.plan(
         cycleId: 'c1',

@@ -12,6 +12,7 @@ import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/library/domain/exercise_query.dart';
 
 import '../../../helpers/app_overrides.dart';
+import '../../../helpers/static_today.dart';
 
 void main() {
   group('FND-03 catalog status', () {
@@ -21,6 +22,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           ...signedInOverrides(),
+          staticToday,
           appDatabaseProvider.overrideWithValue(db),
           seedLoaderProvider.overrideWithValue(() => seed.future),
         ],
@@ -50,6 +52,7 @@ void main() {
         final failing = ProviderContainer(
           overrides: [
             ...signedInOverrides(),
+            staticToday,
             appDatabaseProvider.overrideWithValue(db),
             seedLoaderProvider.overrideWithValue(
               () async => throw const FormatException('corrupt seed'),
@@ -67,6 +70,7 @@ void main() {
         final relaunch = ProviderContainer(
           overrides: [
             ...signedInOverrides(),
+            staticToday,
             appDatabaseProvider.overrideWithValue(db),
             seedLoaderProvider.overrideWithValue(
               () async => File('assets/exercises/seed.json').readAsString(),
@@ -83,7 +87,9 @@ void main() {
       'AC3 the bundled seed asset loads through the default loader',
       () async {
         TestWidgetsFlutterBinding.ensureInitialized();
-        final container = ProviderContainer(overrides: signedInOverrides());
+        final container = ProviderContainer(
+          overrides: [...signedInOverrides(), staticToday],
+        );
         addTearDown(container.dispose);
         final raw = await container.read(seedLoaderProvider)();
         expect(raw, startsWith('{"catalogVersion":'));
@@ -99,6 +105,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           ...signedInOverrides(),
+          staticToday,
           appDatabaseProvider.overrideWithValue(db),
           seedLoaderProvider.overrideWithValue(() => never.future),
         ],

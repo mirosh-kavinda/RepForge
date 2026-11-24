@@ -38,13 +38,15 @@ String signed(AppLocalizations l10n, double delta, String Function(double) f) {
   return delta > 0 ? '+$text' : '$_minus$text';
 }
 
-// AC7: what a touched point or bar shows.
+// AC7: what a touched point or bar shows; [noData] for a bar with no value
+// (PRG-02 AC5).
 String tooltipText(
   String locale,
   DateTime date,
   double value,
-  String Function(double) format,
-) => '${DateFormat.MMMd(locale).format(date)}\n${format(value)}';
+  String Function(double) format, {
+  String? noData,
+}) => '${DateFormat.MMMd(locale).format(date)}\n${noData ?? format(value)}';
 
 class ChartLine {
   const ChartLine({
@@ -130,12 +132,22 @@ class ProgressBarChart extends StatelessWidget {
     required this.points,
     required this.summary,
     required this.format,
+    this.noData = const {},
+    this.noDataText,
+    this.maxY,
     super.key,
   });
 
   final List<ChartPoint> points;
   final String summary;
   final String Function(double) format;
+  // Dates with no value: drawn as a dashed outline, so they differ from a 0
+  // bar by shape, not colour; touching one shows [noDataText] (PRG-02 AC5).
+  final Set<DateTime> noData;
+  final String? noDataText;
+  // A fixed top (100 for percentages) also draws a track behind every bar,
+  // so each column can be touched, even an empty one.
+  final double? maxY;
 
   @override
   Widget build(BuildContext context) {
@@ -150,14 +162,24 @@ class ProgressBarChart extends StatelessWidget {
         height: RfSize.barChartHeight,
         child: BarChart(
           BarChartData(
+            maxY: maxY,
             gridData: const FlGridData(show: false),
             borderData: FlBorderData(show: false),
             titlesData: const FlTitlesData(show: false),
             barTouchData: BarTouchData(
+              allowTouchBarBackDraw: maxY != null,
               touchTooltipData: BarTouchTooltipData(
                 getTooltipColor: (_) => c.surface,
                 getTooltipItem: (group, _, rod, _) => BarTooltipItem(
-                  tooltipText(locale, points[group.x].date, rod.toY, format),
+                  tooltipText(
+                    locale,
+                    points[group.x].date,
+                    points[group.x].value,
+                    format,
+                    noData: noData.contains(points[group.x].date)
+                        ? noDataText
+                        : null,
+                  ),
                   t.label.copyWith(color: c.textPrimary),
                 ),
               ),
@@ -167,12 +189,30 @@ class ProgressBarChart extends StatelessWidget {
                 BarChartGroupData(
                   x: i,
                   barRods: [
-                    BarChartRodData(
-                      toY: p.value,
-                      color: c.actionFill,
-                      width: RfSize.chartBarWidth,
-                      borderRadius: BorderRadius.circular(RfRadius.xs),
-                    ),
+                    if (noData.contains(p.date) && maxY != null)
+                      BarChartRodData(
+                        toY: maxY!,
+                        color: c.surface,
+                        width: RfSize.chartBarWidth,
+                        borderRadius: BorderRadius.circular(RfRadius.xs),
+                        borderSide: BorderSide(
+                          color: c.border,
+                          width: RfStroke.thin,
+                        ),
+                        borderDashArray: const [4, 4],
+                      )
+                    else
+                      BarChartRodData(
+                        toY: noData.contains(p.date) ? 0 : p.value,
+                        color: c.actionFill,
+                        width: RfSize.chartBarWidth,
+                        borderRadius: BorderRadius.circular(RfRadius.xs),
+                        backDrawRodData: BackgroundBarChartRodData(
+                          show: maxY != null,
+                          toY: maxY,
+                          color: c.divider,
+                        ),
+                      ),
                   ],
                 ),
             ],

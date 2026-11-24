@@ -2947,5 +2947,152 @@
         "type": "String"
       }
     }
+  },
+  "streakDays": "{n, plural, =1{1-day streak} other{{n}-day streak}}",
+  "@streakDays": {
+    "description": "PRG-02 Home chip.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "streakStart": "Start a streak today",
+  "@streakStart": {
+    "description": "PRG-02 Home chip with a streak of 0."
+  },
+  "streakChipHint": "Opens Progress",
+  "@streakChipHint": {
+    "description": "Screen-reader hint for the streak chip."
+  },
+  "adherenceTitle": "Adherence",
+  "@adherenceTitle": {
+    "description": "PRG-02 card title."
+  },
+  "adherenceOf": "{done} of {planned} training days",
+  "@adherenceOf": {
+    "description": "Done of planned training days in the range.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "planned": {
+        "type": "int"
+      }
+    }
+  },
+  "adherenceNoData": "Not enough data",
+  "@adherenceNoData": {
+    "description": "No planned training days in the range."
+  },
+  "adherenceStreak": "Streak: {n, plural, =1{1 day} other{{n} days}}",
+  "@adherenceStreak": {
+    "description": "Current streak.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adherenceBest": "Best: {n, plural, =1{1 day} other{{n} days}}",
+  "@adherenceBest": {
+    "description": "Best streak ever.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "adherenceWeekly": "Each week",
+  "@adherenceWeekly": {
+    "description": "Label above the weekly bars."
+  },
+  "adherenceNoTraining": "No training planned",
+  "@adherenceNoTraining": {
+    "description": "A week with no planned training day."
+  },
+  "adherenceMissedTitle": "Missed days",
+  "@adherenceMissedTitle": {
+    "description": "Heading of the missed-day list."
+  },
+  "adherenceNoMissed": "No missed days",
+  "@adherenceNoMissed": {
+    "description": "Empty missed-day list."
+  },
+  "adherenceMissed": "Missed",
+  "@adherenceMissed": {
+    "description": "Status of a missed day."
+  },
+  "adherenceSkipped": "Skipped",
+  "@adherenceSkipped": {
+    "description": "Status of a skipped day."
+  },
+  "adherenceShowAll": "Show all",
+  "@adherenceShowAll": {
+    "description": "Shows every missed day."
+  },
+  "adherenceWorkout": "Workout",
+  "@adherenceWorkout": {
+    "description": "Name for a deleted workout."
+  },
+  "adherenceMissedRow": "{date} · {workout} · {status}",
+  "@adherenceMissedRow": {
+    "description": "One missed day.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "workout": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "adherenceSummary": "{title}, {range}: {percent}, {count}. {streak}, {best}",
+  "@adherenceSummary": {
+    "description": "Screen-reader summary of the card.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      },
+      "streak": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      }
+    }
+  },
+  "adherenceWeeksSummary": "{title}, {range}: {weeks} weeks, {empty} with no training planned, this week {amount}",
+  "@adherenceWeeksSummary": {
+    "description": "Screen-reader summary of the weekly adherence bars.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "weeks": {
+        "type": "int"
+      },
+      "empty": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

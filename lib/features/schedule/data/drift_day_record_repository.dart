@@ -116,7 +116,9 @@ class DriftDayRecordRepository implements DayRecordRepository {
     if (live != null &&
         live.status != DayStatus.done &&
         live.status != DayStatus.planned &&
-        !(fromWorkout && live.status == DayStatus.missed)) {
+        !(fromWorkout &&
+            (live.status == DayStatus.missed ||
+                live.status == DayStatus.rest))) {
       return;
     }
     await _put(

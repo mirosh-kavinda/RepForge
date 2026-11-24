@@ -7,10 +7,12 @@ import '../../../app/widgets/rf_segmented.dart';
 import '../../body/presentation/body_card.dart';
 import '../data/providers.dart';
 import '../domain/progress_rules.dart';
+import 'adherence_section.dart';
 import 'progress_charts.dart';
 import 'progress_sections.dart';
 
-// Screen 06: range switch, charts (PRG-01), Body card (BOD-01).
+// Screen 06: range switch, adherence (PRG-02), charts (PRG-01), Body card
+// (BOD-01).
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
 
@@ -35,6 +37,7 @@ class ProgressScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: RfSpace.s16),
+            const AdherenceSection(),
             const StrengthSection(),
             const VolumeSection(),
             const BodyTrendsSection(),

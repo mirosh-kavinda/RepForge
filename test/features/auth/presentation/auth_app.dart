@@ -9,6 +9,7 @@ import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
 
+import '../../../helpers/static_today.dart';
 import '../../onboarding/fake_onboarding_repository.dart';
 import '../fake_account_preferences_store.dart';
 import '../fake_auth_repository.dart';
@@ -47,6 +48,7 @@ class AuthApp {
         authRepositoryProvider.overrideWithValue(auth),
         accountPreferencesStoreProvider.overrideWithValue(preferences),
         onboardingRepositoryProvider.overrideWithValue(onboarding),
+        staticToday,
       ],
     );
     addTearDown(container.dispose);
