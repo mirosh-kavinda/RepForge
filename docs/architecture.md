@@ -136,7 +136,12 @@ Design choices:
    `syncedAt` is at or after the last pull (per account). Never device time: a phone back
    after 30 days offline writes old `updatedAt` values that a device-time cursor would skip.
 4. Conflicts: last-write-wins by `updatedAt`, except sessions (append-only, never overwritten).
-5. Restore on a new phone = full pull, then rebuild stats locally.
+5. Restore on a new phone (SYN-02) = the same pull, in order and in pages of 200: profile,
+   cycles, templates, goals, custom exercises first (Home works), then schedule days,
+   sessions, body snapshots. The cursor is (syncedAt in µs, doc id), saved per page, so a
+   stop resumes without duplicates. Per account, `restore.<uid>` in `app_meta` is offered /
+   restoring / done / fresh; pull waits while offered; push waits only until the first pull has looked for a backup. Start fresh moves
+   every cursor past the backup. Stats are derived on the phone from the restored rows.
 6. (SYN-01) Codecs in `lib/data/sync/sync_codecs.dart` turn each synced row into a document
    with Drift's JSON (dates as epoch ms, read back as UTC); `syncState` and LOG-03's running
    rest stay home. A session document embeds its sets (ordered by loggedAt, then id). Collections: `profile`, `bodySnapshots`,

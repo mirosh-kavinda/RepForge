@@ -40,4 +40,13 @@ class FakeOnboardingRepository implements OnboardingRepository {
     saved.add(answers);
     done = true;
   }
+
+  // SYN-02 AC5: whether a restored profile is on the phone.
+  var hasProfile = false;
+
+  @override
+  Future<bool> skipIfProfile() async {
+    if (hasProfile) done = true;
+    return hasProfile;
+  }
 }

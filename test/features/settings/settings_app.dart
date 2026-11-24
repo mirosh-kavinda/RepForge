@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/app/app.dart';
 import 'package:repforge/core/clock.dart';
+import 'package:repforge/data/sync/remote_store.dart';
+import 'package:repforge/data/sync/restore.dart';
 import 'package:repforge/data/sync/sync_engine.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/schedule/domain/cycle.dart';
@@ -25,6 +27,8 @@ Future<void> pumpProfile(
   List<Cycle> cycles = const [],
   double textScale = 1,
   SyncStatus? sync,
+  RestoreProgress? restoring,
+  BackupSummary? backup,
   FakeAuthRepository? auth,
   List<Override> extra = const [],
 }) async {
@@ -42,6 +46,8 @@ Future<void> pumpProfile(
           reminder: reminder,
           cycles: FakeCycleRepository(cycles),
           sync: sync,
+          restoring: restoring,
+          backup: backup,
           auth: auth,
         ),
         ...extra,

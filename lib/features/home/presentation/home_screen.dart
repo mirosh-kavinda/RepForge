@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../auth/presentation/restore_card.dart';
 import '../../auth/presentation/verify_email_banner.dart';
 import '../../goals/data/providers.dart';
 import '../../goals/presentation/goal_card.dart';
 import '../../schedule/data/providers.dart';
+import 'restoring_line.dart';
 import 'streak_chip.dart';
 import 'today_card.dart';
 
@@ -27,6 +29,8 @@ class HomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             VerifyEmailBanner(),
+            RestoringLine(),
+            HomeRestoreCard(),
             StreakChip(),
             TodayCard(),
             GoalCard(),

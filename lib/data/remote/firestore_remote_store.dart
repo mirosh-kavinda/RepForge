@@ -57,34 +57,106 @@ class FirestoreRemoteStore implements RemoteStore {
     }
   }
 
+  // The server time in microseconds, Firestore's own precision: a cursor in
+  // milliseconds would sit before the last document read and fetch it again
+  // forever.
+  static int _micros(Timestamp t) =>
+      t.seconds * 1000000 + t.nanoseconds ~/ 1000;
+
   static Map<String, Object?> _plain(Map<String, dynamic> d) => {
     for (final MapEntry(:key, :value) in d.entries)
-      key: value is Timestamp ? value.millisecondsSinceEpoch : value,
+      key: value is Timestamp ? _micros(value) : value,
   };
 
-  @override
-  Future<List<RemoteDoc>> changedSince(
-    String uid,
-    String collection,
-    int sinceMs,
-  ) async {
-    final db = await _db();
+  Future<T> _guard<T>(Future<T> Function() run) async {
     try {
-      final snap = await _col(db, uid, collection)
-          .where(
-            syncedAtField,
-            isGreaterThanOrEqualTo: Timestamp.fromMillisecondsSinceEpoch(
-              sinceMs,
-            ),
-          )
-          .orderBy(syncedAtField)
-          .get()
-          .timeout(_timeout);
-      return [for (final d in snap.docs) (id: d.id, data: _plain(d.data()))];
+      return await run().timeout(_timeout);
     } on FirebaseException catch (e) {
       throw _failure(e);
     } on TimeoutException {
       throw const SyncFailure(SyncErrorKind.offline);
     }
+  }
+
+  @override
+  Future<List<RemoteDoc>> changedSince(
+    String uid,
+    String collection,
+    PullCursor? after, {
+    int limit = pageSize,
+  }) async {
+    final db = await _db();
+    var q = _col(
+      db,
+      uid,
+      collection,
+    ).orderBy(syncedAtField).orderBy(FieldPath.documentId);
+    if (after != null) {
+      q = q.startAfter([
+        Timestamp.fromMicrosecondsSinceEpoch(after.at),
+        after.id,
+      ]);
+    }
+    final snap = await _guard(() => q.limit(limit).get());
+    return [for (final d in snap.docs) (id: d.id, data: _plain(d.data()))];
+  }
+
+  @override
+  Future<PullCursor?> last(String uid, String collection) async {
+    final db = await _db();
+    final snap = await _guard(
+      () => _col(db, uid, collection)
+          .orderBy(syncedAtField, descending: true)
+          .orderBy(FieldPath.documentId, descending: true)
+          .limit(1)
+          .get(),
+    );
+    if (snap.docs.isEmpty) return null;
+    final d = snap.docs.single;
+    final t = d.data()[syncedAtField];
+    return t is Timestamp ? (at: _micros(t), id: d.id) : null;
+  }
+
+  @override
+  Future<int> count(
+    String uid,
+    String collection, {
+    bool liveOnly = true,
+  }) async {
+    final db = await _db();
+    final col = _col(db, uid, collection);
+    final agg = await _guard(
+      () =>
+          (liveOnly ? col.where('deletedAt', isNull: true) : col).count().get(),
+    );
+    return agg.count ?? 0;
+  }
+
+  @override
+  Future<BackupSummary?> summary(
+    String uid,
+    Iterable<String> collections,
+  ) async {
+    final db = await _db();
+    Timestamp? newest;
+    for (final c in collections) {
+      final snap = await _guard(
+        () => _col(
+          db,
+          uid,
+          c,
+        ).orderBy(syncedAtField, descending: true).limit(1).get(),
+      );
+      if (snap.docs.isEmpty) continue;
+      final t = snap.docs.single.data()[syncedAtField];
+      if (t is Timestamp && (newest == null || t.compareTo(newest) > 0)) {
+        newest = t;
+      }
+    }
+    if (newest == null) return null;
+    return (
+      newest: newest.toDate().toUtc(),
+      workouts: await count(uid, 'sessions'),
+    );
   }
 }

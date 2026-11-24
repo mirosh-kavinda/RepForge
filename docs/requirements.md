@@ -45,7 +45,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | GOL-02 | Goal check-ins and drift alerts | v1.1 | P4 | 07 | — |
 | NTF-01 | Local + push notifications, per-type toggles, quiet hours | MVP | P3 | 15, 21, 22 | — |
 | SYN-01 | Offline-first, sync to Firebase; no loss after 30 days offline | MVP | P3 | 24 | Building |
-| SYN-02 | Restore on a new phone; 2 yrs data < 30 s on 4G | MVP | P3 | 24 | — |
+| SYN-02 | Restore on a new phone; 2 yrs data < 30 s on 4G | MVP | P3 | 24 | Building |
 | SYN-03 | Export CSV / JSON | v1.1 | P4 | 23 | — |
 | SET-01 | Settings: units, theme, rest default, plate calculator, reminders | MVP | P2 | 23 | Building |
 

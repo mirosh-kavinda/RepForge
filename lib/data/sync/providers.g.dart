@@ -169,3 +169,194 @@ final class SyncSchedulerProvider
 }
 
 String _$syncSchedulerHash() => r'31256a7e2fdf8c543bf7bc53eb7c48817f32e857';
+
+@ProviderFor(restoreState)
+final restoreStateProvider = RestoreStateProvider._();
+
+final class RestoreStateProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<RestoreState?>,
+          RestoreState?,
+          Stream<RestoreState?>
+        >
+    with $FutureModifier<RestoreState?>, $StreamProvider<RestoreState?> {
+  RestoreStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restoreStateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restoreStateHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<RestoreState?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<RestoreState?> create(Ref ref) {
+    return restoreState(ref);
+  }
+}
+
+String _$restoreStateHash() => r'9cf203cfec2469fbe55f469053c45f679fe9f705';
+
+@ProviderFor(restoreProgress)
+final restoreProgressProvider = RestoreProgressProvider._();
+
+final class RestoreProgressProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<RestoreProgress?>,
+          RestoreProgress?,
+          Stream<RestoreProgress?>
+        >
+    with $FutureModifier<RestoreProgress?>, $StreamProvider<RestoreProgress?> {
+  RestoreProgressProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restoreProgressProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restoreProgressHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<RestoreProgress?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<RestoreProgress?> create(Ref ref) {
+    return restoreProgress(ref);
+  }
+}
+
+String _$restoreProgressHash() => r'f58a6b193902e51c5f84883b114ef803d116a0eb';
+
+@ProviderFor(backupSummary)
+final backupSummaryProvider = BackupSummaryProvider._();
+
+final class BackupSummaryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<BackupSummary?>,
+          BackupSummary?,
+          FutureOr<BackupSummary?>
+        >
+    with $FutureModifier<BackupSummary?>, $FutureProvider<BackupSummary?> {
+  BackupSummaryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'backupSummaryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$backupSummaryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<BackupSummary?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<BackupSummary?> create(Ref ref) {
+    return backupSummary(ref);
+  }
+}
+
+String _$backupSummaryHash() => r'118e6c459db2586e1f4507ca530f3d19dd1151d7';
+
+@ProviderFor(online)
+final onlineProvider = OnlineProvider._();
+
+final class OnlineProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
+    with $FutureModifier<bool>, $StreamProvider<bool> {
+  OnlineProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'onlineProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$onlineHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<bool> create(Ref ref) {
+    return online(ref);
+  }
+}
+
+String _$onlineHash() => r'9765813d9c1d30269743141c9a6c7aa0e1a68d1b';
+
+@ProviderFor(restoreController)
+final restoreControllerProvider = RestoreControllerProvider._();
+
+final class RestoreControllerProvider
+    extends $FunctionalProvider<RestoreActions, RestoreActions, RestoreActions>
+    with $Provider<RestoreActions> {
+  RestoreControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restoreControllerProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restoreControllerHash();
+
+  @$internal
+  @override
+  $ProviderElement<RestoreActions> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  RestoreActions create(Ref ref) {
+    return restoreController(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RestoreActions value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RestoreActions>(value),
+    );
+  }
+}
+
+String _$restoreControllerHash() => r'e7f881293ff79d9b2651aee924a97c16c666f3b9';

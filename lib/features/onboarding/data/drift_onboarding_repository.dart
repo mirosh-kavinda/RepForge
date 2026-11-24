@@ -36,6 +36,16 @@ class DriftOnboardingRepository implements OnboardingRepository {
           .distinct();
 
   @override
+  Future<bool> skipIfProfile() => _db.transaction(() async {
+    final p = await (_db.selectActive(
+      _db.userProfiles,
+    )..limit(1)).getSingleOrNull();
+    if (p == null) return false;
+    await _db.writeMeta(doneKey, 'true');
+    return true;
+  });
+
+  @override
   Future<void> complete(
     OnboardingAnswers a, {
     Future<void> Function()? alsoWrite,

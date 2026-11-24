@@ -11,6 +11,7 @@ import '../../../core/clock.dart';
 import '../../../data/sync/providers.dart';
 import '../../../data/sync/remote_store.dart';
 import '../../auth/data/providers.dart';
+import '../../auth/presentation/restore_card.dart';
 
 // SYN-01 AC9: "Backed up 5 min ago" and the like.
 String backedUpText(
@@ -47,6 +48,7 @@ class BackupScreen extends ConsumerWidget {
     final locale = Localizations.localeOf(context).toString();
     final user = ref.watch(currentUserProvider).value;
     final status = ref.watch(syncStatusProvider).value;
+    final restoring = ref.watch(restoreProgressProvider).value;
     final can = user?.canBackUp ?? false;
     final now = ref.read(clockProvider)();
 
@@ -76,6 +78,11 @@ class BackupScreen extends ConsumerWidget {
                 strong: true,
               ),
             ],
+            // SYN-02 AC3.
+            if (restoring != null)
+              line(l10n.restoringProgress(restoring.done, restoring.total)),
+            // SYN-02 AC1: still undecided, choose here.
+            RestoreCard(onDone: () {}),
             if (status != null)
               line(
                 status.waiting == 0

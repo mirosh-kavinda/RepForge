@@ -248,8 +248,10 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {
-    await _wiper.wipeUserData();
+    // Signed out first, so a sync run in progress stops writing; the wipe
+    // then runs after any page already being written (SYN-02 edge).
     _emit(null);
+    await _wiper.wipeUserData();
     try {
       await (await _auth)?.signOut();
       await _providers.signOut();

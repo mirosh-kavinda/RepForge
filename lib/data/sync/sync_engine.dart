@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../local/app_database.dart';
 import 'remote_store.dart';
+import 'restore.dart';
 import 'sync_codecs.dart';
 
 const _backedUpKey = 'sync.backedUpAt';
@@ -40,12 +41,18 @@ abstract interface class SyncRunner {
 class SyncEngine implements SyncRunner {
   SyncEngine(this._db, this._remote, {DateTime Function()? now})
     : _now = now ?? DateTime.now,
-      _codecs = syncCodecs(_db);
+      _codecs = syncCodecs(_db),
+      _restore = RestoreStore(_db);
 
   final AppDatabase _db;
   final RemoteStore _remote;
   final DateTime Function() _now;
   final Map<String, SyncCodec> _codecs;
+  final RestoreStore _restore;
+
+  late final Map<String, SyncCodec> _byCollection = {
+    for (final c in _codecs.values) c.collection: c,
+  };
 
   // Outbox rows, one per (entity, id), in the order of their latest change;
   // each keeps every seq it stands for (edge: changed again before sending).
@@ -116,6 +123,7 @@ class SyncEngine implements SyncRunner {
     required bool withBody,
     StillFor current = _always,
   }) async {
+    if (!await mayPush(uid)) return;
     final queue = await _queue(withBody: withBody);
     for (var i = 0; i < queue.length; i += maxBatch) {
       final chunk = queue.skip(i).take(maxBatch).toList();
@@ -197,37 +205,163 @@ class SyncEngine implements SyncRunner {
     await recordError(null);
   }
 
-  // AC4, AC5, AC11: per collection, what reached the server since the last
-  // pull (server time, so late uploads aren't missed). A local change still
-  // waiting to be sent wins over an older cloud one. A document that can't
-  // be applied is skipped, never fatal.
-  @override
-  Future<void> pull(String uid, {StillFor current = _always}) async {
-    for (final codec in _codecs.values) {
-      final key = _pulledKey(uid, codec.collection);
-      final since = int.tryParse(await _db.readMeta(key) ?? '') ?? 0;
-      final docs = await _remote.changedSince(uid, codec.collection, since);
-      var newest = since;
-      for (final d in docs) {
-        if (!current()) return;
-        if (d.data[syncedAtField] case final int at when at > newest) {
-          newest = at;
+  PullCursor? _cursor(String? v) {
+    if (v == null) return null;
+    final bar = v.indexOf('|');
+    // Without an id: an early SYN-01 cursor, in milliseconds.
+    if (bar < 0) {
+      final ms = int.tryParse(v);
+      return ms == null ? null : (at: ms * 1000, id: '');
+    }
+    final at = int.tryParse(v.substring(0, bar));
+    return at == null ? null : (at: at, id: v.substring(bar + 1));
+  }
+
+  Future<void> _saveCursor(String uid, String collection, PullCursor c) =>
+      _db.writeMeta(_pulledKey(uid, collection), '${c.at}|${c.id}');
+
+  // One collection, page by page, cursor saved after each page so a stop
+  // resumes where it was (SYN-02 AC8). A local change still waiting to be
+  // sent wins over an older cloud one; a document that can't be applied is
+  // skipped, never fatal. Returns false when the account changed.
+  Future<bool> _pullCollection(
+    String uid,
+    SyncCodec codec,
+    StillFor current,
+    Future<void> Function(int)? onPage,
+  ) async {
+    while (true) {
+      final after = _cursor(
+        await _db.readMeta(_pulledKey(uid, codec.collection)),
+      );
+      final page = await _remote.changedSince(uid, codec.collection, after);
+      if (page.isEmpty) return true;
+      if (!current()) return false;
+      final last = page.last;
+      final lastAt = last.data[syncedAtField];
+      // One transaction per page (SYN-02 AC4): the rows, the cursor and the
+      // progress land together, so a stop never double-counts.
+      await _db.transaction(() async {
+        for (final d in page) {
+          final remoteAt = d.data['updatedAt'];
+          if (remoteAt is! int) continue;
+          try {
+            final local = await codec.readLocal(_db, d.id);
+            final localAt = local?['updatedAt'];
+            if (local != null && localAt is int && localAt >= remoteAt) {
+              continue;
+            }
+            await codec.apply(_db, d.id, d.data);
+          } on Object {
+            // A document this version can't read; the rest still apply.
+          }
         }
-        final remoteAt = d.data['updatedAt'];
-        if (remoteAt is! int) continue;
-        try {
-          final local = await codec.readLocal(_db, d.id);
-          final localAt = local?['updatedAt'];
-          if (local != null && localAt is int && localAt >= remoteAt) continue;
-          await codec.apply(_db, d.id, d.data);
-        } on Object {
-          // A document this version can't read; the rest still apply.
+        if (lastAt is int) {
+          await _saveCursor(uid, codec.collection, (at: lastAt, id: last.id));
         }
-      }
-      if (!current()) return;
-      // ">=" on the next pull: documents sharing this millisecond come again
-      // and are skipped as already applied.
-      if (newest > since) await _db.writeMeta(key, '$newest');
+        await onPage?.call(page.length);
+      });
+      if (!current()) return false;
+      // Without a server time the cursor can't move: stop, don't loop.
+      if (lastAt is! int || page.length < pageSize) return true;
     }
   }
+
+  // AC4, AC5, AC11: what reached the server since the last pull (server time,
+  // so late uploads aren't missed), essentials first (SYN-02 AC2). Waits for
+  // the restore choice on an account with a backup (SYN-02 AC1, AC6).
+  @override
+  Future<void> pull(String uid, {StillFor current = _always}) async {
+    switch (await _restore.read(uid)) {
+      case null:
+        if (!current()) return;
+        // Already syncing here before restore existed (SYN-01): carry on.
+        if (await _syncedBefore(uid)) {
+          await _restore.write(uid, RestoreState.done);
+          break;
+        }
+        final summary = await _remote.summary(uid, allCollections);
+        final cursors = {
+          if (summary != null)
+            for (final c in allCollections)
+              c: ?await _remote.last(uid, c),
+        };
+        // Signed out while asking the cloud: write nothing for that account.
+        if (!current()) return;
+        if (summary == null) {
+          await _restore.write(uid, RestoreState.done);
+        } else {
+          await _restore.offer(uid, summary, cursors);
+          return;
+        }
+      case RestoreState.offered:
+        return;
+      case RestoreState.restoring:
+        await pullOnly(uid, allCollections, current: current, counting: true);
+        if (current()) await _restore.write(uid, RestoreState.done);
+        return;
+      case RestoreState.done || RestoreState.fresh:
+        break;
+    }
+    await pullOnly(uid, allCollections, current: current);
+  }
+
+  Future<bool> _syncedBefore(String uid) async =>
+      (await _db
+              .customSelect(
+                "SELECT 1 FROM app_meta WHERE key LIKE 'sync.pulledAt.' || ? "
+                "|| '.%' LIMIT 1",
+                variables: [Variable.withString(uid)],
+              )
+              .get())
+          .isNotEmpty;
+
+  // Push waits for the offer to be decided: the phone's own records sent
+  // first would look like a backup (SYN-02 edge).
+  Future<bool> mayPush(String uid) async => await _restore.read(uid) != null;
+
+  // [collections] in order; [counting] adds pages to the restore progress.
+  Future<void> pullOnly(
+    String uid,
+    Iterable<String> collections, {
+    StillFor current = _always,
+    bool counting = false,
+  }) async {
+    for (final name in collections) {
+      final codec = _byCollection[name];
+      if (codec == null) continue;
+      final ok = await _pullCollection(
+        uid,
+        codec,
+        current,
+        counting && historyCollections.contains(name)
+            ? (n) => _restore.addDone(uid, n)
+            : null,
+      );
+      if (!ok) return;
+    }
+  }
+
+  // SYN-02 AC2: Restore chosen. Counts what is coming, then brings the
+  // essentials down now; history follows in the background run.
+  Future<void> beginRestore(String uid, {StillFor current = _always}) async {
+    var total = 0;
+    for (final c in historyCollections) {
+      // Every doc, deleted ones too: pages count them all (AC3).
+      total += await _remote.count(uid, c, liveOnly: false);
+    }
+    await pullOnly(uid, essentialCollections, current: current);
+    if (current()) await _restore.start(uid, total);
+  }
+
+  // SYN-02 AC6: Start fresh. Every cursor moves past the backup, so only
+  // changes made from now on come down; nothing in the cloud changes.
+  Future<void> startFresh(String uid) => _db.transaction(() async {
+    for (final c in allCollections) {
+      if (await _restore.offerCursor(uid, c) case final v?) {
+        await _db.writeMeta(_pulledKey(uid, c), v);
+      }
+    }
+    await _restore.write(uid, RestoreState.fresh);
+  });
 }

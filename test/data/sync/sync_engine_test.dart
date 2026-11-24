@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repforge/data/local/app_database.dart';
 import 'package:repforge/data/sync/remote_store.dart';
+import 'package:repforge/data/sync/restore.dart';
 import 'package:repforge/data/sync/sync_engine.dart';
 import 'package:repforge/data/sync/sync_state.dart';
 import 'package:repforge/data/sync/synced_writer.dart';
@@ -36,6 +37,8 @@ void main() {
     DateTime now() => clock = clock.add(const Duration(seconds: 1));
     engine = SyncEngine(db, remote, now: now);
     goals = DriftGoalRepository(db, now: now);
+    // SYN-01 tests run on an account past the restore choice (SYN-02).
+    return RestoreStore(db).write(uid, RestoreState.done);
   });
   tearDown(() => db.close());
 
@@ -250,7 +253,7 @@ void main() {
       remote.put(uid, 'goals', 'x', doc('x', 1000));
       await engine.pull(uid);
       final first = await db.readMeta('sync.pulledAt.$uid.goals');
-      expect(first, '${remote.serverTime}');
+      expect(first, '${remote.serverTime}|x');
       remote.put(uid, 'goals', 'y', doc('y', 2000));
       await engine.pull(uid);
       expect(await goals.watchAll().first, hasLength(2));

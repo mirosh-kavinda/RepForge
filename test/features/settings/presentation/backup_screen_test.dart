@@ -5,9 +5,11 @@ import 'package:repforge/app/l10n/generated/app_localizations.dart';
 import 'package:repforge/app/widgets/rf_button.dart';
 import 'package:repforge/data/sync/providers.dart';
 import 'package:repforge/data/sync/remote_store.dart';
+import 'package:repforge/data/sync/restore.dart';
 import 'package:repforge/data/sync/sync_engine.dart';
 import 'package:repforge/data/sync/sync_scheduler.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
+import 'package:repforge/features/auth/presentation/restore_card.dart';
 import 'package:repforge/features/settings/presentation/backup_screen.dart';
 import 'package:repforge/features/settings/presentation/profile_screen.dart';
 
@@ -23,6 +25,8 @@ Future<void> openBackup(
   AuthUser? user,
   FakeRunner? runner,
   double textScale = 1,
+  RestoreProgress? restoring,
+  bool backup = false,
 }) async {
   final r = runner ?? FakeRunner();
   final me =
@@ -43,6 +47,8 @@ Future<void> openBackup(
   await pumpProfile(
     tester,
     sync: status,
+    restoring: restoring,
+    backup: backup ? (newest: DateTime.utc(2026, 11, 20), workouts: 3) : null,
     auth: FakeAuthRepository(user: me),
     extra: [syncSchedulerProvider.overrideWithValue(scheduler)],
     textScale: textScale,
@@ -124,5 +130,20 @@ void main() {
     expect(at(const Duration(hours: 3)), 'Backed up 3 hours ago');
     expect(at(const Duration(days: 2)), 'Backed up Nov 22, 2026');
     expect(backedUpText(l10n, 'en', null, now), 'Not backed up yet');
+  });
+
+  testWidgets('SYN-02 AC3 restore progress shows while it runs', (
+    tester,
+  ) async {
+    await openBackup(tester, restoring: (done: 40, total: 120));
+    expect(find.text('Restoring: 40 of 120'), findsOneWidget);
+  });
+
+  testWidgets('SYN-02 AC1 the restore card is here while undecided', (
+    tester,
+  ) async {
+    await openBackup(tester, backup: true);
+    expect(find.byType(RestoreCard), findsOneWidget);
+    expect(find.text('Restore'), findsOneWidget);
   });
 }

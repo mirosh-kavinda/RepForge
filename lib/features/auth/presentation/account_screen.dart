@@ -11,9 +11,10 @@ import '../../../app/widgets/rf_button.dart';
 import '../data/providers.dart';
 import '../domain/account_preferences.dart';
 import 'auth_messages.dart';
+import 'restore_card.dart';
 import 'user_avatar.dart';
 
-// Screen 09b (AC13). Restore / Start fresh arrives with SYN-02.
+// Screen 09b (AC13), with the SYN-02 restore card.
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
 
@@ -163,6 +164,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                       ],
                     ),
                   ),
+                  // SYN-02: only when this account has a backup to offer.
+                  RestoreCard(onDone: _continue),
                   section(l10n.accountSectionBackUp, [
                     ListTile(
                       title: Text(l10n.accountWorkouts, style: t.body),

@@ -3591,5 +3591,63 @@
   "backupGuest": "Sign in to back up your training",
   "@backupGuest": {
     "description": "Guests never back up."
+  },
+  "restoreTitle": "Backup from {date}",
+  "@restoreTitle": {
+    "description": "SYN-02 restore card title.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreWorkouts": "{n, plural, =0{No workouts} =1{1 workout} other{{n} workouts}}",
+  "@restoreWorkouts": {
+    "description": "Workouts in the backup.",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "restoreBody": "Restore it to this phone, or start this phone fresh. Your backup stays in the cloud either way.",
+  "@restoreBody": {
+    "description": "Restore card explanation."
+  },
+  "restoreRestore": "Restore",
+  "@restoreRestore": {
+    "description": "Restores the backup."
+  },
+  "restoreFresh": "Start fresh",
+  "@restoreFresh": {
+    "description": "Starts this phone without the backup."
+  },
+  "restoreNeedsConnection": "Restore needs a connection.",
+  "@restoreNeedsConnection": {
+    "description": "Offline on the restore card."
+  },
+  "restoreFailed": "Couldn't reach your backup.",
+  "@restoreFailed": {
+    "description": "Restore failed."
+  },
+  "restoreTryAgain": "Try again",
+  "@restoreTryAgain": {
+    "description": "Retries the restore."
+  },
+  "restoringHome": "Restoring your history…",
+  "@restoringHome": {
+    "description": "Home line while history loads."
+  },
+  "restoringProgress": "Restoring: {done} of {total}",
+  "@restoringProgress": {
+    "description": "Restore progress.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

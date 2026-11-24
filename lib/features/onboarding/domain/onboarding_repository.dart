@@ -14,4 +14,8 @@ abstract interface class OnboardingRepository {
     OnboardingAnswers answers, {
     Future<void> Function()? alsoWrite,
   });
+
+  // SYN-02 AC5: a restored profile stands in for onboarding. True when one
+  // was there and onboarding is now done.
+  Future<bool> skipIfProfile();
 }

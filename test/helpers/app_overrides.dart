@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/misc.dart';
 import 'package:repforge/core/metrics/units.dart';
 import 'package:repforge/data/sync/providers.dart';
+import 'package:repforge/data/sync/remote_store.dart';
+import 'package:repforge/data/sync/restore.dart';
 import 'package:repforge/data/sync/sync_engine.dart';
 import 'package:repforge/features/auth/data/providers.dart';
 import 'package:repforge/features/auth/domain/auth_user.dart';
@@ -46,6 +48,8 @@ List<Override> signedInOverrides({
   FakeSettingsRepository? settings,
   FakeWorkoutReminder? reminder,
   SyncStatus? sync,
+  RestoreProgress? restoring,
+  BackupSummary? backup,
   UnitSystem units = UnitSystem.metric,
 }) => [
   authChoiceMadeProvider.overrideWith((ref) => Stream.value(true)),
@@ -84,6 +88,8 @@ List<Override> signedInOverrides({
     settings ?? FakeSettingsRepository(),
   ),
   workoutReminderProvider.overrideWithValue(reminder ?? FakeWorkoutReminder()),
+  restoreProgressProvider.overrideWith((ref) => Stream.value(restoring)),
+  backupSummaryProvider.overrideWith((ref) async => backup),
   syncStatusProvider.overrideWith(
     (ref) => Stream.value(sync ?? (backedUpAt: null, waiting: 0, error: null)),
   ),
