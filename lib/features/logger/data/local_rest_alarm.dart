@@ -1,20 +1,17 @@
-import 'package:app_settings/app_settings.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../../data/notifications/local_notifications.dart';
 import '../domain/rest_alarm.dart';
 
 // One notification id: a new rest always replaces the last one.
 const _id = 3001;
 
 class LocalRestAlarm implements RestAlarm {
-  LocalRestAlarm([FlutterLocalNotificationsPlugin? plugin])
-    : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+  LocalRestAlarm([LocalNotifications? notifications])
+    : _n = notifications ?? LocalNotifications.instance;
 
-  final FlutterLocalNotificationsPlugin _plugin;
-  bool _ready = false;
+  final LocalNotifications _n;
 
   static const _details = NotificationDetails(
     android: AndroidNotificationDetails(
@@ -33,50 +30,11 @@ class LocalRestAlarm implements RestAlarm {
     ),
   );
 
-  Future<void> _init() async {
-    if (_ready) return;
-    tzdata.initializeTimeZones();
-    await _plugin.initialize(
-      settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-        iOS: DarwinInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false,
-        ),
-      ),
-    );
-    _ready = true;
-  }
-
-  AndroidFlutterLocalNotificationsPlugin? get _android => _plugin
-      .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin
-      >();
-
-  IOSFlutterLocalNotificationsPlugin? get _ios => _plugin
-      .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin
-      >();
+  @override
+  Future<bool> allowed() => _n.allowed();
 
   @override
-  Future<bool> allowed() async {
-    await _init();
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return await _android?.areNotificationsEnabled() ?? false;
-    }
-    final p = await _ios?.checkPermissions();
-    return p?.isEnabled ?? false;
-  }
-
-  @override
-  Future<bool> request() async {
-    await _init();
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return await _android?.requestNotificationsPermission() ?? false;
-    }
-    return await _ios?.requestPermissions(alert: true, sound: true) ?? false;
-  }
+  Future<bool> request() => _n.request();
 
   @override
   Future<void> schedule(
@@ -84,11 +42,11 @@ class LocalRestAlarm implements RestAlarm {
     required String title,
     required String body,
   }) async {
-    await _init();
+    await _n.ready();
     // UTC instant, so the device's time zone database is not needed.
     final when = tz.TZDateTime.from(at.toUtc(), tz.UTC);
-    final exact = await _android?.canScheduleExactNotifications() ?? false;
-    await _plugin.zonedSchedule(
+    final exact = await _n.android?.canScheduleExactNotifications() ?? false;
+    await _n.plugin.zonedSchedule(
       id: _id,
       scheduledDate: when,
       notificationDetails: _details,
@@ -102,11 +60,10 @@ class LocalRestAlarm implements RestAlarm {
 
   @override
   Future<void> cancel() async {
-    await _init();
-    await _plugin.cancel(id: _id);
+    await _n.ready();
+    await _n.plugin.cancel(id: _id);
   }
 
   @override
-  Future<void> openSettings() =>
-      AppSettings.openAppSettings(type: AppSettingsType.notification);
+  Future<void> openSettings() => _n.openSettings();
 }

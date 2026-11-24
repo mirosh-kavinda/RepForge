@@ -25,7 +25,9 @@ import '../features/progress/presentation/progress_screen.dart';
 import '../features/schedule/presentation/cycle_editor_screen.dart';
 import '../features/schedule/presentation/cycles_screen.dart';
 import '../features/schedule/presentation/schedule_screen.dart';
+import '../features/settings/presentation/plates_screen.dart';
 import '../features/settings/presentation/profile_screen.dart';
+import '../features/settings/presentation/reminder_screen.dart';
 import '../features/workout/presentation/template_editor_screen.dart';
 import '../features/workout/presentation/workouts_screen.dart';
 import 'shell.dart';
@@ -62,6 +64,8 @@ abstract final class Routes {
   static const goalNew = '/progress/goals/new';
   static String goalEdit(String id) => '/progress/goals/$id/edit';
   static const profile = '/profile';
+  static const plates = '/profile/plates';
+  static const reminder = '/profile/reminder';
   static const workouts = '/schedule/workouts';
   static const workoutNew = '/schedule/workouts/new';
   static String workoutEdit(String id) => '/schedule/workouts/$id';
@@ -293,6 +297,16 @@ GoRouter router(Ref ref) {
               GoRoute(
                 path: Routes.profile,
                 builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'plates',
+                    builder: (context, state) => const PlatesScreen(),
+                  ),
+                  GoRoute(
+                    path: 'reminder',
+                    builder: (context, state) => const ReminderScreen(),
+                  ),
+                ],
               ),
             ],
           ),

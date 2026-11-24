@@ -11,6 +11,7 @@ import '../../../app/widgets/rf_tappable.dart';
 import '../../../core/metrics/units.dart';
 import '../domain/logger_rules.dart';
 import '../domain/workout_session.dart';
+import 'plates_sheet.dart';
 
 String _num(double v) =>
     v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toString();
@@ -52,6 +53,8 @@ String shortSetText(
 
 // Weight, then reps or seconds, as steppers in the user's unit.
 class SetSteppers extends StatelessWidget {
+  static const platesKey = ValueKey('setSteppers.plates');
+
   const SetSteppers({
     required this.row,
     required this.values,
@@ -96,6 +99,20 @@ class SetSteppers extends StatelessWidget {
             seconds: v.seconds,
           )),
         ),
+        // SET-01 AC6: what to load for a barbell weight.
+        if (!row.bodyweight && v.kg > 0)
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton.icon(
+              key: platesKey,
+              style: TextButton.styleFrom(
+                minimumSize: const Size(RfSize.minTarget, RfSize.minTarget),
+              ),
+              onPressed: () => showPlatesSheet(context, kg: v.kg, units: units),
+              icon: const Icon(Icons.fitness_center),
+              label: Text(l10n.settingsPlates),
+            ),
+          ),
         const SizedBox(height: RfSpace.s8),
         if (v.seconds != null)
           RfStepper(

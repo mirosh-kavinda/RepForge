@@ -361,7 +361,7 @@ final class GoalLiftsProvider
   }
 }
 
-String _$goalLiftsHash() => r'c806f82ddb5686974d829e86bb45d61f606465d9';
+String _$goalLiftsHash() => r'a22bc0daff5b2f219a4bb807686babb0424bd803';
 
 @ProviderFor(goalLiftName)
 final goalLiftNameProvider = GoalLiftNameFamily._();

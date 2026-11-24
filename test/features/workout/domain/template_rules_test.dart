@@ -223,4 +223,13 @@ void main() {
       expect(addToTemplate(full, 'dips').result, AddResult.full);
     });
   });
+
+  group('SET-01 default rest', () {
+    test('AC4 new rows take it; existing rows keep theirs', () {
+      final old = newEntry('a').copyWith(restSec: 45);
+      final list = append([old], ['b', 'c'], restSec: 90);
+      expect([for (final e in list) e.restSec], [45, 90, 90]);
+      expect(newEntry('d').restSec, 120);
+    });
+  });
 }

@@ -3,6 +3,7 @@ import 'package:characters/characters.dart';
 import '../../../core/ids.dart';
 import '../../../core/metrics/units.dart';
 import '../../library/domain/exercise.dart';
+import '../../settings/domain/settings.dart' show defaultRestSec;
 import 'workout_template.dart';
 
 abstract final class TemplateLimits {
@@ -37,21 +38,28 @@ bool canSave(String name, List<TemplateExercise> exercises) =>
 int remainingSlots(List<TemplateExercise> exercises) =>
     TemplateLimits.maxExercises - exercises.length;
 
-TemplateExercise newEntry(String exerciseId) =>
-    TemplateExercise(id: newId(), exerciseId: exerciseId);
+// SET-01 AC4: new rows start with the default rest; old rows keep theirs.
+TemplateExercise newEntry(String exerciseId, {int restSec = defaultRestSec}) =>
+    TemplateExercise(id: newId(), exerciseId: exerciseId, restSec: restSec);
 
 List<TemplateExercise> append(
   List<TemplateExercise> list,
-  List<String> exerciseIds,
-) => [...list, ...exerciseIds.take(remainingSlots(list)).map(newEntry)];
+  List<String> exerciseIds, {
+  int restSec = defaultRestSec,
+}) => [
+  ...list,
+  for (final id in exerciseIds.take(remainingSlots(list)))
+    newEntry(id, restSec: restSec),
+];
 
 // EXL-02 AC8: adding one exercise from its detail screen.
 enum AddResult { added, already, full }
 
 ({AddResult result, WorkoutTemplate template}) addToTemplate(
   WorkoutTemplate t,
-  String exerciseId,
-) {
+  String exerciseId, {
+  int restSec = defaultRestSec,
+}) {
   if (t.exercises.any((e) => e.exerciseId == exerciseId)) {
     return (result: AddResult.already, template: t);
   }
@@ -60,7 +68,9 @@ enum AddResult { added, already, full }
   }
   return (
     result: AddResult.added,
-    template: t.copyWith(exercises: append(t.exercises, [exerciseId])),
+    template: t.copyWith(
+      exercises: append(t.exercises, [exerciseId], restSec: restSec),
+    ),
   );
 }
 

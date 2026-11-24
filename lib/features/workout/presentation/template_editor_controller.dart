@@ -5,6 +5,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../core/ids.dart';
 import '../../library/data/providers.dart';
 import '../../library/domain/exercise.dart';
+import '../../settings/data/providers.dart';
+import '../../settings/domain/settings.dart' show defaultRestSec;
 import '../data/providers.dart';
 import '../domain/template_rules.dart' as rules;
 import '../domain/workout_template.dart';
@@ -98,12 +100,26 @@ class TemplateEditor extends _$TemplateEditor {
 
   void setName(String name) => _set(_s.copyWith(name: name));
 
+  // SET-01 AC4.
+  Future<int> _defaultRest() async {
+    try {
+      // Read the stream itself: an unwatched provider is paused.
+      return (await ref.read(settingsRepositoryProvider).watch().first).restSec;
+    } on Object {
+      return defaultRestSec;
+    }
+  }
+
   Future<void> add(List<String> exerciseIds) async {
     final missing = exerciseIds.where((i) => !_s.catalog.containsKey(i));
     final found = await _lookup(missing);
     _set(
       _s.copyWith(
-        exercises: rules.append(_s.exercises, exerciseIds),
+        exercises: rules.append(
+          _s.exercises,
+          exerciseIds,
+          restSec: await _defaultRest(),
+        ),
         catalog: {..._s.catalog, ...found},
       ),
     );

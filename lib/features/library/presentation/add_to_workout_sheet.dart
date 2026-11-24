@@ -8,6 +8,8 @@ import '../../../app/theme/rf_scales.dart';
 import '../../../app/theme/rf_tokens.dart';
 import '../../../app/theme/rf_typography.dart';
 import '../../../app/widgets/rf_button.dart';
+import '../../settings/data/providers.dart';
+import '../../settings/domain/settings.dart';
 import '../../workout/data/providers.dart';
 import '../../workout/domain/template_rules.dart';
 import '../../workout/domain/workout_template.dart';
@@ -33,7 +35,14 @@ Future<void> showAddToWorkout(
     return;
   }
   if (picked is! WorkoutTemplate) return;
-  final r = addToTemplate(picked, exercise.id);
+  // SET-01 AC4: wait for the setting; nothing may be watching it yet.
+  var rest = defaultRestSec;
+  try {
+    rest = (await ref.read(settingsRepositoryProvider).watch().first).restSec;
+  } on Object {
+    // Keep the default.
+  }
+  final r = addToTemplate(picked, exercise.id, restSec: rest);
   String message;
   switch (r.result) {
     case AddResult.already:

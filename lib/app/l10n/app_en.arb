@@ -3345,5 +3345,175 @@
   "goalTargetBelow": "Enter a target below your current value",
   "@goalTargetBelow": {
     "description": "Edited weight-loss target not below current."
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "SET-01 heading on Profile."
+  },
+  "settingsUnits": "Units",
+  "@settingsUnits": {
+    "description": "Units row."
+  },
+  "settingsUnitsMetric": "Metric (kg, cm)",
+  "@settingsUnitsMetric": {
+    "description": "Metric choice, in words."
+  },
+  "settingsUnitsImperial": "Imperial (lb, in)",
+  "@settingsUnitsImperial": {
+    "description": "Imperial choice, in words."
+  },
+  "settingsTheme": "Theme",
+  "@settingsTheme": {
+    "description": "Theme row."
+  },
+  "settingsThemeSystem": "System",
+  "@settingsThemeSystem": {
+    "description": "Theme follows the phone."
+  },
+  "settingsThemeLight": "Light",
+  "@settingsThemeLight": {
+    "description": "Light theme."
+  },
+  "settingsThemeDark": "Dark",
+  "@settingsThemeDark": {
+    "description": "Dark theme."
+  },
+  "settingsRest": "Default rest",
+  "@settingsRest": {
+    "description": "Default rest row; sheet title."
+  },
+  "settingsRestHint": "For exercises you add to workouts from now on",
+  "@settingsRestHint": {
+    "description": "Under the default rest stepper."
+  },
+  "settingsDone": "Done",
+  "@settingsDone": {
+    "description": "Closes a settings sheet."
+  },
+  "settingsPlates": "Plates",
+  "@settingsPlates": {
+    "description": "Plates row; plates screen title; logger button."
+  },
+  "settingsPlatesSummary": "{bar} bar · {count, plural, =1{1 plate} other{{count} plates}}",
+  "@settingsPlatesSummary": {
+    "description": "Plates row value.",
+    "placeholders": {
+      "bar": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReminder": "Workout reminder",
+  "@settingsReminder": {
+    "description": "Reminder row; screen title."
+  },
+  "settingsReminderOff": "Off",
+  "@settingsReminderOff": {
+    "description": "Reminder row value when off."
+  },
+  "settingsReminderOn": "On, {time}",
+  "@settingsReminderOn": {
+    "description": "Reminder row value when on.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSaveFailed": "Couldn't save that change. Try again.",
+  "@settingsSaveFailed": {
+    "description": "A failed settings write."
+  },
+  "platesBar": "Bar",
+  "@platesBar": {
+    "description": "Bar weight field."
+  },
+  "platesOwned": "Plates I own",
+  "@platesOwned": {
+    "description": "Heading of plate toggles."
+  },
+  "platesKeepOne": "Keep at least one plate",
+  "@platesKeepOne": {
+    "description": "Turning off the last plate."
+  },
+  "platesPlate": "{weight} plate",
+  "@platesPlate": {
+    "description": "Semantics label of a plate toggle.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "platesFor": "Plates for {weight}",
+  "@platesFor": {
+    "description": "Plates sheet title.",
+    "placeholders": {
+      "weight": {
+        "type": "String"
+      }
+    }
+  },
+  "platesEachSide": "Each side: {plates}",
+  "@platesEachSide": {
+    "description": "Per-side load.",
+    "placeholders": {
+      "plates": {
+        "type": "String"
+      }
+    }
+  },
+  "platesJustBar": "Just the bar",
+  "@platesJustBar": {
+    "description": "No plates needed."
+  },
+  "platesShort": "{amount} short",
+  "@platesShort": {
+    "description": "Closest lighter load.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "platesBelowBar": "Lighter than the bar",
+  "@platesBelowBar": {
+    "description": "Weight below the bar."
+  },
+  "reminderTitle": "{workout} day today",
+  "@reminderTitle": {
+    "description": "Reminder notification title.",
+    "placeholders": {
+      "workout": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderWorkout": "Workout",
+  "@reminderWorkout": {
+    "description": "Reminder name for an unknown workout."
+  },
+  "reminderBody": "Your workout is planned for today.",
+  "@reminderBody": {
+    "description": "Reminder notification body."
+  },
+  "reminderSwitch": "Remind me on training days",
+  "@reminderSwitch": {
+    "description": "Reminder switch."
+  },
+  "reminderTime": "Time",
+  "@reminderTime": {
+    "description": "Reminder time row."
+  },
+  "reminderNeedsNotifications": "Reminders need notifications turned on for RepForge.",
+  "@reminderNeedsNotifications": {
+    "description": "Notifications are off."
+  },
+  "reminderNoCycle": "No cycle yet",
+  "@reminderNoCycle": {
+    "description": "No active cycle: nothing will fire."
   }
 }

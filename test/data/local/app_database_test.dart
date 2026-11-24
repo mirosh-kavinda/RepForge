@@ -391,9 +391,34 @@ void main() {
     });
   });
 
+  group('SET-01 schema v16', () {
+    test('v15 -> v16 adds the settings columns', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v15 = AppDatabase(NativeDatabase(file));
+      for (final c in [
+        'default_rest_sec',
+        'bar_kg_metric',
+        'bar_kg_imperial',
+        'plates_metric',
+        'plates_imperial',
+      ]) {
+        await v15.customStatement('ALTER TABLE user_profiles DROP COLUMN $c');
+      }
+      await v15.customStatement('PRAGMA user_version = 15');
+      await v15.close();
+
+      final v16 = AppDatabase(NativeDatabase(file));
+      addTearDown(v16.close);
+      expect(await v16.select(v16.userProfiles).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 15);
+      expect(db.schemaVersion, 16);
       final names =
           (await db
                   .customSelect(

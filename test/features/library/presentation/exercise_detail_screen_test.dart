@@ -16,11 +16,13 @@ import 'package:repforge/features/library/presentation/custom_exercise_form.dart
 import 'package:repforge/features/library/presentation/exercise_detail_screen.dart';
 import 'package:repforge/features/logger/data/providers.dart';
 import 'package:repforge/features/logger/domain/workout_session.dart';
+import 'package:repforge/features/settings/domain/settings.dart';
 import 'package:repforge/features/workout/domain/workout_template.dart';
 import 'package:repforge/features/workout/presentation/template_editor_screen.dart';
 
 import '../../../helpers/app_overrides.dart';
 import '../../logger/fake_session_repository.dart';
+import '../../settings/fake_settings_repository.dart';
 import '../../workout/fakes.dart';
 import '../fake_custom_exercise_repository.dart';
 import '../library_fakes.dart';
@@ -71,6 +73,7 @@ Future<void> openDetail(
   double textScale = 1,
   ImageProvider Function(String path)? images,
   List<Exercise> mine = const [],
+  int restSec = 120,
 }) async {
   tester.view
     ..devicePixelRatio = 1
@@ -93,6 +96,9 @@ Future<void> openDetail(
           templates: templates,
           units: units,
           custom: custom,
+          settings: FakeSettingsRepository(
+            settings: TrainingSettings(restSec: restSec),
+          ),
         ),
         exerciseCatalogProvider.overrideWith(
           (ref) async => CombinedCatalog(LibraryCatalog(), custom),
@@ -398,6 +404,17 @@ void main() {
         tester.getSize(find.byKey(ExerciseDetailScreen.addKey)).height,
         greaterThanOrEqualTo(48),
       );
+    });
+  });
+
+  group('SET-01 default rest', () {
+    testWidgets('AC4 adding from the library uses it', (tester) async {
+      await openDetail(tester, 'Plank', restSec: 90);
+      await tester.tap(find.byKey(ExerciseDetailScreen.addKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Push'));
+      await tester.pumpAndSettle();
+      expect(templates.saved.single.exercises.last.restSec, 90);
     });
   });
 }

@@ -68,7 +68,7 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 
 | Entity | Firestore path | Key fields |
 |---|---|---|
-| UserProfile | users/{uid} | name, sex, birthYear, heightCm, units, activityLevel, goalType, timezone |
+| UserProfile | users/{uid} | name, sex, birthYear, heightCm, units, activityLevel, goalType, timezone, defaultRestSec, barKgMetric / barKgImperial, platesMetric / platesImperial (kg) |
 | Exercise (catalog) | catalog/exercises/{exId} (read-only) | name, primaryMuscles[], secondaryMuscles[], equipment, level, category, mechanic, force, instructions[], images[] |
 | CustomExercise | users/{uid}/customExercises/{id} | same as Exercise |
 | WorkoutTemplate | users/{uid}/templates/{id} | name, exercises[{exId, order, sets, repMin, repMax, targetKg, restSec, supersetGroup}] |
@@ -93,6 +93,11 @@ Design choices:
 - Progress (PRG-01): `progress_rules.dart` builds chart series from finished sets and body
   snapshots for a range (e1RM and volume from `lib/core/metrics`); charts are `fl_chart`, each
   hidden from screen readers behind a text summary. The chosen exercise lives in `app_meta`.
+- Settings (SET-01): units, default rest, bar and plates live on the synced profile (plates
+  in kg, one list per unit system); theme and the workout reminder stay in `app_meta`. The
+  plate solver works in the display unit. One `LocalNotifications` holds the plugin for the
+  rest timer (id 3001) and reminders (4000–4013) so neither replaces the other's tap handler;
+  `reminderScheduler` re-schedules the next 14 planned training days on every change.
 - Goals (GOL-01): `goals` stores only what the user set; current value, progress, projection
   and pace are worked out on read (`goal_rules.dart`, with `bestE1rm` and `projectGoal`). A
   settler provider (listened on Home and Goals) writes `achievedAt` once data reaches the

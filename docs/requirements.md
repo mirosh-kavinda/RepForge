@@ -47,7 +47,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | SYN-01 | Offline-first, sync to Firebase; no loss after 30 days offline | MVP | P3 | 24 | — |
 | SYN-02 | Restore on a new phone; 2 yrs data < 30 s on 4G | MVP | P3 | 24 | — |
 | SYN-03 | Export CSV / JSON | v1.1 | P4 | 23 | — |
-| SET-01 | Settings: units, theme, rest default, plate calculator, reminders | MVP | P2 | 23 | — |
+| SET-01 | Settings: units, theme, rest default, plate calculator, reminders | MVP | P2 | 23 | Building |
 
 ## Non-functional requirements
 

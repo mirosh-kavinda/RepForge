@@ -57,11 +57,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      container.read(appThemeModeProvider.notifier).set(ThemeMode.light);
+      await container.read(appThemeModeProvider.notifier).set(ThemeMode.light);
       await tester.pumpAndSettle();
       expect(colorsIn(tester).bg, RfColors.light.bg);
 
-      container.read(appThemeModeProvider.notifier).set(ThemeMode.dark);
+      await container.read(appThemeModeProvider.notifier).set(ThemeMode.dark);
       await tester.pumpAndSettle();
       expect(colorsIn(tester).bg, RfColors.dark.bg);
     });
@@ -85,7 +85,7 @@ void main() {
         ),
       );
       await tester.enterText(find.byType(TextField), '62.5');
-      container.read(appThemeModeProvider.notifier).set(ThemeMode.dark);
+      await container.read(appThemeModeProvider.notifier).set(ThemeMode.dark);
       await tester.pumpAndSettle();
       expect(find.text('62.5'), findsOneWidget);
       expect(colorsIn(tester).bg, RfColors.dark.bg);

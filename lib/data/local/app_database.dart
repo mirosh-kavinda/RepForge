@@ -75,6 +75,12 @@ class UserProfiles extends Table with SyncedTable {
   IntColumn get birthYear => integer().nullable()();
   RealColumn get heightCm => real().nullable()();
   TextColumn get activityLevel => text().nullable()();
+  // SET-01. Null bar / plates mean the defaults; plates are JSON lists of kg.
+  IntColumn get defaultRestSec => integer().withDefault(const Constant(120))();
+  RealColumn get barKgMetric => real().nullable()();
+  RealColumn get barKgImperial => real().nullable()();
+  TextColumn get platesMetric => text().nullable()();
+  TextColumn get platesImperial => text().nullable()();
 }
 
 // ONB-01 creates it with weight and waist; BOD-01 adds the other measurements.
@@ -201,7 +207,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -270,6 +276,19 @@ class AppDatabase extends _$AppDatabase {
         }
       }
       if (from < 15) await m.createTable(goals);
+      if (from < 16) {
+        for (final c in [
+          userProfiles.defaultRestSec,
+          userProfiles.barKgMetric,
+          userProfiles.barKgImperial,
+          userProfiles.platesMetric,
+          userProfiles.platesImperial,
+        ]) {
+          if (!await _has('user_profiles', c.name)) {
+            await m.addColumn(userProfiles, c);
+          }
+        }
+      }
       if (from < 12) {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS workout_sessions_template_ended '

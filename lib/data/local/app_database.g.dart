@@ -1608,6 +1608,62 @@ class $UserProfilesTable extends UserProfiles
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _defaultRestSecMeta = const VerificationMeta(
+    'defaultRestSec',
+  );
+  @override
+  late final GeneratedColumn<int> defaultRestSec = GeneratedColumn<int>(
+    'default_rest_sec',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(120),
+  );
+  static const VerificationMeta _barKgMetricMeta = const VerificationMeta(
+    'barKgMetric',
+  );
+  @override
+  late final GeneratedColumn<double> barKgMetric = GeneratedColumn<double>(
+    'bar_kg_metric',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _barKgImperialMeta = const VerificationMeta(
+    'barKgImperial',
+  );
+  @override
+  late final GeneratedColumn<double> barKgImperial = GeneratedColumn<double>(
+    'bar_kg_imperial',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _platesMetricMeta = const VerificationMeta(
+    'platesMetric',
+  );
+  @override
+  late final GeneratedColumn<String> platesMetric = GeneratedColumn<String>(
+    'plates_metric',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _platesImperialMeta = const VerificationMeta(
+    'platesImperial',
+  );
+  @override
+  late final GeneratedColumn<String> platesImperial = GeneratedColumn<String>(
+    'plates_imperial',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1621,6 +1677,11 @@ class $UserProfilesTable extends UserProfiles
     birthYear,
     heightCm,
     activityLevel,
+    defaultRestSec,
+    barKgMetric,
+    barKgImperial,
+    platesMetric,
+    platesImperial,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1698,6 +1759,51 @@ class $UserProfilesTable extends UserProfiles
         ),
       );
     }
+    if (data.containsKey('default_rest_sec')) {
+      context.handle(
+        _defaultRestSecMeta,
+        defaultRestSec.isAcceptableOrUnknown(
+          data['default_rest_sec']!,
+          _defaultRestSecMeta,
+        ),
+      );
+    }
+    if (data.containsKey('bar_kg_metric')) {
+      context.handle(
+        _barKgMetricMeta,
+        barKgMetric.isAcceptableOrUnknown(
+          data['bar_kg_metric']!,
+          _barKgMetricMeta,
+        ),
+      );
+    }
+    if (data.containsKey('bar_kg_imperial')) {
+      context.handle(
+        _barKgImperialMeta,
+        barKgImperial.isAcceptableOrUnknown(
+          data['bar_kg_imperial']!,
+          _barKgImperialMeta,
+        ),
+      );
+    }
+    if (data.containsKey('plates_metric')) {
+      context.handle(
+        _platesMetricMeta,
+        platesMetric.isAcceptableOrUnknown(
+          data['plates_metric']!,
+          _platesMetricMeta,
+        ),
+      );
+    }
+    if (data.containsKey('plates_imperial')) {
+      context.handle(
+        _platesImperialMeta,
+        platesImperial.isAcceptableOrUnknown(
+          data['plates_imperial']!,
+          _platesImperialMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1753,6 +1859,26 @@ class $UserProfilesTable extends UserProfiles
         DriftSqlType.string,
         data['${effectivePrefix}activity_level'],
       ),
+      defaultRestSec: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}default_rest_sec'],
+      )!,
+      barKgMetric: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}bar_kg_metric'],
+      ),
+      barKgImperial: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}bar_kg_imperial'],
+      ),
+      platesMetric: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plates_metric'],
+      ),
+      platesImperial: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plates_imperial'],
+      ),
     );
   }
 
@@ -1777,6 +1903,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
   final int? birthYear;
   final double? heightCm;
   final String? activityLevel;
+  final int defaultRestSec;
+  final double? barKgMetric;
+  final double? barKgImperial;
+  final String? platesMetric;
+  final String? platesImperial;
   const UserProfile({
     required this.id,
     required this.updatedAt,
@@ -1789,6 +1920,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     this.birthYear,
     this.heightCm,
     this.activityLevel,
+    required this.defaultRestSec,
+    this.barKgMetric,
+    this.barKgImperial,
+    this.platesMetric,
+    this.platesImperial,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1822,6 +1958,19 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     if (!nullToAbsent || activityLevel != null) {
       map['activity_level'] = Variable<String>(activityLevel);
     }
+    map['default_rest_sec'] = Variable<int>(defaultRestSec);
+    if (!nullToAbsent || barKgMetric != null) {
+      map['bar_kg_metric'] = Variable<double>(barKgMetric);
+    }
+    if (!nullToAbsent || barKgImperial != null) {
+      map['bar_kg_imperial'] = Variable<double>(barKgImperial);
+    }
+    if (!nullToAbsent || platesMetric != null) {
+      map['plates_metric'] = Variable<String>(platesMetric);
+    }
+    if (!nullToAbsent || platesImperial != null) {
+      map['plates_imperial'] = Variable<String>(platesImperial);
+    }
     return map;
   }
 
@@ -1848,6 +1997,19 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       activityLevel: activityLevel == null && nullToAbsent
           ? const Value.absent()
           : Value(activityLevel),
+      defaultRestSec: Value(defaultRestSec),
+      barKgMetric: barKgMetric == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barKgMetric),
+      barKgImperial: barKgImperial == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barKgImperial),
+      platesMetric: platesMetric == null && nullToAbsent
+          ? const Value.absent()
+          : Value(platesMetric),
+      platesImperial: platesImperial == null && nullToAbsent
+          ? const Value.absent()
+          : Value(platesImperial),
     );
   }
 
@@ -1870,6 +2032,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       birthYear: serializer.fromJson<int?>(json['birthYear']),
       heightCm: serializer.fromJson<double?>(json['heightCm']),
       activityLevel: serializer.fromJson<String?>(json['activityLevel']),
+      defaultRestSec: serializer.fromJson<int>(json['defaultRestSec']),
+      barKgMetric: serializer.fromJson<double?>(json['barKgMetric']),
+      barKgImperial: serializer.fromJson<double?>(json['barKgImperial']),
+      platesMetric: serializer.fromJson<String?>(json['platesMetric']),
+      platesImperial: serializer.fromJson<String?>(json['platesImperial']),
     );
   }
   @override
@@ -1889,6 +2056,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       'birthYear': serializer.toJson<int?>(birthYear),
       'heightCm': serializer.toJson<double?>(heightCm),
       'activityLevel': serializer.toJson<String?>(activityLevel),
+      'defaultRestSec': serializer.toJson<int>(defaultRestSec),
+      'barKgMetric': serializer.toJson<double?>(barKgMetric),
+      'barKgImperial': serializer.toJson<double?>(barKgImperial),
+      'platesMetric': serializer.toJson<String?>(platesMetric),
+      'platesImperial': serializer.toJson<String?>(platesImperial),
     };
   }
 
@@ -1904,6 +2076,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     Value<int?> birthYear = const Value.absent(),
     Value<double?> heightCm = const Value.absent(),
     Value<String?> activityLevel = const Value.absent(),
+    int? defaultRestSec,
+    Value<double?> barKgMetric = const Value.absent(),
+    Value<double?> barKgImperial = const Value.absent(),
+    Value<String?> platesMetric = const Value.absent(),
+    Value<String?> platesImperial = const Value.absent(),
   }) => UserProfile(
     id: id ?? this.id,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -1918,6 +2095,15 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     activityLevel: activityLevel.present
         ? activityLevel.value
         : this.activityLevel,
+    defaultRestSec: defaultRestSec ?? this.defaultRestSec,
+    barKgMetric: barKgMetric.present ? barKgMetric.value : this.barKgMetric,
+    barKgImperial: barKgImperial.present
+        ? barKgImperial.value
+        : this.barKgImperial,
+    platesMetric: platesMetric.present ? platesMetric.value : this.platesMetric,
+    platesImperial: platesImperial.present
+        ? platesImperial.value
+        : this.platesImperial,
   );
   UserProfile copyWithCompanion(UserProfilesCompanion data) {
     return UserProfile(
@@ -1934,6 +2120,21 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       activityLevel: data.activityLevel.present
           ? data.activityLevel.value
           : this.activityLevel,
+      defaultRestSec: data.defaultRestSec.present
+          ? data.defaultRestSec.value
+          : this.defaultRestSec,
+      barKgMetric: data.barKgMetric.present
+          ? data.barKgMetric.value
+          : this.barKgMetric,
+      barKgImperial: data.barKgImperial.present
+          ? data.barKgImperial.value
+          : this.barKgImperial,
+      platesMetric: data.platesMetric.present
+          ? data.platesMetric.value
+          : this.platesMetric,
+      platesImperial: data.platesImperial.present
+          ? data.platesImperial.value
+          : this.platesImperial,
     );
   }
 
@@ -1950,7 +2151,12 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           ..write('sex: $sex, ')
           ..write('birthYear: $birthYear, ')
           ..write('heightCm: $heightCm, ')
-          ..write('activityLevel: $activityLevel')
+          ..write('activityLevel: $activityLevel, ')
+          ..write('defaultRestSec: $defaultRestSec, ')
+          ..write('barKgMetric: $barKgMetric, ')
+          ..write('barKgImperial: $barKgImperial, ')
+          ..write('platesMetric: $platesMetric, ')
+          ..write('platesImperial: $platesImperial')
           ..write(')'))
         .toString();
   }
@@ -1968,6 +2174,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     birthYear,
     heightCm,
     activityLevel,
+    defaultRestSec,
+    barKgMetric,
+    barKgImperial,
+    platesMetric,
+    platesImperial,
   );
   @override
   bool operator ==(Object other) =>
@@ -1983,7 +2194,12 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           other.sex == this.sex &&
           other.birthYear == this.birthYear &&
           other.heightCm == this.heightCm &&
-          other.activityLevel == this.activityLevel);
+          other.activityLevel == this.activityLevel &&
+          other.defaultRestSec == this.defaultRestSec &&
+          other.barKgMetric == this.barKgMetric &&
+          other.barKgImperial == this.barKgImperial &&
+          other.platesMetric == this.platesMetric &&
+          other.platesImperial == this.platesImperial);
 }
 
 class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
@@ -1998,6 +2214,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
   final Value<int?> birthYear;
   final Value<double?> heightCm;
   final Value<String?> activityLevel;
+  final Value<int> defaultRestSec;
+  final Value<double?> barKgMetric;
+  final Value<double?> barKgImperial;
+  final Value<String?> platesMetric;
+  final Value<String?> platesImperial;
   final Value<int> rowid;
   const UserProfilesCompanion({
     this.id = const Value.absent(),
@@ -2011,6 +2232,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     this.birthYear = const Value.absent(),
     this.heightCm = const Value.absent(),
     this.activityLevel = const Value.absent(),
+    this.defaultRestSec = const Value.absent(),
+    this.barKgMetric = const Value.absent(),
+    this.barKgImperial = const Value.absent(),
+    this.platesMetric = const Value.absent(),
+    this.platesImperial = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UserProfilesCompanion.insert({
@@ -2025,6 +2251,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     this.birthYear = const Value.absent(),
     this.heightCm = const Value.absent(),
     this.activityLevel = const Value.absent(),
+    this.defaultRestSec = const Value.absent(),
+    this.barKgMetric = const Value.absent(),
+    this.barKgImperial = const Value.absent(),
+    this.platesMetric = const Value.absent(),
+    this.platesImperial = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt),
        units = Value(units);
@@ -2040,6 +2271,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     Expression<int>? birthYear,
     Expression<double>? heightCm,
     Expression<String>? activityLevel,
+    Expression<int>? defaultRestSec,
+    Expression<double>? barKgMetric,
+    Expression<double>? barKgImperial,
+    Expression<String>? platesMetric,
+    Expression<String>? platesImperial,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2054,6 +2290,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       if (birthYear != null) 'birth_year': birthYear,
       if (heightCm != null) 'height_cm': heightCm,
       if (activityLevel != null) 'activity_level': activityLevel,
+      if (defaultRestSec != null) 'default_rest_sec': defaultRestSec,
+      if (barKgMetric != null) 'bar_kg_metric': barKgMetric,
+      if (barKgImperial != null) 'bar_kg_imperial': barKgImperial,
+      if (platesMetric != null) 'plates_metric': platesMetric,
+      if (platesImperial != null) 'plates_imperial': platesImperial,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2070,6 +2311,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     Value<int?>? birthYear,
     Value<double?>? heightCm,
     Value<String?>? activityLevel,
+    Value<int>? defaultRestSec,
+    Value<double?>? barKgMetric,
+    Value<double?>? barKgImperial,
+    Value<String?>? platesMetric,
+    Value<String?>? platesImperial,
     Value<int>? rowid,
   }) {
     return UserProfilesCompanion(
@@ -2084,6 +2330,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       birthYear: birthYear ?? this.birthYear,
       heightCm: heightCm ?? this.heightCm,
       activityLevel: activityLevel ?? this.activityLevel,
+      defaultRestSec: defaultRestSec ?? this.defaultRestSec,
+      barKgMetric: barKgMetric ?? this.barKgMetric,
+      barKgImperial: barKgImperial ?? this.barKgImperial,
+      platesMetric: platesMetric ?? this.platesMetric,
+      platesImperial: platesImperial ?? this.platesImperial,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2126,6 +2377,21 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     if (activityLevel.present) {
       map['activity_level'] = Variable<String>(activityLevel.value);
     }
+    if (defaultRestSec.present) {
+      map['default_rest_sec'] = Variable<int>(defaultRestSec.value);
+    }
+    if (barKgMetric.present) {
+      map['bar_kg_metric'] = Variable<double>(barKgMetric.value);
+    }
+    if (barKgImperial.present) {
+      map['bar_kg_imperial'] = Variable<double>(barKgImperial.value);
+    }
+    if (platesMetric.present) {
+      map['plates_metric'] = Variable<String>(platesMetric.value);
+    }
+    if (platesImperial.present) {
+      map['plates_imperial'] = Variable<String>(platesImperial.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2146,6 +2412,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
           ..write('birthYear: $birthYear, ')
           ..write('heightCm: $heightCm, ')
           ..write('activityLevel: $activityLevel, ')
+          ..write('defaultRestSec: $defaultRestSec, ')
+          ..write('barKgMetric: $barKgMetric, ')
+          ..write('barKgImperial: $barKgImperial, ')
+          ..write('platesMetric: $platesMetric, ')
+          ..write('platesImperial: $platesImperial, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -8473,6 +8744,11 @@ typedef $$UserProfilesTableCreateCompanionBuilder =
       Value<int?> birthYear,
       Value<double?> heightCm,
       Value<String?> activityLevel,
+      Value<int> defaultRestSec,
+      Value<double?> barKgMetric,
+      Value<double?> barKgImperial,
+      Value<String?> platesMetric,
+      Value<String?> platesImperial,
       Value<int> rowid,
     });
 typedef $$UserProfilesTableUpdateCompanionBuilder =
@@ -8488,6 +8764,11 @@ typedef $$UserProfilesTableUpdateCompanionBuilder =
       Value<int?> birthYear,
       Value<double?> heightCm,
       Value<String?> activityLevel,
+      Value<int> defaultRestSec,
+      Value<double?> barKgMetric,
+      Value<double?> barKgImperial,
+      Value<String?> platesMetric,
+      Value<String?> platesImperial,
       Value<int> rowid,
     });
 
@@ -8555,6 +8836,31 @@ class $$UserProfilesTableFilterComposer
     column: $table.activityLevel,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get defaultRestSec => $composableBuilder(
+    column: $table.defaultRestSec,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get barKgMetric => $composableBuilder(
+    column: $table.barKgMetric,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get barKgImperial => $composableBuilder(
+    column: $table.barKgImperial,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get platesMetric => $composableBuilder(
+    column: $table.platesMetric,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get platesImperial => $composableBuilder(
+    column: $table.platesImperial,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$UserProfilesTableOrderingComposer
@@ -8620,6 +8926,31 @@ class $$UserProfilesTableOrderingComposer
     column: $table.activityLevel,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get defaultRestSec => $composableBuilder(
+    column: $table.defaultRestSec,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get barKgMetric => $composableBuilder(
+    column: $table.barKgMetric,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get barKgImperial => $composableBuilder(
+    column: $table.barKgImperial,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get platesMetric => $composableBuilder(
+    column: $table.platesMetric,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get platesImperial => $composableBuilder(
+    column: $table.platesImperial,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserProfilesTableAnnotationComposer
@@ -8663,6 +8994,31 @@ class $$UserProfilesTableAnnotationComposer
 
   GeneratedColumn<String> get activityLevel => $composableBuilder(
     column: $table.activityLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get defaultRestSec => $composableBuilder(
+    column: $table.defaultRestSec,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get barKgMetric => $composableBuilder(
+    column: $table.barKgMetric,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get barKgImperial => $composableBuilder(
+    column: $table.barKgImperial,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get platesMetric => $composableBuilder(
+    column: $table.platesMetric,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get platesImperial => $composableBuilder(
+    column: $table.platesImperial,
     builder: (column) => column,
   );
 }
@@ -8709,6 +9065,11 @@ class $$UserProfilesTableTableManager
                 Value<int?> birthYear = const Value.absent(),
                 Value<double?> heightCm = const Value.absent(),
                 Value<String?> activityLevel = const Value.absent(),
+                Value<int> defaultRestSec = const Value.absent(),
+                Value<double?> barKgMetric = const Value.absent(),
+                Value<double?> barKgImperial = const Value.absent(),
+                Value<String?> platesMetric = const Value.absent(),
+                Value<String?> platesImperial = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserProfilesCompanion(
                 id: id,
@@ -8722,6 +9083,11 @@ class $$UserProfilesTableTableManager
                 birthYear: birthYear,
                 heightCm: heightCm,
                 activityLevel: activityLevel,
+                defaultRestSec: defaultRestSec,
+                barKgMetric: barKgMetric,
+                barKgImperial: barKgImperial,
+                platesMetric: platesMetric,
+                platesImperial: platesImperial,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8737,6 +9103,11 @@ class $$UserProfilesTableTableManager
                 Value<int?> birthYear = const Value.absent(),
                 Value<double?> heightCm = const Value.absent(),
                 Value<String?> activityLevel = const Value.absent(),
+                Value<int> defaultRestSec = const Value.absent(),
+                Value<double?> barKgMetric = const Value.absent(),
+                Value<double?> barKgImperial = const Value.absent(),
+                Value<String?> platesMetric = const Value.absent(),
+                Value<String?> platesImperial = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserProfilesCompanion.insert(
                 id: id,
@@ -8750,6 +9121,11 @@ class $$UserProfilesTableTableManager
                 birthYear: birthYear,
                 heightCm: heightCm,
                 activityLevel: activityLevel,
+                defaultRestSec: defaultRestSec,
+                barKgMetric: barKgMetric,
+                barKgImperial: barKgImperial,
+                platesMetric: platesMetric,
+                platesImperial: platesImperial,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

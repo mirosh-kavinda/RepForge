@@ -11,11 +11,14 @@ import 'package:repforge/core/metrics/units.dart';
 import 'package:repforge/features/library/data/providers.dart';
 import 'package:repforge/features/library/presentation/exercise_picker_screen.dart';
 import 'package:repforge/features/onboarding/data/providers.dart';
+import 'package:repforge/features/settings/data/providers.dart';
+import 'package:repforge/features/settings/domain/settings.dart';
 import 'package:repforge/features/workout/data/providers.dart';
 import 'package:repforge/features/workout/domain/workout_template.dart';
 import 'package:repforge/features/workout/presentation/exercise_targets_sheet.dart';
 import 'package:repforge/features/workout/presentation/template_editor_screen.dart';
 
+import '../../settings/fake_settings_repository.dart';
 import '../fakes.dart';
 
 const legDay = WorkoutTemplate(
@@ -43,16 +46,21 @@ Future<FakeTemplateRepository> pumpEditor(
   UnitSystem units = UnitSystem.metric,
   double textScale = 1,
   FakeTemplateRepository? repo,
+  int restSec = 120,
 }) async {
   tester.view
     ..devicePixelRatio = 1
     ..physicalSize = const Size(390, 844);
   addTearDown(tester.view.reset);
   final r = repo ?? FakeTemplateRepository([legDay]);
+  settings = FakeSettingsRepository(
+    settings: TrainingSettings(restSec: restSec),
+  );
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         templateRepositoryProvider.overrideWithValue(r),
+        settingsRepositoryProvider.overrideWithValue(settings),
         exerciseCatalogProvider.overrideWith((ref) async => FakeCatalog()),
         unitSystemProvider.overrideWith((ref) => Stream.value(units)),
       ],
@@ -99,6 +107,8 @@ bool saveEnabled(WidgetTester tester) =>
         .widget<RfButton>(find.byKey(TemplateEditorScreen.saveKey))
         .onPressed !=
     null;
+
+late FakeSettingsRepository settings;
 
 Future<void> rowAction(WidgetTester tester, String name, String action) async {
   await tester.tap(find.byTooltip('Actions for $name'));
@@ -451,6 +461,19 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.byType(RfStepper), findsWidgets);
       handle.dispose();
+    });
+  });
+
+  group('SET-01 default rest', () {
+    testWidgets('AC4 new rows start with it', (tester) async {
+      await pumpEditor(tester, restSec: 90);
+      await tester.tap(find.byKey(TemplateEditorScreen.addKey));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Leg Press'));
+      await tester.pump();
+      await tester.tap(find.byKey(ExercisePickerScreen.addKey));
+      await tester.pumpAndSettle();
+      expect(find.text('3 × 8–12 · rest 1:30'), findsOneWidget);
     });
   });
 }
