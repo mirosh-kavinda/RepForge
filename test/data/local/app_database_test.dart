@@ -374,9 +374,26 @@ void main() {
     });
   });
 
+  group('GOL-01 schema v15', () {
+    test('v14 -> v15 adds goals', () async {
+      final dir = await Directory.systemTemp.createTemp('rf_migration');
+      addTearDown(() => dir.delete(recursive: true));
+      final file = File('${dir.path}/app.db');
+
+      final v14 = AppDatabase(NativeDatabase(file));
+      await v14.customStatement('DROP TABLE goals');
+      await v14.customStatement('PRAGMA user_version = 14');
+      await v14.close();
+
+      final v15 = AppDatabase(NativeDatabase(file));
+      addTearDown(v15.close);
+      expect(await v15.select(v15.goals).get(), isEmpty);
+    });
+  });
+
   group('FND-03 AppDatabase', () {
     test('schema v1 creates catalog, muscles, FTS, meta and outbox', () async {
-      expect(db.schemaVersion, 14);
+      expect(db.schemaVersion, 15);
       final names =
           (await db
                   .customSelect(

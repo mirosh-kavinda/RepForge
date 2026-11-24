@@ -6619,6 +6619,724 @@ class CustomExercisesCompanion extends UpdateCompanion<CustomExerciseRow> {
   }
 }
 
+class $GoalsTable extends Goals with TableInfo<$GoalsTable, GoalRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GoalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: newId,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncState, String> syncState =
+      GeneratedColumn<String>(
+        'sync_state',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(SyncState.pending.name),
+      ).withConverter<SyncState>($GoalsTable.$convertersyncState);
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exerciseIdMeta = const VerificationMeta(
+    'exerciseId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciseId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startValueMeta = const VerificationMeta(
+    'startValue',
+  );
+  @override
+  late final GeneratedColumn<double> startValue = GeneratedColumn<double>(
+    'start_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetValueMeta = const VerificationMeta(
+    'targetValue',
+  );
+  @override
+  late final GeneratedColumn<double> targetValue = GeneratedColumn<double>(
+    'target_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deadlineMeta = const VerificationMeta(
+    'deadline',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deadline = GeneratedColumn<DateTime>(
+    'deadline',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pinnedMeta = const VerificationMeta('pinned');
+  @override
+  late final GeneratedColumn<bool> pinned = GeneratedColumn<bool>(
+    'pinned',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("pinned" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _achievedAtMeta = const VerificationMeta(
+    'achievedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> achievedAt = GeneratedColumn<DateTime>(
+    'achieved_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    type,
+    exerciseId,
+    startValue,
+    targetValue,
+    deadline,
+    pinned,
+    createdAt,
+    achievedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'goals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<GoalRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciseIdMeta,
+        exerciseId.isAcceptableOrUnknown(data['exercise_id']!, _exerciseIdMeta),
+      );
+    }
+    if (data.containsKey('start_value')) {
+      context.handle(
+        _startValueMeta,
+        startValue.isAcceptableOrUnknown(data['start_value']!, _startValueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startValueMeta);
+    }
+    if (data.containsKey('target_value')) {
+      context.handle(
+        _targetValueMeta,
+        targetValue.isAcceptableOrUnknown(
+          data['target_value']!,
+          _targetValueMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetValueMeta);
+    }
+    if (data.containsKey('deadline')) {
+      context.handle(
+        _deadlineMeta,
+        deadline.isAcceptableOrUnknown(data['deadline']!, _deadlineMeta),
+      );
+    }
+    if (data.containsKey('pinned')) {
+      context.handle(
+        _pinnedMeta,
+        pinned.isAcceptableOrUnknown(data['pinned']!, _pinnedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('achieved_at')) {
+      context.handle(
+        _achievedAtMeta,
+        achievedAt.isAcceptableOrUnknown(data['achieved_at']!, _achievedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  GoalRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return GoalRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      syncState: $GoalsTable.$convertersyncState.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}sync_state'],
+        )!,
+      ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      exerciseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      ),
+      startValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}start_value'],
+      )!,
+      targetValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_value'],
+      )!,
+      deadline: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deadline'],
+      ),
+      pinned: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}pinned'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      achievedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}achieved_at'],
+      ),
+    );
+  }
+
+  @override
+  $GoalsTable createAlias(String alias) {
+    return $GoalsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncState, String, String> $convertersyncState =
+      const EnumNameConverter<SyncState>(SyncState.values);
+}
+
+class GoalRow extends DataClass implements Insertable<GoalRow> {
+  final String id;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  final SyncState syncState;
+  final String type;
+  final String? exerciseId;
+  final double startValue;
+  final double targetValue;
+  final DateTime? deadline;
+  final bool pinned;
+  final DateTime createdAt;
+  final DateTime? achievedAt;
+  const GoalRow({
+    required this.id,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.syncState,
+    required this.type,
+    this.exerciseId,
+    required this.startValue,
+    required this.targetValue,
+    this.deadline,
+    required this.pinned,
+    required this.createdAt,
+    this.achievedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    {
+      map['sync_state'] = Variable<String>(
+        $GoalsTable.$convertersyncState.toSql(syncState),
+      );
+    }
+    map['type'] = Variable<String>(type);
+    if (!nullToAbsent || exerciseId != null) {
+      map['exercise_id'] = Variable<String>(exerciseId);
+    }
+    map['start_value'] = Variable<double>(startValue);
+    map['target_value'] = Variable<double>(targetValue);
+    if (!nullToAbsent || deadline != null) {
+      map['deadline'] = Variable<DateTime>(deadline);
+    }
+    map['pinned'] = Variable<bool>(pinned);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || achievedAt != null) {
+      map['achieved_at'] = Variable<DateTime>(achievedAt);
+    }
+    return map;
+  }
+
+  GoalsCompanion toCompanion(bool nullToAbsent) {
+    return GoalsCompanion(
+      id: Value(id),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      syncState: Value(syncState),
+      type: Value(type),
+      exerciseId: exerciseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exerciseId),
+      startValue: Value(startValue),
+      targetValue: Value(targetValue),
+      deadline: deadline == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deadline),
+      pinned: Value(pinned),
+      createdAt: Value(createdAt),
+      achievedAt: achievedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(achievedAt),
+    );
+  }
+
+  factory GoalRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return GoalRow(
+      id: serializer.fromJson<String>(json['id']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      syncState: $GoalsTable.$convertersyncState.fromJson(
+        serializer.fromJson<String>(json['syncState']),
+      ),
+      type: serializer.fromJson<String>(json['type']),
+      exerciseId: serializer.fromJson<String?>(json['exerciseId']),
+      startValue: serializer.fromJson<double>(json['startValue']),
+      targetValue: serializer.fromJson<double>(json['targetValue']),
+      deadline: serializer.fromJson<DateTime?>(json['deadline']),
+      pinned: serializer.fromJson<bool>(json['pinned']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      achievedAt: serializer.fromJson<DateTime?>(json['achievedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'syncState': serializer.toJson<String>(
+        $GoalsTable.$convertersyncState.toJson(syncState),
+      ),
+      'type': serializer.toJson<String>(type),
+      'exerciseId': serializer.toJson<String?>(exerciseId),
+      'startValue': serializer.toJson<double>(startValue),
+      'targetValue': serializer.toJson<double>(targetValue),
+      'deadline': serializer.toJson<DateTime?>(deadline),
+      'pinned': serializer.toJson<bool>(pinned),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'achievedAt': serializer.toJson<DateTime?>(achievedAt),
+    };
+  }
+
+  GoalRow copyWith({
+    String? id,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    SyncState? syncState,
+    String? type,
+    Value<String?> exerciseId = const Value.absent(),
+    double? startValue,
+    double? targetValue,
+    Value<DateTime?> deadline = const Value.absent(),
+    bool? pinned,
+    DateTime? createdAt,
+    Value<DateTime?> achievedAt = const Value.absent(),
+  }) => GoalRow(
+    id: id ?? this.id,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    syncState: syncState ?? this.syncState,
+    type: type ?? this.type,
+    exerciseId: exerciseId.present ? exerciseId.value : this.exerciseId,
+    startValue: startValue ?? this.startValue,
+    targetValue: targetValue ?? this.targetValue,
+    deadline: deadline.present ? deadline.value : this.deadline,
+    pinned: pinned ?? this.pinned,
+    createdAt: createdAt ?? this.createdAt,
+    achievedAt: achievedAt.present ? achievedAt.value : this.achievedAt,
+  );
+  GoalRow copyWithCompanion(GoalsCompanion data) {
+    return GoalRow(
+      id: data.id.present ? data.id.value : this.id,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      type: data.type.present ? data.type.value : this.type,
+      exerciseId: data.exerciseId.present
+          ? data.exerciseId.value
+          : this.exerciseId,
+      startValue: data.startValue.present
+          ? data.startValue.value
+          : this.startValue,
+      targetValue: data.targetValue.present
+          ? data.targetValue.value
+          : this.targetValue,
+      deadline: data.deadline.present ? data.deadline.value : this.deadline,
+      pinned: data.pinned.present ? data.pinned.value : this.pinned,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      achievedAt: data.achievedAt.present
+          ? data.achievedAt.value
+          : this.achievedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalRow(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('type: $type, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('startValue: $startValue, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('deadline: $deadline, ')
+          ..write('pinned: $pinned, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('achievedAt: $achievedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    updatedAt,
+    deletedAt,
+    syncState,
+    type,
+    exerciseId,
+    startValue,
+    targetValue,
+    deadline,
+    pinned,
+    createdAt,
+    achievedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GoalRow &&
+          other.id == this.id &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.syncState == this.syncState &&
+          other.type == this.type &&
+          other.exerciseId == this.exerciseId &&
+          other.startValue == this.startValue &&
+          other.targetValue == this.targetValue &&
+          other.deadline == this.deadline &&
+          other.pinned == this.pinned &&
+          other.createdAt == this.createdAt &&
+          other.achievedAt == this.achievedAt);
+}
+
+class GoalsCompanion extends UpdateCompanion<GoalRow> {
+  final Value<String> id;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  final Value<SyncState> syncState;
+  final Value<String> type;
+  final Value<String?> exerciseId;
+  final Value<double> startValue;
+  final Value<double> targetValue;
+  final Value<DateTime?> deadline;
+  final Value<bool> pinned;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> achievedAt;
+  final Value<int> rowid;
+  const GoalsCompanion({
+    this.id = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.type = const Value.absent(),
+    this.exerciseId = const Value.absent(),
+    this.startValue = const Value.absent(),
+    this.targetValue = const Value.absent(),
+    this.deadline = const Value.absent(),
+    this.pinned = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.achievedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GoalsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.syncState = const Value.absent(),
+    required String type,
+    this.exerciseId = const Value.absent(),
+    required double startValue,
+    required double targetValue,
+    this.deadline = const Value.absent(),
+    this.pinned = const Value.absent(),
+    required DateTime createdAt,
+    this.achievedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt),
+       type = Value(type),
+       startValue = Value(startValue),
+       targetValue = Value(targetValue),
+       createdAt = Value(createdAt);
+  static Insertable<GoalRow> custom({
+    Expression<String>? id,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? syncState,
+    Expression<String>? type,
+    Expression<String>? exerciseId,
+    Expression<double>? startValue,
+    Expression<double>? targetValue,
+    Expression<DateTime>? deadline,
+    Expression<bool>? pinned,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? achievedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (syncState != null) 'sync_state': syncState,
+      if (type != null) 'type': type,
+      if (exerciseId != null) 'exercise_id': exerciseId,
+      if (startValue != null) 'start_value': startValue,
+      if (targetValue != null) 'target_value': targetValue,
+      if (deadline != null) 'deadline': deadline,
+      if (pinned != null) 'pinned': pinned,
+      if (createdAt != null) 'created_at': createdAt,
+      if (achievedAt != null) 'achieved_at': achievedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GoalsCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+    Value<SyncState>? syncState,
+    Value<String>? type,
+    Value<String?>? exerciseId,
+    Value<double>? startValue,
+    Value<double>? targetValue,
+    Value<DateTime?>? deadline,
+    Value<bool>? pinned,
+    Value<DateTime>? createdAt,
+    Value<DateTime?>? achievedAt,
+    Value<int>? rowid,
+  }) {
+    return GoalsCompanion(
+      id: id ?? this.id,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      syncState: syncState ?? this.syncState,
+      type: type ?? this.type,
+      exerciseId: exerciseId ?? this.exerciseId,
+      startValue: startValue ?? this.startValue,
+      targetValue: targetValue ?? this.targetValue,
+      deadline: deadline ?? this.deadline,
+      pinned: pinned ?? this.pinned,
+      createdAt: createdAt ?? this.createdAt,
+      achievedAt: achievedAt ?? this.achievedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(
+        $GoalsTable.$convertersyncState.toSql(syncState.value),
+      );
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (exerciseId.present) {
+      map['exercise_id'] = Variable<String>(exerciseId.value);
+    }
+    if (startValue.present) {
+      map['start_value'] = Variable<double>(startValue.value);
+    }
+    if (targetValue.present) {
+      map['target_value'] = Variable<double>(targetValue.value);
+    }
+    if (deadline.present) {
+      map['deadline'] = Variable<DateTime>(deadline.value);
+    }
+    if (pinned.present) {
+      map['pinned'] = Variable<bool>(pinned.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (achievedAt.present) {
+      map['achieved_at'] = Variable<DateTime>(achievedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GoalsCompanion(')
+          ..write('id: $id, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('syncState: $syncState, ')
+          ..write('type: $type, ')
+          ..write('exerciseId: $exerciseId, ')
+          ..write('startValue: $startValue, ')
+          ..write('targetValue: $targetValue, ')
+          ..write('deadline: $deadline, ')
+          ..write('pinned: $pinned, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('achievedAt: $achievedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6644,6 +7362,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CustomExercisesTable customExercises = $CustomExercisesTable(
     this,
   );
+  late final $GoalsTable goals = $GoalsTable(this);
   late final Index exerciseMusclesMuscle = Index(
     'exercise_muscles_muscle',
     'CREATE INDEX exercise_muscles_muscle ON exercise_muscles (muscle)',
@@ -6681,6 +7400,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSessions,
     sessionSets,
     customExercises,
+    goals,
     exerciseMusclesMuscle,
     scheduleDaysDate,
     workoutSessionsTemplateEnded,
@@ -10230,6 +10950,341 @@ typedef $$CustomExercisesTableProcessedTableManager =
       CustomExerciseRow,
       PrefetchHooks Function()
     >;
+typedef $$GoalsTableCreateCompanionBuilder =
+    GoalsCompanion Function({
+      Value<String> id,
+      required DateTime updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      required String type,
+      Value<String?> exerciseId,
+      required double startValue,
+      required double targetValue,
+      Value<DateTime?> deadline,
+      Value<bool> pinned,
+      required DateTime createdAt,
+      Value<DateTime?> achievedAt,
+      Value<int> rowid,
+    });
+typedef $$GoalsTableUpdateCompanionBuilder =
+    GoalsCompanion Function({
+      Value<String> id,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+      Value<SyncState> syncState,
+      Value<String> type,
+      Value<String?> exerciseId,
+      Value<double> startValue,
+      Value<double> targetValue,
+      Value<DateTime?> deadline,
+      Value<bool> pinned,
+      Value<DateTime> createdAt,
+      Value<DateTime?> achievedAt,
+      Value<int> rowid,
+    });
+
+class $$GoalsTableFilterComposer extends Composer<_$AppDatabase, $GoalsTable> {
+  $$GoalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncState, SyncState, String> get syncState =>
+      $composableBuilder(
+        column: $table.syncState,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get startValue => $composableBuilder(
+    column: $table.startValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deadline => $composableBuilder(
+    column: $table.deadline,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get pinned => $composableBuilder(
+    column: $table.pinned,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get achievedAt => $composableBuilder(
+    column: $table.achievedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GoalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GoalsTable> {
+  $$GoalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get startValue => $composableBuilder(
+    column: $table.startValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deadline => $composableBuilder(
+    column: $table.deadline,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get pinned => $composableBuilder(
+    column: $table.pinned,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get achievedAt => $composableBuilder(
+    column: $table.achievedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GoalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GoalsTable> {
+  $$GoalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncState, String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get exerciseId => $composableBuilder(
+    column: $table.exerciseId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get startValue => $composableBuilder(
+    column: $table.startValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get targetValue => $composableBuilder(
+    column: $table.targetValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deadline =>
+      $composableBuilder(column: $table.deadline, builder: (column) => column);
+
+  GeneratedColumn<bool> get pinned =>
+      $composableBuilder(column: $table.pinned, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get achievedAt => $composableBuilder(
+    column: $table.achievedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$GoalsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GoalsTable,
+          GoalRow,
+          $$GoalsTableFilterComposer,
+          $$GoalsTableOrderingComposer,
+          $$GoalsTableAnnotationComposer,
+          $$GoalsTableCreateCompanionBuilder,
+          $$GoalsTableUpdateCompanionBuilder,
+          (GoalRow, BaseReferences<_$AppDatabase, $GoalsTable, GoalRow>),
+          GoalRow,
+          PrefetchHooks Function()
+        > {
+  $$GoalsTableTableManager(_$AppDatabase db, $GoalsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GoalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GoalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GoalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String?> exerciseId = const Value.absent(),
+                Value<double> startValue = const Value.absent(),
+                Value<double> targetValue = const Value.absent(),
+                Value<DateTime?> deadline = const Value.absent(),
+                Value<bool> pinned = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> achievedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GoalsCompanion(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                type: type,
+                exerciseId: exerciseId,
+                startValue: startValue,
+                targetValue: targetValue,
+                deadline: deadline,
+                pinned: pinned,
+                createdAt: createdAt,
+                achievedAt: achievedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required DateTime updatedAt,
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<SyncState> syncState = const Value.absent(),
+                required String type,
+                Value<String?> exerciseId = const Value.absent(),
+                required double startValue,
+                required double targetValue,
+                Value<DateTime?> deadline = const Value.absent(),
+                Value<bool> pinned = const Value.absent(),
+                required DateTime createdAt,
+                Value<DateTime?> achievedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GoalsCompanion.insert(
+                id: id,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                syncState: syncState,
+                type: type,
+                exerciseId: exerciseId,
+                startValue: startValue,
+                targetValue: targetValue,
+                deadline: deadline,
+                pinned: pinned,
+                createdAt: createdAt,
+                achievedAt: achievedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GoalsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GoalsTable,
+      GoalRow,
+      $$GoalsTableFilterComposer,
+      $$GoalsTableOrderingComposer,
+      $$GoalsTableAnnotationComposer,
+      $$GoalsTableCreateCompanionBuilder,
+      $$GoalsTableUpdateCompanionBuilder,
+      (GoalRow, BaseReferences<_$AppDatabase, $GoalsTable, GoalRow>),
+      GoalRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10258,4 +11313,6 @@ class $AppDatabaseManager {
       $$SessionSetsTableTableManager(_db, _db.sessionSets);
   $$CustomExercisesTableTableManager get customExercises =>
       $$CustomExercisesTableTableManager(_db, _db.customExercises);
+  $$GoalsTableTableManager get goals =>
+      $$GoalsTableTableManager(_db, _db.goals);
 }

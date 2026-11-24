@@ -8,6 +8,19 @@ import 'base_columns.dart';
 
 part 'app_database.g.dart';
 
+// GOL-01. Values in metric (kg); the direction is target vs start.
+@DataClassName('GoalRow')
+class Goals extends Table with SyncedTable {
+  TextColumn get type => text()();
+  TextColumn get exerciseId => text().nullable()();
+  RealColumn get startValue => real()();
+  RealColumn get targetValue => real()();
+  DateTimeColumn get deadline => dateTime().nullable()();
+  BoolColumn get pinned => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get achievedAt => dateTime().nullable()();
+}
+
 // EXL-03: the user's own exercises. Muscles are JSON lists of keys.
 @DataClassName('CustomExerciseRow')
 class CustomExercises extends Table with SyncedTable {
@@ -181,13 +194,14 @@ const catalogVersionKey = 'catalogVersion';
     WorkoutSessions,
     SessionSets,
     CustomExercises,
+    Goals,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -255,6 +269,7 @@ class AppDatabase extends _$AppDatabase {
           }
         }
       }
+      if (from < 15) await m.createTable(goals);
       if (from < 12) {
         await customStatement(
           'CREATE INDEX IF NOT EXISTS workout_sessions_template_ended '

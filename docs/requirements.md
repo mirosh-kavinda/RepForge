@@ -41,7 +41,7 @@ Screen numbers refer to the design canvas (see [design.md](design.md)).
 | PRG-01 | Progress dashboard: e1RM, best set, volume, body trends | MVP | P2 | 06 | Done |
 | PRG-02 | Adherence stats + cycle streak (rest never breaks it) | MVP | P2 | 01, 06 | Done |
 | PRG-03 | 7-day muscle heat map | v1.1 | P4 | 22 | — |
-| GOL-01 | Personal goals with projected finish date | MVP | P2 | 07, 19 | — |
+| GOL-01 | Personal goals with projected finish date | MVP | P2 | 07, 19 | Done |
 | GOL-02 | Goal check-ins and drift alerts | v1.1 | P4 | 07 | — |
 | NTF-01 | Local + push notifications, per-type toggles, quiet hours | MVP | P3 | 15, 21, 22 | — |
 | SYN-01 | Offline-first, sync to Firebase; no loss after 30 days offline | MVP | P3 | 24 | — |

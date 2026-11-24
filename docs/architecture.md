@@ -77,7 +77,7 @@ Same entities locally (Drift) and in Firestore under `users/{uid}`. Every record
 | WorkoutSession | users/{uid}/sessions/{id} | templateId, startedAt, endedAt, totalVolumeKg, prCount, notes, sets[{exId, setNo, kg, reps, rpe, isWarmup, isPR}] |
 | BodySnapshot | users/{uid}/bodySnapshots/{id} | date, weightKg, waistCm, neckCm, hipCm, bodyFatPct, bmi, lbmKg, ffmi, bmr, tdee |
 | PersonalRecord | users/{uid}/records/{exId} | bestE1rm, bestSet{kg, reps}, bestVolume, achievedAt |
-| Goal | users/{uid}/goals/{id} | type, exId?, targetValue, startValue, deadline, projectedDate, status |
+| Goal | users/{uid}/goals/{id} | type (strength / bodyWeight), exerciseId?, startValue, targetValue (kg), deadline?, pinned, createdAt, achievedAt? |
 | NotificationPrefs | users/{uid}/settings/notifications | per-type on/off, reminderTime, quietHours, fcmTokens[] |
 | ProgressPhoto | Storage users/{uid}/photos/{id}.webp + doc | date, pose, path |
 
@@ -93,6 +93,10 @@ Design choices:
 - Progress (PRG-01): `progress_rules.dart` builds chart series from finished sets and body
   snapshots for a range (e1RM and volume from `lib/core/metrics`); charts are `fl_chart`, each
   hidden from screen readers behind a text summary. The chosen exercise lives in `app_meta`.
+- Goals (GOL-01): `goals` stores only what the user set; current value, progress, projection
+  and pace are worked out on read (`goal_rules.dart`, with `bestE1rm` and `projectGoal`). A
+  settler provider (listened on Home and Goals) writes `achievedAt` once data reaches the
+  target; pinning clears the other pins in one transaction.
 - Adherence (PRG-02): `adherence_rules.dart` reads every cycle's day records (no new table):
   one status per date up to today (the active cycle's wins on a shared date), today from its
   record or else its row (training = pending, rest = rest). Dates with no record are absent, so

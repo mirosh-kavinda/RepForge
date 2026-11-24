@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/generated/app_localizations.dart';
+import '../../../app/router.dart';
 import '../../../app/theme/rf_scales.dart';
 import '../../../app/widgets/rf_segmented.dart';
 import '../../body/presentation/body_card.dart';
@@ -15,6 +17,8 @@ import 'progress_sections.dart';
 // (BOD-01).
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
+
+  static const goalsKey = ValueKey('progress.goals');
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +40,20 @@ class ProgressScreen extends ConsumerWidget {
                 if (r != null) ref.read(selectedRangeProvider.notifier).set(r);
               },
             ),
-            const SizedBox(height: RfSpace.s16),
+            const SizedBox(height: RfSpace.s8),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: ProgressScreen.goalsKey,
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(RfSize.minTarget, RfSize.minTarget),
+                ),
+                onPressed: () => context.push(Routes.goals),
+                icon: const Icon(Icons.flag_outlined),
+                label: Text(l10n.goalsOpen),
+              ),
+            ),
+            const SizedBox(height: RfSpace.s8),
             const AdherenceSection(),
             const StrengthSection(),
             const VolumeSection(),

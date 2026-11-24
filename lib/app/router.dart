@@ -8,6 +8,8 @@ import '../features/auth/presentation/email_sign_in_screen.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/body/presentation/body_form_screen.dart';
 import '../features/body/presentation/body_history_screen.dart';
+import '../features/goals/presentation/goal_form_screen.dart';
+import '../features/goals/presentation/goals_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/library/presentation/custom_exercise_form.dart';
 import '../features/library/presentation/exercise_detail_screen.dart';
@@ -56,6 +58,9 @@ abstract final class Routes {
   static const body = '/progress/body';
   static const bodyNew = '/progress/body/new';
   static String bodySnapshot(String id) => '/progress/body/$id';
+  static const goals = '/progress/goals';
+  static const goalNew = '/progress/goals/new';
+  static String goalEdit(String id) => '/progress/goals/$id/edit';
   static const profile = '/profile';
   static const workouts = '/schedule/workouts';
   static const workoutNew = '/schedule/workouts/new';
@@ -261,6 +266,21 @@ GoRouter router(Ref ref) {
                         path: ':id',
                         builder: (context, state) =>
                             BodySnapshotScreen(id: state.pathParameters['id']!),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'goals',
+                    builder: (context, state) => const GoalsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        builder: (context, state) => const GoalFormScreen(),
+                      ),
+                      GoRoute(
+                        path: ':id/edit',
+                        builder: (context, state) =>
+                            GoalFormScreen(id: state.pathParameters['id']),
                       ),
                     ],
                   ),

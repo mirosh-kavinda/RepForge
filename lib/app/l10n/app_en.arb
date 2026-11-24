@@ -3094,5 +3094,256 @@
         "type": "String"
       }
     }
+  },
+  "goalsTitle": "Goals",
+  "@goalsTitle": {
+    "description": "GOL-01 screen 07 title; Progress entry."
+  },
+  "goalsOpen": "Goals",
+  "@goalsOpen": {
+    "description": "Progress entry to the Goals screen."
+  },
+  "goalsNone": "No goals yet",
+  "@goalsNone": {
+    "description": "Goals screen with no goals."
+  },
+  "goalNew": "New goal",
+  "@goalNew": {
+    "description": "Creates a goal."
+  },
+  "goalEditTitle": "Edit goal",
+  "@goalEditTitle": {
+    "description": "Edit form title."
+  },
+  "goalsActive": "Active",
+  "@goalsActive": {
+    "description": "Heading of active goals."
+  },
+  "goalsAchieved": "Achieved",
+  "@goalsAchieved": {
+    "description": "Heading of achieved goals."
+  },
+  "goalAchievedOn": "Achieved {date}",
+  "@goalAchievedOn": {
+    "description": "Row of an achieved goal.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalBodyWeight": "Body weight",
+  "@goalBodyWeight": {
+    "description": "Name of a body weight goal; type option."
+  },
+  "goalStrength": "Strength",
+  "@goalStrength": {
+    "description": "Type option."
+  },
+  "goalTypeLabel": "Goal type",
+  "@goalTypeLabel": {
+    "description": "Label of the type switch."
+  },
+  "goalStrengthName": "{lift} estimated 1RM",
+  "@goalStrengthName": {
+    "description": "Name of a strength goal.",
+    "placeholders": {
+      "lift": {
+        "type": "String"
+      }
+    }
+  },
+  "goalPath": "{start} → {current} → {target}",
+  "@goalPath": {
+    "description": "Start, current and target.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "goalPercent": "{n} %",
+  "@goalPercent": {
+    "description": "Progress toward the target.",
+    "placeholders": {
+      "n": {
+        "type": "String"
+      }
+    }
+  },
+  "goalProjected": "Projected: {date}",
+  "@goalProjected": {
+    "description": "Projected finish date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalNotEnoughData": "Not enough data yet: log it 3 times over 2 weeks",
+  "@goalNotEnoughData": {
+    "description": "No projection yet."
+  },
+  "goalNotOnTrack": "Not on track at your current trend",
+  "@goalNotOnTrack": {
+    "description": "Trend never meets the target."
+  },
+  "goalOnPace": "On pace",
+  "@goalOnPace": {
+    "description": "Projection is on or before the deadline."
+  },
+  "goalBehind": "Behind",
+  "@goalBehind": {
+    "description": "Projection is after the deadline."
+  },
+  "goalDeadlinePassed": "Deadline passed",
+  "@goalDeadlinePassed": {
+    "description": "Deadline is before today."
+  },
+  "goalDeadlineOn": "Deadline: {date}",
+  "@goalDeadlineOn": {
+    "description": "A goal deadline.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "goalPinned": "Pinned to Home",
+  "@goalPinned": {
+    "description": "A pinned goal."
+  },
+  "goalActions": "Goal actions",
+  "@goalActions": {
+    "description": "Menu of a goal row."
+  },
+  "goalPin": "Pin to Home",
+  "@goalPin": {
+    "description": "Menu action."
+  },
+  "goalUnpin": "Unpin",
+  "@goalUnpin": {
+    "description": "Menu action."
+  },
+  "goalEdit": "Edit",
+  "@goalEdit": {
+    "description": "Menu action."
+  },
+  "goalMarkAchieved": "Mark achieved",
+  "@goalMarkAchieved": {
+    "description": "Menu action."
+  },
+  "goalDelete": "Delete",
+  "@goalDelete": {
+    "description": "Menu action."
+  },
+  "goalDeleted": "Goal deleted",
+  "@goalDeleted": {
+    "description": "Snackbar after delete."
+  },
+  "goalUndo": "Undo",
+  "@goalUndo": {
+    "description": "Snackbar action."
+  },
+  "goalActionFailed": "Couldn't save that change. Try again.",
+  "@goalActionFailed": {
+    "description": "A failed write."
+  },
+  "goalLift": "Lift",
+  "@goalLift": {
+    "description": "Lift picker label."
+  },
+  "goalPickLift": "Choose a lift",
+  "@goalPickLift": {
+    "description": "Lift picker sheet title; empty picker."
+  },
+  "goalNoLifts": "Log a lift with weight and up to 12 reps first",
+  "@goalNoLifts": {
+    "description": "No lift has an estimated 1RM."
+  },
+  "goalNoWeight": "Save a body snapshot first",
+  "@goalNoWeight": {
+    "description": "No weight yet."
+  },
+  "goalNow": "Now: {amount}",
+  "@goalNow": {
+    "description": "Current value in the form.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "goalTarget": "Target",
+  "@goalTarget": {
+    "description": "Target field label."
+  },
+  "goalTargetInvalid": "Enter a number above 0",
+  "@goalTargetInvalid": {
+    "description": "Bad target."
+  },
+  "goalTargetAlready": "You're already there",
+  "@goalTargetAlready": {
+    "description": "Target equals current."
+  },
+  "goalTargetAbove": "Enter a target above your current value",
+  "@goalTargetAbove": {
+    "description": "Strength target too low."
+  },
+  "goalDeadline": "Deadline",
+  "@goalDeadline": {
+    "description": "Deadline row label."
+  },
+  "goalDeadlineNone": "No deadline",
+  "@goalDeadlineNone": {
+    "description": "No deadline set."
+  },
+  "goalDeadlineSet": "Set deadline",
+  "@goalDeadlineSet": {
+    "description": "Opens the date picker."
+  },
+  "goalDeadlineClear": "Clear deadline",
+  "@goalDeadlineClear": {
+    "description": "Removes the deadline."
+  },
+  "goalSave": "Save goal",
+  "@goalSave": {
+    "description": "Form save button."
+  },
+  "goalSetOne": "Set a goal",
+  "@goalSetOne": {
+    "description": "Home link with no active goals."
+  },
+  "goalCardHint": "Opens Goals",
+  "@goalCardHint": {
+    "description": "Screen-reader hint for the Home goal card."
+  },
+  "goalHomeSummary": "{name}: {path}, {percent}. {projection}",
+  "@goalHomeSummary": {
+    "description": "Screen-reader label of the Home goal card.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      },
+      "projection": {
+        "type": "String"
+      }
+    }
+  },
+  "goalTargetBelow": "Enter a target below your current value",
+  "@goalTargetBelow": {
+    "description": "Edited weight-loss target not below current."
   }
 }

@@ -352,7 +352,7 @@ final class StatusHistoryProvider
   }
 }
 
-String _$statusHistoryHash() => r'a42d2621970b78439a5a90871c3eaa36bf6646ef';
+String _$statusHistoryHash() => r'60cdb38cf85766916609cea8f584a0ad11c5e1ba';
 
 @ProviderFor(streak)
 final streakProvider = StreakProvider._();
